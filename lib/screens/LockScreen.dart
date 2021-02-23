@@ -47,7 +47,6 @@ class _LockScreenState extends State<LockScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // backgroundColor: Colors.black,
       body: Column(
         children: [
           SizedBox(

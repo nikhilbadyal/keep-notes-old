@@ -26,10 +26,31 @@ class _SetPasswordState extends State<SetPassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // backgroundColor: Colors.black,
       body: Column(
         children: [
+          SizedBox(
+            height: 40.0,
+          ),
           Expanded(
+            flex: 1,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.cancel,
+                    color: Colors.blue,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/', (Route<dynamic> route) => false);
+                  },
+                )
+              ],
+              mainAxisAlignment: MainAxisAlignment.end,
+            ),
+          ),
+          Expanded(
+            flex: 10,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -68,7 +89,7 @@ class _SetPasswordState extends State<SetPassword> {
             ),
           ),
           Expanded(
-            // flex: 1,
+            flex: 15,
             child: GridView.builder(
               padding: EdgeInsets.all(0.0),
               physics: NeverScrollableScrollPhysics(),
