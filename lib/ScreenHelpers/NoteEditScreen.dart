@@ -355,7 +355,7 @@ class _EditScreenState extends State<EditScreen> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return moreOption(noteInEditing, _autoSaver);
+        return moreOption(context, noteInEditing, _autoSaver);
       },
     );
   }
@@ -376,7 +376,7 @@ class _EditScreenState extends State<EditScreen> {
     });
   }
 
-  Widget moreOption(Note noteInEditing, Timer autoSaver) {
+  Widget moreOption(BuildContext context, Note noteInEditing, Timer autoSaver) {
     //TODO optimize this
     return Container(
       height: 200,
@@ -409,7 +409,20 @@ class _EditScreenState extends State<EditScreen> {
                       }
                     }
                     debugPrint("NOt set");
-                    Dialog();
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CupertinoAlertDialog(
+                            title: Text("Please set password first"),
+                            actions: [
+                              FlatButton(onPressed: (){
+                                Navigator.of(this.context).pushNamedAndRemoveUntil(
+                                    '/setpass', (Route<dynamic> route) => false);
+                              }, child: Text("Ok")),
+                              FlatButton(onPressed: (){Navigator.of(context).pop(true);}, child: Text("Later")),
+                            ],
+                          );
+                        });
                     /*CustomDialog(
                       title: "Info",
                       descriptions: "Please set password first",
