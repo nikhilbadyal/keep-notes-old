@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/widget/Dismiss.dart';
 import 'package:notes/widget/NoNotes.dart';
 import 'package:provider/provider.dart';
@@ -11,11 +12,9 @@ class Count {
 
 class Body extends StatefulWidget {
   final NoteState fromWhere;
+  final DrawerManager drawerManager;
 
-  final bool isIgnoring;
-
-  const Body({Key key, @required this.fromWhere, this.isIgnoring})
-      : super(key: key);
+  const Body({Key key, @required this.fromWhere, this.drawerManager}) : super(key: key);
 
   @override
   _BodyState createState() => _BodyState();
@@ -53,7 +52,7 @@ class _BodyState extends State<Body> {
                     return Padding(
                       padding: const EdgeInsets.only(top: 0),
                       child: AbsorbPointer(
-                        absorbing: widget.isIgnoring,
+                        absorbing: widget.drawerManager.isIgnoring,
                         child: ListView.builder(
                           //TODO GIve Animate list a try
                           physics: BouncingScrollPhysics(),

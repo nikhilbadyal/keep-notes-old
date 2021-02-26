@@ -13,8 +13,12 @@ import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/screens/SetPassword.dart';
 import 'package:notes/screens/SuggestionScreen.dart';
 import 'package:notes/screens/TrashScreen.dart';
+import 'package:notes/util/DrawerManager.dart';
+import 'package:notes/util/MyRouteObserver.dart';
 import 'package:provider/provider.dart';
 
+
+MyNotes myNotes;
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -30,24 +34,28 @@ void main() {
 
 //TODO implement lock screen
 class MyNotes extends StatelessWidget {
+  final MyRouteObserver myRouteObserver = MyRouteObserver();
+  final DrawerManager drawerManager = DrawerManager();
   @override
   Widget build(BuildContext context) {
-    Colors.blue;
+    myNotes = this;
     return ChangeNotifierProvider.value(
       value: NotesHelper(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Notes App',
+        navigatorObservers: [myRouteObserver],
         routes: {
-          '/': (context) => HomeScreen(),
-          '/about': (context) => AboutMeScreen(),
-          '/archive': (context) => ArchiveScreen(),
-          '/suggestions': (context) => SuggestionsScreen(),
-          '/trash': (context) => TrashScreen(),
+          '/': (context) => HomeScreen(drawerManager), //d
+          '/about': (context) => AboutMeScreen(drawerManager), //d
+          '/archive': (context) => ArchiveScreen(drawerManager), //d
+          '/suggestions': (context) => SuggestionsScreen(drawerManager), //d
+          '/trash': (context) => TrashScreen(drawerManager), //d
+          '/hidden': (context) => HiddenScreen(drawerManager), //d
+          '/backup': (context) => BackUpScreen(drawerManager), //d
           '/lock': (context) => LockScreen(),
           '/setpass': (context) => SetPassword(),
-          '/hidden': (context) => HiddenScreen(),
-          '/backup': (context) => BackUpScreen(),
+
         },
       ),
     );

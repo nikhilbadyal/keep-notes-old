@@ -1,46 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/main.dart';
 import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/util/Utilites.dart';
 
 //TODO optimize screen jumping
 void goTOArchiveScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/archive', (Route<dynamic> route) => false);
 }
 
 void goToBackUpScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
+
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/backup', (Route<dynamic> route) => false);
 }
 
 void goTODeleteScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
+
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/trash', (Route<dynamic> route) => false);
 }
 
 void goTOAboutMeScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
+
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/about', (Route<dynamic> route) => false);
 }
 
 void goTOBugScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
+
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/suggestions', (Route<dynamic> route) => false);
 }
 
 void goTOHomeScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
+
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
 }
 
 void goTOHiddenScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/hidden', (Route<dynamic> route) => false);
 }
 
 Future<void> goToLockScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState();
   if (LockChecker.bioEnabled) {
     await Utilities.isBioAvailable();
     await Utilities.getListOfBiometricTypes();
@@ -52,11 +66,13 @@ Future<void> goToLockScreen(BuildContext context) async {
 }
 
 void goToSetPasswordScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/setpass', (Route<dynamic> route) => false);
 }
 
 void goToBiometricSetup(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState();
   Navigator.of(context)
       .pushNamedAndRemoveUntil('/setpass', (Route<dynamic> route) => false);
 }
@@ -66,6 +82,7 @@ void goToNoteEditScreen(
     NoteState noteState,
     String imagePath = '',
     shouldAutoFocus = false}) {
+  myNotes.drawerManager.resetDrawerState();
   var autoFocus = true;
   var emptyNote = Note(
     id: -1,

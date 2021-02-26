@@ -14,6 +14,16 @@ class SecondLayerState extends State<SecondLayer> {
   double angle = 0;
   bool isOpen = false;
 
+  void callSetState(double xOffset, double yOffset, double angle) {
+    setState(
+      () {
+        this.xOffSet = xOffset;
+        this.yOffSet = yOffset;
+        this.angle = angle;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     secondLayer = this;

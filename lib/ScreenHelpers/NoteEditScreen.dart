@@ -415,11 +415,18 @@ class _EditScreenState extends State<EditScreen> {
                           return CupertinoAlertDialog(
                             title: Text("Please set password first"),
                             actions: [
-                              FlatButton(onPressed: (){
-                                Navigator.of(this.context).pushNamedAndRemoveUntil(
-                                    '/setpass', (Route<dynamic> route) => false);
-                              }, child: Text("Ok")),
-                              FlatButton(onPressed: (){Navigator.of(context).pop(true);}, child: Text("Later")),
+                              FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(this.context)
+                                        .pushNamedAndRemoveUntil('/setpass',
+                                            (Route<dynamic> route) => false);
+                                  },
+                                  child: Text("Ok")),
+                              FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(true);
+                                  },
+                                  child: Text("Later")),
                             ],
                           );
                         });

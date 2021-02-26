@@ -45,209 +45,209 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          SizedBox(
-            height: 40.0,
-          ),
-          Expanded(
-            flex: 1,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.cancel,
-                    color: Colors.blue,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/', (Route<dynamic> route) => false);
-                  },
-                )
-              ],
-              mainAxisAlignment: MainAxisAlignment.end,
+    return WillPopScope(
+      onWillPop: _onBackPress,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          children: [
+            SizedBox(
+              height: 40.0,
             ),
-          ),
-          Expanded(
-            flex: 10,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 12.0,
-                ),
-                Text(
-                  'Enter password',
-                  style: TextStyle(
-                    // color: Colors.white,
-                    color: Colors.blue,
+            Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.cancel,
+                      color: Colors.blue,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/', (Route<dynamic> route) => false);
+                    },
+                  )
+                ],
+                mainAxisAlignment: MainAxisAlignment.end,
+              ),
+            ),
+            Expanded(
+              flex: 10,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 12.0,
                   ),
-                ),
-                SizedBox(
-                  height: 12.0,
-                ),
-                Container(
-                  height: 100,
-                  // color: Colors.blue,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (var i = 0; i < actives.length; ++i)
-                        AnimatedBox(
-                          clear: clears[i],
-                          active: actives[i],
-                          value: values[i],
-                        ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    if (await Utilities.isBioAvailable()) {
-                      errorPopUp(context,
-                          "Password can't be recovered. Delete all Hidden Notes?");
-                    } else {
-                      //TODO add to share preference that bio is not avaialable in system
-                    }
-                  },
-                  child: Text(
-                    message,
+                  Text(
+                    'Enter password',
                     style: TextStyle(
-                      color: message == 'success'
-                          ? Colors.green
-                          : Colors.redAccent,
+                      // color: Colors.white,
+                      color: Colors.blue,
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 30.0,
-                ),
-                LockChecker.bioEnabled
-                    ? GestureDetector(
-                        onTap: () {
-                          promptFinger(context);
-                        },
-                        child: Text(
-                          'Use FinerPrint',
-                          //TODO set this to bio available
-                          style: TextStyle(color: Colors.green),
-                        ),
-                      )
-                    : LockChecker.bioAvailable
-                        ? GestureDetector(
-                            onTap: () {
-                              promptUser(context);
-                            },
-                            child: Text(
-                              'SetUp FinerPrint',
-                              //TODO set this to bio available
-                              style: TextStyle(color: Colors.green),
-                            ),
-                          )
-                        : GestureDetector(
-                            onTap: () {},
-                            child: Text(
-                              '',
-                            ),
-                          )
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 15,
-            child: GridView.builder(
-              padding: EdgeInsets.all(0.0),
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 0.8 / 0.6,
+                  SizedBox(
+                    height: 12.0,
+                  ),
+                  Container(
+                    height: 100,
+                    // color: Colors.blue,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (var i = 0; i < actives.length; ++i)
+                          AnimatedBox(
+                            clear: clears[i],
+                            active: actives[i],
+                            value: values[i],
+                          ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      if (await Utilities.isBioAvailable()) {
+                        errorPopUp(context,
+                            "Password can't be recovered. Delete all Hidden Notes?");
+                      } else {
+                      }
+                    },
+                    child: Text(
+                      message,
+                      style: TextStyle(
+                        color: message == 'success'
+                            ? Colors.green
+                            : Colors.redAccent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30.0,
+                  ),
+                  LockChecker.bioEnabled
+                      ? GestureDetector(
+                          onTap: () {
+                            promptFinger(context);
+                          },
+                          child: Text(
+                            'Use FinerPrint',
+                            style: TextStyle(color: Colors.green),
+                          ),
+                        )
+                      : LockChecker.bioAvailable
+                          ? GestureDetector(
+                              onTap: () {
+                                promptUser(context);
+                              },
+                              child: Text(
+                                'SetUp FinerPrint',
+                                style: TextStyle(color: Colors.green),
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {},
+                              child: Text(
+                                '',
+                              ),
+                            )
+                ],
               ),
-              itemBuilder: (context, index) => Container(
-                margin: EdgeInsets.all(4.0),
-                width: 50.0,
-                height: 50.0,
-                // height: MediaQuery.of(context).size.height/8,
-                child: Center(
-                  child: index == 9
-                      ? SizedBox()
-                      : Center(
-                          child: MaterialButton(
-                            // color: Colors.blue,
-                            minWidth: 55.0,
-                            height: 55.0,
-                            child: index == 11
-                                ? Icon(
-                                    Icons.backspace_outlined,
-                                    // color: Colors.white,
-                                    color: Colors.blue,
-                                  )
-                                : Text(
-                                    '${numbers[index == 10 ? index - 1 : index]}',
-                                    style: TextStyle(
+            ),
+            Expanded(
+              flex: 15,
+              child: GridView.builder(
+                padding: EdgeInsets.all(0.0),
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 0.8 / 0.6,
+                ),
+                itemBuilder: (context, index) => Container(
+                  margin: EdgeInsets.all(4.0),
+                  width: 50.0,
+                  height: 50.0,
+                  // height: MediaQuery.of(context).size.height/8,
+                  child: Center(
+                    child: index == 9
+                        ? SizedBox()
+                        : Center(
+                            child: MaterialButton(
+                              // color: Colors.blue,
+                              minWidth: 55.0,
+                              height: 55.0,
+                              child: index == 11
+                                  ? Icon(
+                                      Icons.backspace_outlined,
                                       // color: Colors.white,
                                       color: Colors.blue,
-                                      fontSize: 26.0,
+                                    )
+                                  : Text(
+                                      '${numbers[index == 10 ? index - 1 : index]}',
+                                      style: TextStyle(
+                                        // color: Colors.white,
+                                        color: Colors.blue,
+                                        fontSize: 26.0,
+                                      ),
                                     ),
-                                  ),
-                            onPressed: () {
-                              if (index == 11) {
-                                currentIndex--;
-                                if (inputText.isEmpty) {
-                                  currentIndex = 0;
+                              onPressed: () {
+                                if (index == 11) {
+                                  currentIndex--;
+                                  if (inputText.isEmpty) {
+                                    currentIndex = 0;
+                                  } else {
+                                    inputText = inputText.substring(
+                                        0, inputText.length - 1);
+                                    clears = clears.map((e) => false).toList();
+                                    setState(() {
+                                      clears[currentIndex] = true;
+                                      actives[currentIndex] = false;
+                                    });
+                                    return;
+                                  }
                                 } else {
-                                  inputText = inputText.substring(
-                                      0, inputText.length - 1);
+                                  inputText +=
+                                      numbers[index == 10 ? index - 1 : index]
+                                          .toString();
+                                  if (inputText.length == 5) {
+                                    setState(() {
+                                      clears = clears.map((e) => true).toList();
+                                      actives =
+                                          actives.map((e) => false).toList();
+                                    });
+                                    if (inputText == LockChecker.password) {
+                                      message = 'success';
+                                      goTOHiddenScreen(context);
+                                    } else {
+                                      message = 'Forgot Password ?';
+                                      setState(() {});
+                                    }
+                                    inputText = '';
+                                    currentIndex = 0;
+                                    return;
+                                  }
+                                  message = '';
                                   clears = clears.map((e) => false).toList();
                                   setState(() {
-                                    clears[currentIndex] = true;
-                                    actives[currentIndex] = false;
+                                    actives[currentIndex] = true;
+                                    currentIndex++;
                                   });
-                                  return;
                                 }
-                              } else {
-                                inputText +=
-                                    numbers[index == 10 ? index - 1 : index]
-                                        .toString();
-                                if (inputText.length == 5) {
-                                  setState(() {
-                                    clears = clears.map((e) => true).toList();
-                                    actives =
-                                        actives.map((e) => false).toList();
-                                  });
-                                  if (inputText == LockChecker.password) {
-                                    message = 'success';
-                                    goTOHiddenScreen(context);
-                                  } else {
-                                    message = 'Forgot Password ?';
-                                    setState(() {});
-                                  }
-                                  inputText = '';
-                                  currentIndex = 0;
-                                  return;
-                                }
-                                message = '';
-                                clears = clears.map((e) => false).toList();
-                                setState(() {
-                                  actives[currentIndex] = true;
-                                  currentIndex++;
-                                });
-                              }
-                            },
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(60.0)),
+                              },
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(60.0)),
+                            ),
                           ),
-                        ),
+                  ),
                 ),
+                itemCount: 12,
               ),
-              itemCount: 12,
             ),
-          ),
-          /*  SizedBox(
-            height: 50.0,
-          ),*/
-        ],
+            /*  SizedBox(
+              height: 50.0,
+            ),*/
+          ],
+        ),
       ),
     );
   }
@@ -331,6 +331,12 @@ class _LockScreenState extends State<LockScreen> {
           ),
         ) ??
         false; // In case the user dismisses the dialog by clicking away from it
+  }
+
+  Future<bool> _onBackPress() async {
+    Navigator.of(this.context)
+        .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    return true;
   }
 }
 
