@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:notes/screens/LockScreen.dart';
+import 'package:notes/main.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/PopUp.dart';
 
@@ -154,13 +154,13 @@ class _SetPasswordState extends State<SetPassword> {
                                     message = 'Pass is ' + inputText;
                                     Utilities.showMyToast(message, 3,
                                         ToastGravity.CENTER, Colors.green);
-                                    LockChecker.passwordSet = true;
-                                    LockChecker.password = inputText;
+                                    myNotes.lockChecker.passwordSet = true;
+                                    myNotes.lockChecker.password = inputText;
                                     await Utilities.addBoolToSF(
                                         "passwordSet", true);
                                     await Utilities.addStringToSF(
                                         'password', inputText);
-                                    LockChecker.updateDetails();
+                                    myNotes.lockChecker.updateDetails();
                                     if (await Utilities.isBioAvailable()) {
                                       promptUser(context);
                                     }
@@ -207,9 +207,9 @@ class _SetPasswordState extends State<SetPassword> {
               return;
             },
             onSecondPressed: () async {
-              LockChecker.bioEnabled = false;
+              myNotes.lockChecker.bioEnabled = false;
               Utilities.addBoolToSF('bio', false);
-              await LockChecker.updateDetails();
+              await myNotes.lockChecker.updateDetails();
               await Navigator.of(context).pushNamedAndRemoveUntil(
                   '/lock', (Route<dynamic> route) => false);
             },

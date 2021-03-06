@@ -14,7 +14,9 @@ import 'package:notes/screens/SetPassword.dart';
 import 'package:notes/screens/SuggestionScreen.dart';
 import 'package:notes/screens/TrashScreen.dart';
 import 'package:notes/util/DrawerManager.dart';
+import 'package:notes/util/LockManager.dart';
 import 'package:notes/util/MyRouteObserver.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:provider/provider.dart';
 
 
@@ -34,8 +36,10 @@ void main() {
 
 //TODO implement lock screen
 class MyNotes extends StatelessWidget {
+
   final MyRouteObserver myRouteObserver = MyRouteObserver();
   final DrawerManager drawerManager = DrawerManager();
+  final LockChecker lockChecker = LockChecker(Utilities.passLength);
   @override
   Widget build(BuildContext context) {
     myNotes = this;
@@ -46,16 +50,15 @@ class MyNotes extends StatelessWidget {
         title: 'Notes App',
         navigatorObservers: [myRouteObserver],
         routes: {
-          '/': (context) => HomeScreen(drawerManager), //d
-          '/about': (context) => AboutMeScreen(drawerManager), //d
-          '/archive': (context) => ArchiveScreen(drawerManager), //d
-          '/suggestions': (context) => SuggestionsScreen(drawerManager), //d
-          '/trash': (context) => TrashScreen(drawerManager), //d
-          '/hidden': (context) => HiddenScreen(drawerManager), //d
-          '/backup': (context) => BackUpScreen(drawerManager), //d
+          '/': (context) => HomeScreen(), //d
+          '/about': (context) => AboutMeScreen(), //d
+          '/archive': (context) => ArchiveScreen(), //d
+          '/suggestions': (context) => SuggestionsScreen(), //d
+          '/trash': (context) => TrashScreen(), //d
+          '/hidden': (context) => HiddenScreen(), //d
+          '/backup': (context) => BackUpScreen(), //d
           '/lock': (context) => LockScreen(),
           '/setpass': (context) => SetPassword(),
-
         },
       ),
     );

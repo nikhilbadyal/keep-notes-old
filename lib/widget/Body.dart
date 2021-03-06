@@ -6,6 +6,8 @@ import 'package:notes/widget/Dismiss.dart';
 import 'package:notes/widget/NoNotes.dart';
 import 'package:provider/provider.dart';
 
+import '../main.dart';
+
 class Count {
   static int i = 0;
 }
@@ -52,7 +54,7 @@ class _BodyState extends State<Body> {
                     return Padding(
                       padding: const EdgeInsets.only(top: 0),
                       child: AbsorbPointer(
-                        absorbing: widget.drawerManager.isIgnoring,
+                        absorbing: myNotes.drawerManager.isIgnoring,
                         child: ListView.builder(
                           //TODO GIve Animate list a try
                           physics: BouncingScrollPhysics(),

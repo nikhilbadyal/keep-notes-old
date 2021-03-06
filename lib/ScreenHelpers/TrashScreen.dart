@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/database/note.dart';
-import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/Body.dart';
+
+import '../main.dart';
 // enum viewType { //TODO list grid toggle List, Grid }
 
 _TrashScreenHelperState trash ;
 class TrashScreenHelper extends StatefulWidget {
-  final DrawerManager drawerManager;
-
-  const TrashScreenHelper(this.drawerManager) ;
 
   @override
   _TrashScreenHelperState createState() => _TrashScreenHelperState();
@@ -37,8 +35,8 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
     trash = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: widget.drawerManager.xOffSet, y: widget.drawerManager.yOffSet)
-          .rotate(widget.drawerManager.angle)
+          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),
       child: Scaffold(

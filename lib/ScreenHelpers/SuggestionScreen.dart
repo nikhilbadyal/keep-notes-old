@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
-import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
 import 'package:notes/widget/PopUp.dart';
 
+import '../main.dart';
+
 _SuggestionsScreenHelperState suggestion ;
 class SuggestionsScreenHelper extends StatefulWidget {
-  final DrawerManager drawerManager;
-  SuggestionsScreenHelper(this.drawerManager);
-
   @override
   _SuggestionsScreenHelperState createState() =>
       _SuggestionsScreenHelperState();
@@ -36,8 +34,8 @@ class _SuggestionsScreenHelperState extends State<SuggestionsScreenHelper> {
     suggestion = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: widget.drawerManager.xOffSet, y: widget.drawerManager.yOffSet)
-          .rotate(widget.drawerManager.angle)
+          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),
       child: Scaffold(

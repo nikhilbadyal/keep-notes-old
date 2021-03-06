@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:notes/database/note.dart';
-import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+
+import '../main.dart';
 
 class DatabaseHelper {
   // static Database _database;
@@ -66,10 +67,10 @@ class DatabaseHelper {
     final db = await database;
     try {
       await db.delete('notes', where: 'state = ?', whereArgs: [3]);
-      LockChecker.passwordSet = false;
+      myNotes.lockChecker.passwordSet = false;
       await Utilities.removeValues('password');
       await Utilities.removeValues('bio');
-      await LockChecker.updateDetails();
+      await myNotes.lockChecker.updateDetails();
       return true;
     } on Error {
       return false;

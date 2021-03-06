@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/database/note.dart';
-import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/BottomBar.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
 import 'package:notes/widget/FloatingActionButton.dart';
 
+import '../main.dart';
+
 _BackUpScreenHelperState backup ;
 class BackUpScreenHelper extends StatefulWidget {
-  final DrawerManager drawerManager ;
-
-  BackUpScreenHelper(this.drawerManager);
 
   @override
   _BackUpScreenHelperState createState() => _BackUpScreenHelperState();
@@ -38,8 +36,8 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
     backup = this ;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: widget.drawerManager.xOffSet, y: widget.drawerManager.yOffSet)
-          .rotate(widget.drawerManager.angle)
+          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),
       child: Scaffold(

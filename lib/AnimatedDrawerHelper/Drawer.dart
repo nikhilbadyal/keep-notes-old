@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notes/screens/LockScreen.dart';
+import 'package:notes/main.dart';
 import 'package:notes/widget/Navigations.dart';
 
 class ThirdLayer extends StatelessWidget {
@@ -24,7 +24,7 @@ class ThirdLayer extends StatelessWidget {
                     //TODO ask for long tap or tap
                     onTap: () async {
                       if (ModalRoute.of(context).settings.name != '/hidden') {
-                        var status = LockChecker.passwordSet;
+                        var status = myNotes.lockChecker.passwordSet;
                         if (status) {
                           await goToLockScreen(context);
                         } else {

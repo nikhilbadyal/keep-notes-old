@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/main.dart';
-import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/util/Utilites.dart';
 
 //TODO optimize screen jumping
@@ -55,14 +54,15 @@ void goTOHiddenScreen(BuildContext context) {
 
 Future<void> goToLockScreen(BuildContext context) async {
   myNotes.drawerManager.resetDrawerState();
-  if (LockChecker.bioEnabled) {
+
+  if (myNotes.lockChecker.bioEnabled) {
     await Utilities.isBioAvailable();
     await Utilities.getListOfBiometricTypes();
     await Utilities.authenticateUser(context);
   } else {
     await Navigator.of(context)
         .pushNamedAndRemoveUntil('/lock', (Route<dynamic> route) => false);
-  }
+ }
 }
 
 void goToSetPasswordScreen(BuildContext context) {

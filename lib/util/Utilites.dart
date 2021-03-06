@@ -5,11 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/widget/PopUp.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../main.dart';
 
 class Utilities {
   static final LocalAuthentication _localAuthentication = LocalAuthentication();
@@ -20,7 +21,7 @@ class Utilities {
   static const double padding = 20;
 
   static const double avatarRadius = 45;
-
+  static const passLength = 4;
   static const Color dialogColor = Colors.white;
 
   static Future<String> getImage(ImageSource imageSource) async {
@@ -93,12 +94,12 @@ class Utilities {
         : print('User is not authenticated.');
 
     if (isAuthenticated) {
-      LockChecker.bioEnabled = true;
+      myNotes.lockChecker.bioEnabled = true;
       Utilities.addBoolToSF('bio', true);
       await Navigator.of(context)
           .pushNamedAndRemoveUntil('/hidden', (Route<dynamic> route) => false);
     } else {
-      LockChecker.bioEnabled
+      myNotes.lockChecker.bioEnabled
           ? await showDialog<bool>(
               context: context,
               builder: (context) => CustomDialog(
@@ -115,7 +116,7 @@ class Utilities {
                 },
               ),
             )
-          : LockChecker.passwordSet
+          : myNotes.lockChecker.passwordSet
               ? Navigator.of(context).pushNamedAndRemoveUntil(
                   '/lock', (Route<dynamic> route) => false)
               : Navigator.of(context).pop(true);

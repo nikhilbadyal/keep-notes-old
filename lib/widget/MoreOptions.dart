@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
-import 'package:notes/screens/LockScreen.dart';
+import 'package:notes/main.dart';
 import 'package:notes/widget/PopUp.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +33,7 @@ class _MoreOptionsState extends State<MoreOptions> {
             ),
             title: Text('Hide Note'),
             onTap: () {
-              if (!LockChecker.passwordSet) {
+              if (!myNotes.lockChecker.passwordSet) {
                 errorPopUp(context, "Please set password first.");
                 // Navigator.of(context).pop(true);
               }

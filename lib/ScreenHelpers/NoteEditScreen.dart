@@ -7,12 +7,13 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
-import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/DeletePopUp.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../main.dart';
 
 // ignore: must_be_immutable
 class EditScreen extends StatefulWidget {
@@ -391,7 +392,7 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                   title: Text('Hide Note'),
                   onTap: () async {
-                    if (LockChecker.passwordSet) {
+                    if (myNotes.lockChecker.passwordSet) {
                       debugPrint(" set");
                       _autoSaver.cancel();
                       saveNote();

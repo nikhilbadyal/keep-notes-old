@@ -5,24 +5,8 @@ import 'package:notes/widget/Navigations.dart';
 import 'package:notes/widget/PopUp.dart';
 import 'package:provider/provider.dart';
 
-class LockChecker {
-  static bool passwordSet = false;
-  static String password;
+import '../main.dart';
 
-  static bool bioEnabled = false;
-  static bool bioAvailable = false;
-
-  static void updateDetails() async {
-    password = await Utilities.getStringValuesSF('password');
-    bioEnabled = await Utilities.getBoolValuesSF('bio');
-    passwordSet = password == null ? false : true;
-    bioEnabled = bioEnabled == null ? false : bioEnabled;
-  }
-
-  static void bioAvailCheck() async {
-    bioAvailable = await Utilities.isBioAvailable();
-  }
-}
 
 class LockScreen extends StatefulWidget {
   @override
@@ -83,7 +67,6 @@ class _LockScreenState extends State<LockScreen> {
                   Text(
                     'Enter password',
                     style: TextStyle(
-                      // color: Colors.white,
                       color: Colors.blue,
                     ),
                   ),
@@ -92,7 +75,6 @@ class _LockScreenState extends State<LockScreen> {
                   ),
                   Container(
                     height: 100,
-                    // color: Colors.blue,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -110,8 +92,7 @@ class _LockScreenState extends State<LockScreen> {
                       if (await Utilities.isBioAvailable()) {
                         errorPopUp(context,
                             "Password can't be recovered. Delete all Hidden Notes?");
-                      } else {
-                      }
+                      } else {}
                     },
                     child: Text(
                       message,
@@ -125,7 +106,7 @@ class _LockScreenState extends State<LockScreen> {
                   SizedBox(
                     height: 30.0,
                   ),
-                  LockChecker.bioEnabled
+                  myNotes.lockChecker.bioEnabled
                       ? GestureDetector(
                           onTap: () {
                             promptFinger(context);
@@ -135,7 +116,7 @@ class _LockScreenState extends State<LockScreen> {
                             style: TextStyle(color: Colors.green),
                           ),
                         )
-                      : LockChecker.bioAvailable
+                      : myNotes.lockChecker.bioAvailable
                           ? GestureDetector(
                               onTap: () {
                                 promptUser(context);
@@ -173,19 +154,16 @@ class _LockScreenState extends State<LockScreen> {
                         ? SizedBox()
                         : Center(
                             child: MaterialButton(
-                              // color: Colors.blue,
                               minWidth: 55.0,
                               height: 55.0,
                               child: index == 11
                                   ? Icon(
                                       Icons.backspace_outlined,
-                                      // color: Colors.white,
                                       color: Colors.blue,
                                     )
                                   : Text(
                                       '${numbers[index == 10 ? index - 1 : index]}',
                                       style: TextStyle(
-                                        // color: Colors.white,
                                         color: Colors.blue,
                                         fontSize: 26.0,
                                       ),
@@ -215,7 +193,7 @@ class _LockScreenState extends State<LockScreen> {
                                       actives =
                                           actives.map((e) => false).toList();
                                     });
-                                    if (inputText == LockChecker.password) {
+                                    if (inputText == myNotes.lockChecker.password) {
                                       message = 'success';
                                       goTOHiddenScreen(context);
                                     } else {
@@ -243,9 +221,10 @@ class _LockScreenState extends State<LockScreen> {
                 itemCount: 12,
               ),
             ),
-            /*  SizedBox(
+  SizedBox(
               height: 50.0,
-            ),*/
+            ),
+
           ],
         ),
       ),
@@ -287,9 +266,9 @@ class _LockScreenState extends State<LockScreen> {
               return;
             },
             onSecondPressed: () async {
-              LockChecker.bioEnabled = false;
+              myNotes.lockChecker.bioEnabled = false;
               Utilities.addBoolToSF('bio', false);
-              await LockChecker.updateDetails();
+              await myNotes.lockChecker.updateDetails();
               Navigator.of(context).pop(true);
             },
           ),
@@ -306,7 +285,7 @@ class _LockScreenState extends State<LockScreen> {
             firstOption: 'Yes',
             secondOption: 'Cancel',
             onFirstPressed: () async {
-              if (LockChecker.bioEnabled) {
+              if (myNotes.lockChecker.bioEnabled) {
                 await Utilities.getListOfBiometricTypes();
                 await Utilities.authenticateUser(context);
               } else {
@@ -373,7 +352,6 @@ class _AnimatedBoxState extends State<AnimatedBox>
       animation: animationController,
       builder: (context, child) => Container(
         margin: EdgeInsets.all(8.0),
-        // color: Colors.redAccent,
         child: Stack(
           children: [
             Container(),
@@ -383,9 +361,7 @@ class _AnimatedBoxState extends State<AnimatedBox>
               height: 10.0,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color:
-                    widget.active ? Colors.black : Colors.blue, // Colors.white,
-                // color: widget.active ? Colors.grey :Colors.blue,// Colors.white,
+                color: widget.active ? Colors.yellow : Colors.blue,
               ),
             ),
             Align(
@@ -398,9 +374,7 @@ class _AnimatedBoxState extends State<AnimatedBox>
                   width: 10.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: widget.active
-                        ? Colors.grey
-                        : Colors.blue, //Colors.white,
+                    color: widget.active ? Colors.red : Colors.blue,
                   ),
                 ),
               ),
