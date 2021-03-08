@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
-import 'package:notes/widget/PopUp.dart';
+import 'package:notes/widget/Navigations.dart';
 
 import '../main.dart';
 
-_SuggestionsScreenHelperState suggestion ;
+_SuggestionsScreenHelperState suggestion;
+
 class SuggestionsScreenHelper extends StatefulWidget {
   @override
   _SuggestionsScreenHelperState createState() =>
@@ -25,8 +26,11 @@ class _SuggestionsScreenHelperState extends State<SuggestionsScreenHelper> {
       imagePath: 'assets/images/img3.jpg',
     );
   }
+
   void callSetState() {
-    setState(() {},);
+    setState(
+      () {},
+    );
   }
 
   @override
@@ -34,7 +38,9 @@ class _SuggestionsScreenHelperState extends State<SuggestionsScreenHelper> {
     suggestion = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .translate(
+              x: myNotes.drawerManager.xOffSet,
+              y: myNotes.drawerManager.yOffSet)
           .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),
@@ -45,16 +51,16 @@ class _SuggestionsScreenHelperState extends State<SuggestionsScreenHelper> {
         ),
         body: DoubleBackToCloseWidget(
           child: Center(
-            child: CustomDialog(
-              title: "Ops",
-              descriptions: "Screen not implemented. Come back Soon",
-              firstOption: "Ok",
-              secondOption: '',
-              onSecondPressed: null,
-              onFirstPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
-              },
+            child: AlertDialog(
+              title: Text('Screen not implemented yet'),
+              actions: [
+                TextButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    goTOHomeScreen(context);
+                  },
+                ),
+              ],
             ),
           ),
         ),

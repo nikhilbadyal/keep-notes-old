@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/Navigations.dart';
-import 'package:notes/widget/PopUp.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Widget fab(BuildContext context, NoteState noteState) {
@@ -17,17 +16,23 @@ Widget fab(BuildContext context, NoteState noteState) {
       } else if (storageStatus.isDenied) {
         storageStatus = await Permission.storage.request();
       } else {
-        CustomDialog(
-          title: 'Permission',
-          descriptions: 'App needs access to store data.',
-          firstOption: 'Deny',
-          secondOption: 'Open Settings',
-          onFirstPressed: () => Navigator.of(context).pop(),
-          onSecondPressed: () async {
-            await openAppSettings();
-            Navigator.of(context).pop();
-            ;
-          },
+        AlertDialog(
+          title: Text('App needs access to store data'),
+          actions: [
+            TextButton(
+              child: Text('Deny'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Open Settings'),
+              onPressed: () async {
+                await openAppSettings();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
       }
     },

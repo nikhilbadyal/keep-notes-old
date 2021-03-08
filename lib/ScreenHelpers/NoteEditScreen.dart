@@ -19,7 +19,7 @@ import '../main.dart';
 class EditScreen extends StatefulWidget {
   final Note currentNote;
   final bool shouldAutoFocus;
-  bool isImageNote; //TODO fix this
+  bool isImageNote; //TODO fix this and make this final
   final NoteState fromWhere;
 
   EditScreen(
@@ -122,12 +122,15 @@ class _EditScreenState extends State<EditScreen> {
                 height: 250.0,
                 child: Stack(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                        image: DecorationImage(
-                          image: FileImage(_image),
-                          fit: BoxFit.cover,
+                    Hero(
+                      tag: noteInEditing.imagePath,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.0),
+                          image: DecorationImage(
+                            image: FileImage(_image),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -224,25 +227,11 @@ class _EditScreenState extends State<EditScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.camera_alt_outlined, color: headerColor),
-                  onPressed: () async {
-                    await getImage(ImageSource.camera);
-                  },
-                  tooltip: 'Camera',
-                ),
-                IconButton(
-                  icon: Icon(Icons.insert_photo, color: headerColor),
-                  onPressed: () async {
-                    await getImage(ImageSource.gallery);
-                  },
-                  tooltip: 'Gallery',
-                ),
-              ],
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 6,
             ),
-            Text('Modified ${noteInEditing.strLastModifiedDate1}'),
+            Center(
+                child: Text('Modified ${noteInEditing.strLastModifiedDate1}')),
             IconButton(
               onPressed: () {
                 _moreMenu(context);
@@ -416,14 +405,14 @@ class _EditScreenState extends State<EditScreen> {
                           return CupertinoAlertDialog(
                             title: Text("Please set password first"),
                             actions: [
-                              FlatButton(
+                              TextButton(
                                   onPressed: () {
                                     Navigator.of(this.context)
                                         .pushNamedAndRemoveUntil('/setpass',
                                             (Route<dynamic> route) => false);
                                   },
                                   child: Text("Ok")),
-                              FlatButton(
+                              TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop(true);
                                   },
@@ -431,14 +420,6 @@ class _EditScreenState extends State<EditScreen> {
                             ],
                           );
                         });
-                    /*CustomDialog(
-                      title: "Info",
-                      descriptions: "Please set password first",
-                      onFirstPressed: null,
-                      firstOption: "OK",
-                      secondOption: "",
-                      onSecondPressed: null,
-                    );*/
                   },
                 )
               : ListTile(

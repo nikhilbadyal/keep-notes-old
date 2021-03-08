@@ -5,7 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:notes/main.dart';
 import 'package:notes/util/Utilites.dart';
-import 'package:notes/widget/PopUp.dart';
 
 class SetPassword extends StatefulWidget {
   @override
@@ -106,7 +105,13 @@ class _SetPasswordState extends State<SetPassword> {
                   // height: MediaQuery.of(context).size.height/8,
                   child: Center(
                     child: index == 9
-                        ? SizedBox()
+                        ? GestureDetector(
+                            child: Icon(Icons.fingerprint_outlined),
+                            onTap: () async {
+                              await Utilities.getListOfBiometricTypes();
+                              await Utilities.authenticateUser(context);
+                            },
+                          )
                         : Center(
                             child: MaterialButton(
                               // color: Colors.blue,
@@ -161,9 +166,6 @@ class _SetPasswordState extends State<SetPassword> {
                                     await Utilities.addStringToSF(
                                         'password', inputText);
                                     myNotes.lockChecker.updateDetails();
-                                    if (await Utilities.isBioAvailable()) {
-                                      promptUser(context);
-                                    }
                                     inputText = '';
                                     currentIndex = 0;
                                     return;
@@ -193,6 +195,7 @@ class _SetPasswordState extends State<SetPassword> {
     );
   }
 
+/*
   Future<bool> promptUser(BuildContext contexto) async {
     return await showDialog<bool>(
           context: contexto,
@@ -216,7 +219,7 @@ class _SetPasswordState extends State<SetPassword> {
           ),
         ) ??
         false; // In case the user dismisses the dialog by clicking away from it
-  }
+  }*/
 
   Future<bool> _onBackPress() async {
     Navigator.of(this.context)

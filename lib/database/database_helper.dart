@@ -46,20 +46,12 @@ class DatabaseHelper {
   }
 
   static Future<Note> insertNote(Note note, bool isNew) async {
-    // debugPrint("This is the content"+ note.content);
-    // debugPrint('Inserting Note database helper.');
     final db = await database;
     note.id = await db.insert(
       tableName,
       isNew ? note.toMap(true) : note.toMap(false),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-
-    /* if (isNew) {
-      var one = await db.query(tableName, orderBy: 'lastModify DESC', limit: 1);
-      var latestId = one.first['id'] as int;
-      return latestId;
-    }*/
     return note;
   }
 
@@ -71,6 +63,7 @@ class DatabaseHelper {
       await Utilities.removeValues('password');
       await Utilities.removeValues('bio');
       await myNotes.lockChecker.updateDetails();
+
       return true;
     } on Error {
       return false;

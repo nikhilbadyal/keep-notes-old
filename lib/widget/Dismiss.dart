@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
-import 'package:notes/widget/PopUp.dart';
 import 'package:notes/widget/list_item.dart';
 import 'package:provider/provider.dart';
 
@@ -110,22 +109,89 @@ class Dismiss extends StatelessWidget {
     }
     return await showDialog<bool>(
             context: buildContext,
-            builder: (context) => CustomDialog(
+            builder: (context) => AlertDialog(
+                  title: Text('Are you sure you want to $action?'),
+                  actions: [
+                    TextButton(
+                      child: Text('Yes'),
+                      onPressed: () async {
+                        if (action == 'delete permanently') {
+                          var status =
+                              Provider.of<NotesHelper>(context, listen: false)
+                                  .deleteNote(note);
+                          status.then((value) => {
+                                if (value)
+                                  {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Note Deleted')))
+                                  }
+                                else
+                                  {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Unable to detele Note')))
+                                  }
+                              });
+                        } else if (action == 'delete') {
+                          await Provider.of<NotesHelper>(context, listen: false)
+                              .trashNote(
+                                  note: note,
+                                  context: context,
+                                  fromWhere: fromWhere);
+                        } else if (action == 'unarchive') {
+                          await Provider.of<NotesHelper>(context, listen: false)
+                              .unarchiveNote(note);
+                        } else if (action == 'archive') {
+                          await Provider.of<NotesHelper>(context, listen: false)
+                              .archiveNote(note);
+                        } else if (action == 'unhide') {
+                          await Provider.of<NotesHelper>(context, listen: false)
+                              .unhideNote(note);
+                        } else {
+                          await Provider.of<NotesHelper>(context, listen: false)
+                              .undelete(note);
+                        }
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(buildContext).pop(false);
+                      },
+                    ),
+                  ],
+                )
+            /*CustomDialog(
                   title: 'Action',
                   descriptions: 'Are you sure you want to $action?',
                   firstOption: 'Yes',
                   secondOption: 'Cancel',
                   onFirstPressed: () async {
                     if (action == 'delete permanently') {
-                      Provider.of<NotesHelper>(context,
-                              listen: false) //TODO check
-                          .deleteNote(note);
+                      var status =
+                          Provider.of<NotesHelper>(context, listen: false)
+                              .deleteNote(note);
+                      status.then((value) => {
+                            if (value)
+                              {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Note Deleted')))
+                              }
+                            else
+                              {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Unable to detele Note')))
+                              }
+                          });
                     } else if (action == 'delete') {
                       await Provider.of<NotesHelper>(context, listen: false)
                           .trashNote(
                               note: note,
                               context: context,
-                              fromWhere: fromWhere); //TODO check context
+                              fromWhere: fromWhere);
                     } else if (action == 'unarchive') {
                       await Provider.of<NotesHelper>(context, listen: false)
                           .unarchiveNote(note);
@@ -139,13 +205,13 @@ class Dismiss extends StatelessWidget {
                       await Provider.of<NotesHelper>(context, listen: false)
                           .undelete(note);
                     }
-                    Navigator.of(context).pop(true);
+                    // Navigator.of(context).pop(true);
                   },
-                  // onFirstPressed: _onPressed(context,action),
                   onSecondPressed: () {
                     return Navigator.of(buildContext).pop(false);
                   },
-                )) ??
+                )*/
+            ) ??
         false; // In case the user dismisses the dialog by clicking away from it
   }
 }

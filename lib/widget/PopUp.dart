@@ -1,4 +1,5 @@
 //24-12-2020
+/*
 
 import 'package:flutter/material.dart';
 import 'package:notes/util/Utilites.dart';
@@ -86,7 +87,7 @@ class _CustomDialogState extends State<CustomDialog> {
                 children: [
                   Align(
                     alignment: _alignment(),
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: widget.onFirstPressed == null
                           ? () {
                               Navigator.of(context).pop();
@@ -98,7 +99,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   if (widget.secondOption != '')
                     Align(
                       alignment: Alignment.bottomRight,
-                      child: FlatButton(
+                      child: TextButton(
                         onPressed: widget.onSecondPressed,
                         child: Text(widget.secondOption),
                       ),
@@ -133,3 +134,4 @@ class _CustomDialogState extends State<CustomDialog> {
     return Alignment.bottomLeft;
   }
 }
+*/

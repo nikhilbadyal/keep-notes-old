@@ -1,5 +1,7 @@
 //26-02-2021
 
+import 'package:flutter/material.dart';
+
 import 'Utilites.dart';
 
 class LockChecker  {
@@ -23,7 +25,11 @@ class LockChecker  {
   Future<void> initConfig() async {
     password = await Utilities.getStringValuesSF('password');
     passwordSet = password == null ? false : true;
-    bioEnabled = await Utilities.getBoolValuesSF('bio') == null ? false : bioEnabled;
+    bioEnabled = await Utilities.getBoolValuesSF('bio');
+    bioEnabled == null ? false : bioEnabled;
+    if(bioEnabled == null){
+      debugPrint("Im nyll");
+    }
     if(bioEnabled){
       bioAvailable = true;
     }else{

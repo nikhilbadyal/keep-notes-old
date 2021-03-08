@@ -45,18 +45,15 @@ class _BodyState extends State<Body> {
                 child: noNotesUi(context, widget.fromWhere),
                 builder: (context, notehelper, child) {
                   if (notehelper.items.isEmpty) {
-                    //'Body Child length less 0  count value is ${Count.i}');
                     Count.i++;
                     return child;
                   } else {
-                    //  'Body Child length greater 0  count value is ${Count.i}');
                     Count.i++;
                     return Padding(
                       padding: const EdgeInsets.only(top: 0),
                       child: AbsorbPointer(
                         absorbing: myNotes.drawerManager.isIgnoring,
                         child: ListView.builder(
-                          //TODO GIve Animate list a try
                           physics: BouncingScrollPhysics(),
                           itemCount: notehelper.items.length,
                           itemBuilder: (context, index) {

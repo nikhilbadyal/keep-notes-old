@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:notes/widget/PopUp.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -99,7 +98,9 @@ class Utilities {
       await Navigator.of(context)
           .pushNamedAndRemoveUntil('/hidden', (Route<dynamic> route) => false);
     } else {
-      myNotes.lockChecker.bioEnabled
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/lock', (Route<dynamic> route) => false);
+      /* myNotes.lockChecker.bioEnabled
           ? await showDialog<bool>(
               context: context,
               builder: (context) => CustomDialog(
@@ -108,8 +109,7 @@ class Utilities {
                 firstOption: 'Yes',
                 secondOption: 'Cancel',
                 onFirstPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/lock', (Route<dynamic> route) => false);
+
                 },
                 onSecondPressed: () {
                   Navigator.of(context).pop(true);
@@ -119,7 +119,7 @@ class Utilities {
           : myNotes.lockChecker.passwordSet
               ? Navigator.of(context).pushNamedAndRemoveUntil(
                   '/lock', (Route<dynamic> route) => false)
-              : Navigator.of(context).pop(true);
+              : Navigator.of(context).pop(true);*/
     }
   }
 

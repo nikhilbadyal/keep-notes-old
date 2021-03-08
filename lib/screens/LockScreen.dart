@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/Navigations.dart';
-import 'package:notes/widget/PopUp.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
-
 
 class LockScreen extends StatefulWidget {
   @override
@@ -106,7 +104,7 @@ class _LockScreenState extends State<LockScreen> {
                   SizedBox(
                     height: 30.0,
                   ),
-                  myNotes.lockChecker.bioEnabled
+                  /* myNotes.lockChecker.bioEnabled
                       ? GestureDetector(
                           onTap: () {
                             promptFinger(context);
@@ -131,7 +129,7 @@ class _LockScreenState extends State<LockScreen> {
                               child: Text(
                                 '',
                               ),
-                            )
+                            )*/
                 ],
               ),
             ),
@@ -151,7 +149,30 @@ class _LockScreenState extends State<LockScreen> {
                   // height: MediaQuery.of(context).size.height/8,
                   child: Center(
                     child: index == 9
-                        ? SizedBox()
+                        ? GestureDetector(
+                            child: Icon(Icons.fingerprint_outlined),
+                            onTap: () async {
+                              if (myNotes.lockChecker.bioEnabled) {
+                                await Utilities.getListOfBiometricTypes();
+                                await Utilities.authenticateUser(context);
+                              } else {
+                                return await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text('Set FP first'),
+                                    actions: [
+                                      TextButton(
+                                        child: Text('Ok'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          )
                         : Center(
                             child: MaterialButton(
                               minWidth: 55.0,
@@ -193,7 +214,8 @@ class _LockScreenState extends State<LockScreen> {
                                       actives =
                                           actives.map((e) => false).toList();
                                     });
-                                    if (inputText == myNotes.lockChecker.password) {
+                                    if (inputText ==
+                                        myNotes.lockChecker.password) {
                                       message = 'success';
                                       goTOHiddenScreen(context);
                                     } else {
@@ -221,10 +243,9 @@ class _LockScreenState extends State<LockScreen> {
                 itemCount: 12,
               ),
             ),
-  SizedBox(
+            SizedBox(
               height: 50.0,
             ),
-
           ],
         ),
       ),
@@ -234,24 +255,29 @@ class _LockScreenState extends State<LockScreen> {
   Future<void> errorPopUp(BuildContext context, String data) async {
     await showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
-        title: '',
-        descriptions: data,
-        firstOption: 'Proceed',
-        secondOption: 'Cancel',
-        onFirstPressed: () async {
-          await Provider.of<NotesHelper>(this.context, listen: false)
-              .deleteAllHiddenNotes();
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-        },
-        onSecondPressed: () {
-          return Navigator.of(context).pop(false);
-        },
+      builder: (context) => AlertDialog(
+        title: Text(data),
+        actions: [
+          TextButton(
+            child: Text('Proceed'),
+            onPressed: () async {
+              await Provider.of<NotesHelper>(this.context, listen: false)
+                  .deleteAllHiddenNotes();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/', (Route<dynamic> route) => false);
+            },
+          ),
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
       ),
     );
   }
-
+/*
   Future<bool> promptUser(BuildContext contexto) async {
     return await showDialog<bool>(
           context: contexto,
@@ -274,12 +300,19 @@ class _LockScreenState extends State<LockScreen> {
           ),
         ) ??
         false; // In case the user dismisses the dialog by clicking away from it
-  }
+  }*/
+
+/*
 
   Future<bool> promptFinger(BuildContext contexto) async {
     return await showDialog<bool>(
           context: contexto,
-          builder: (context) => CustomDialog(
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Set Fingerprint '),
+            );
+          } */
+/*CustomDialog(
             title: '',
             descriptions: 'Want to use FingerPrint?',
             firstOption: 'Yes',
@@ -307,10 +340,12 @@ class _LockScreenState extends State<LockScreen> {
             onSecondPressed: () async {
               Navigator.of(context).pop(true);
             },
-          ),
+          ),*/ /*
+
         ) ??
         false; // In case the user dismisses the dialog by clicking away from it
   }
+*/
 
   Future<bool> _onBackPress() async {
     Navigator.of(this.context)

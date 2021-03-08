@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 
 
 MyNotes myNotes;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -34,7 +35,6 @@ void main() {
   runApp(MyNotes());
 }
 
-//TODO implement lock screen
 class MyNotes extends StatelessWidget {
 
   final MyRouteObserver myRouteObserver = MyRouteObserver();

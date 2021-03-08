@@ -5,8 +5,6 @@ import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/util/constants.dart';
 
-import 'PopUp.dart';
-
 class ListItem extends StatelessWidget {
   final Note note;
   final NoteState fromWhere;
@@ -102,16 +100,19 @@ class ListItem extends StatelessWidget {
                     SizedBox(
                       width: 12.0,
                     ),
-                    Container(
-                      width: 80.0,
-                      height: 95.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.0),
-                        image: DecorationImage(
-                          image: FileImage(
-                            File(note.imagePath),
+                    Hero(
+                      tag: note.imagePath,
+                      child: Container(
+                        width: 80.0,
+                        height: 95.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.0),
+                          image: DecorationImage(
+                            image: FileImage(
+                              File(note.imagePath),
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
                         ),
                       ),
                     )
@@ -130,7 +131,7 @@ class ListItem extends StatelessWidget {
       builder: (context) => AlertDialog(
         content: Text(data),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text('Ok'),
             onPressed: () {
               Navigator.of(context).pop(true);
@@ -144,15 +145,16 @@ class ListItem extends StatelessWidget {
   Future<void> PopUp(BuildContext context) async {
     await showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
-        title: 'Error',
-        descriptions: 'Please remove note from trash before editing',
-        firstOption: 'Ok',
-        secondOption: '',
-        onFirstPressed: () {
-          Navigator.of(context).pop(true);
-        },
-        onSecondPressed: () {},
+      builder: (context) => AlertDialog(
+        title: Text('Please remove note from trash before editing'),
+        actions: [
+          TextButton(
+            child: Text('Approve'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
       ),
     );
   }

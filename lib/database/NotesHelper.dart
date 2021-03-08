@@ -71,30 +71,30 @@ class NotesHelper with ChangeNotifier {
     return false;
   }
 
-  Future<void> undelete(Note note) async {
-    if (note.id != -1) {
+  Future<bool> undelete(Note note) async {
+    if (note.id == -1) {
+      return false;
+    }
       await DatabaseHelper.undelete(note);
       await getNotesAll(4);
       notifyListeners();
-    }
-    return;
+    return true;
   }
 
-  Future<void> deleteNote(Note note) async {
-    if (note.id != -1) {
-      _items.removeWhere((element) {
-        return element.id == note.id;
-      });
-      notifyListeners();
-      await DatabaseHelper.deleteNote(note);
+  Future<bool> deleteNote(Note note) async {
+    if (note.id == -1) {
+      return false;
     }
-    return;
-  }
-
-  Future<void> deleteAllHiddenNotes() async {
-    await DatabaseHelper.deleteAllHiddenNotes();
+    _items.removeWhere((element) {
+      return element.id == note.id;
+    });
     notifyListeners();
-    return;
+    return DatabaseHelper.deleteNote(note);
+  }
+
+  Future<bool> deleteAllHiddenNotes() async {
+    notifyListeners();
+    return DatabaseHelper.deleteAllHiddenNotes();
   }
 
   Future<void> trashNote(
@@ -126,7 +126,7 @@ class NotesHelper with ChangeNotifier {
               content: Text(
                   'If you\'re seeing this please consider submitting a bug :-)'),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text('Ok'),
                   onPressed: () async {
                     await Navigator.of(context).pushNamedAndRemoveUntil(

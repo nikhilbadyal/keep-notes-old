@@ -5,7 +5,6 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/main.dart';
-import 'package:notes/widget/PopUp.dart';
 import 'package:provider/provider.dart';
 
 class MoreOptions extends StatefulWidget {
@@ -77,18 +76,23 @@ class _MoreOptionsState extends State<MoreOptions> {
   static Future<void> errorPopUp(BuildContext context, String data) async {
     await showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
-        title: 'Error',
-        descriptions: data,
-        firstOption: 'Ok',
-        secondOption: 'Later',
-        onFirstPressed: () {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/setpass', (Route<dynamic> route) => false);
-        },
-        onSecondPressed: () {
-          Navigator.of(context).pop(true);
-        },
+      builder: (context) => AlertDialog(
+        title: Text(data),
+        actions: [
+          TextButton(
+            child: Text('Ok'),
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/setpass', (Route<dynamic> route) => false);
+            },
+          ),
+          TextButton(
+            child: Text('Later'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
       ),
     );
   }
