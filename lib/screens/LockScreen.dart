@@ -1,10 +1,19 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:notes/database/NotesHelper.dart';
+import 'package:notes/main.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/Navigations.dart';
-import 'package:provider/provider.dart';
 
 import '../main.dart';
+
+typedef KeyboardTapCallback = void Function(String text);
+typedef DeleteTapCallback = void Function();
+typedef FingerTapCallback = void Function();
+typedef DoneCallBack = void Function(String text);
+
+final String pass = "1234";
 
 class LockScreen extends StatefulWidget {
   @override
@@ -12,405 +21,183 @@ class LockScreen extends StatefulWidget {
 }
 
 class _LockScreenState extends State<LockScreen> {
-  final password;
+  String enteredPassCode = "";
+  final StreamController<bool> _verificationNotifier =
+      StreamController<bool>.broadcast();
 
-  var numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
-  var inputText = '';
-  var actives = [false, false, false, false, false];
-  var clears = [false, false, false, false, false];
-  var values = [1, 2, 3, 2, 1];
-  var currentIndex = 0;
-  var message = '';
-  String condition;
+  bool isValid = false;
 
-  _LockScreenState({this.password});
+  void _onTap(String text) {
+    setState(() {
+      if (enteredPassCode.length < pass.length) {
+        enteredPassCode += text;
+        if (enteredPassCode.length == pass.length) {
+          _doneEnteringPass(enteredPassCode);
+        }
+      }
+    });
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onBackPress,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          children: [
-            SizedBox(
-              height: 40.0,
+  void _onDelTap() {
+    if (enteredPassCode.length > 0) {
+      setState(() {
+        enteredPassCode =
+            enteredPassCode.substring(0, enteredPassCode.length - 1);
+      });
+    }
+  }
+
+  void _onFingerTap() {
+    if (myNotes.lockChecker.bioEnabled) {
+      Utilities.authenticateUser(context);
+    } else {
+      showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          // TODO user must enter password once after setting up fp
+          title: Text('Set Fingerprint first'),
+          actions: [
+            TextButton(
+              child: Text('Ok',style: TextStyle(fontSize: 100),),
+              onPressed: () async {
+                Navigator.of(context).pop(true);
+                await Utilities.getListOfBiometricTypes();
+                await Utilities.authenticateUser(context);
+              },
             ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.cancel,
-                      color: Colors.blue,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/', (Route<dynamic> route) => false);
-                    },
-                  )
-                ],
-                mainAxisAlignment: MainAxisAlignment.end,
-              ),
-            ),
-            Expanded(
-              flex: 10,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 12.0,
-                  ),
-                  Text(
-                    'Enter password',
-                    style: TextStyle(
-                      color: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 12.0,
-                  ),
-                  Container(
-                    height: 100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (var i = 0; i < actives.length; ++i)
-                          AnimatedBox(
-                            clear: clears[i],
-                            active: actives[i],
-                            value: values[i],
-                          ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      if (await Utilities.isBioAvailable()) {
-                        errorPopUp(context,
-                            "Password can't be recovered. Delete all Hidden Notes?");
-                      } else {}
-                    },
-                    child: Text(
-                      message,
-                      style: TextStyle(
-                        color: message == 'success'
-                            ? Colors.green
-                            : Colors.redAccent,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  /* myNotes.lockChecker.bioEnabled
-                      ? GestureDetector(
-                          onTap: () {
-                            promptFinger(context);
-                          },
-                          child: Text(
-                            'Use FinerPrint',
-                            style: TextStyle(color: Colors.green),
-                          ),
-                        )
-                      : myNotes.lockChecker.bioAvailable
-                          ? GestureDetector(
-                              onTap: () {
-                                promptUser(context);
-                              },
-                              child: Text(
-                                'SetUp FinerPrint',
-                                style: TextStyle(color: Colors.green),
-                              ),
-                            )
-                          : GestureDetector(
-                              onTap: () {},
-                              child: Text(
-                                '',
-                              ),
-                            )*/
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 15,
-              child: GridView.builder(
-                padding: EdgeInsets.all(0.0),
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 0.8 / 0.6,
-                ),
-                itemBuilder: (context, index) => Container(
-                  margin: EdgeInsets.all(4.0),
-                  width: 50.0,
-                  height: 50.0,
-                  // height: MediaQuery.of(context).size.height/8,
-                  child: Center(
-                    child: index == 9
-                        ? GestureDetector(
-                            child: Icon(Icons.fingerprint_outlined),
-                            onTap: () async {
-                              if (myNotes.lockChecker.bioEnabled) {
-                                await Utilities.getListOfBiometricTypes();
-                                await Utilities.authenticateUser(context);
-                              } else {
-                                return await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text('Set FP first'),
-                                    actions: [
-                                      TextButton(
-                                        child: Text('Ok'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                            },
-                          )
-                        : Center(
-                            child: MaterialButton(
-                              minWidth: 55.0,
-                              height: 55.0,
-                              child: index == 11
-                                  ? Icon(
-                                      Icons.backspace_outlined,
-                                      color: Colors.blue,
-                                    )
-                                  : Text(
-                                      '${numbers[index == 10 ? index - 1 : index]}',
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 26.0,
-                                      ),
-                                    ),
-                              onPressed: () {
-                                if (index == 11) {
-                                  currentIndex--;
-                                  if (inputText.isEmpty) {
-                                    currentIndex = 0;
-                                  } else {
-                                    inputText = inputText.substring(
-                                        0, inputText.length - 1);
-                                    clears = clears.map((e) => false).toList();
-                                    setState(() {
-                                      clears[currentIndex] = true;
-                                      actives[currentIndex] = false;
-                                    });
-                                    return;
-                                  }
-                                } else {
-                                  inputText +=
-                                      numbers[index == 10 ? index - 1 : index]
-                                          .toString();
-                                  if (inputText.length == 5) {
-                                    setState(() {
-                                      clears = clears.map((e) => true).toList();
-                                      actives =
-                                          actives.map((e) => false).toList();
-                                    });
-                                    if (inputText ==
-                                        myNotes.lockChecker.password) {
-                                      message = 'success';
-                                      goTOHiddenScreen(context);
-                                    } else {
-                                      message = 'Forgot Password ?';
-                                      setState(() {});
-                                    }
-                                    inputText = '';
-                                    currentIndex = 0;
-                                    return;
-                                  }
-                                  message = '';
-                                  clears = clears.map((e) => false).toList();
-                                  setState(() {
-                                    actives[currentIndex] = true;
-                                    currentIndex++;
-                                  });
-                                }
-                              },
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(60.0)),
-                            ),
-                          ),
-                  ),
-                ),
-                itemCount: 12,
-              ),
-            ),
-            SizedBox(
-              height: 50.0,
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () async {
+                Navigator.of(context).pop(true);
+              },
             ),
           ],
         ),
-      ),
-    );
+      );
+    }
   }
 
-  Future<void> errorPopUp(BuildContext context, String data) async {
-    await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(data),
-        actions: [
-          TextButton(
-            child: Text('Proceed'),
-            onPressed: () async {
-              await Provider.of<NotesHelper>(this.context, listen: false)
-                  .deleteAllHiddenNotes();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/', (Route<dynamic> route) => false);
-            },
-          ),
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
-    );
+  Widget title = Container(
+      child: Text(
+    'Enter Password',
+    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  ));
+
+  void callSetState(String data) {
+    setState(() {
+      enteredPassCode = data;
+    });
   }
-/*
-  Future<bool> promptUser(BuildContext contexto) async {
-    return await showDialog<bool>(
-          context: contexto,
-          builder: (context) => CustomDialog(
-            title: '',
-            descriptions: 'Want to set FingerPrint?',
-            firstOption: 'Yes',
-            secondOption: 'Cancel',
-            onFirstPressed: () async {
-              await Utilities.getListOfBiometricTypes();
-              await Utilities.authenticateUser(context);
-              return;
-            },
-            onSecondPressed: () async {
-              myNotes.lockChecker.bioEnabled = false;
-              Utilities.addBoolToSF('bio', false);
-              await myNotes.lockChecker.updateDetails();
-              Navigator.of(context).pop(true);
-            },
-          ),
-        ) ??
-        false; // In case the user dismisses the dialog by clicking away from it
-  }*/
 
-/*
-
-  Future<bool> promptFinger(BuildContext contexto) async {
-    return await showDialog<bool>(
-          context: contexto,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('Set Fingerprint '),
-            );
-          } */
-/*CustomDialog(
-            title: '',
-            descriptions: 'Want to use FingerPrint?',
-            firstOption: 'Yes',
-            secondOption: 'Cancel',
-            onFirstPressed: () async {
-              if (myNotes.lockChecker.bioEnabled) {
-                await Utilities.getListOfBiometricTypes();
-                await Utilities.authenticateUser(context);
-              } else {
-                return await showDialog<bool>(
-                  context: contexto,
-                  builder: (context) => CustomDialog(
-                      title: '',
-                      descriptions: 'Fingerprint not setup.',
-                      firstOption: 'Ok',
-                      secondOption: '',
-                      onFirstPressed: () async {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/lock', (Route<dynamic> route) => false);
-                      },
-                      onSecondPressed: () {}),
-                );
-              }
-            },
-            onSecondPressed: () async {
-              Navigator.of(context).pop(true);
-            },
-          ),*/ /*
-
-        ) ??
-        false; // In case the user dismisses the dialog by clicking away from it
+  void _doneEnteringPass(String enteredPassCode) {
+    if (enteredPassCode == myNotes.lockChecker.password) {
+      goTOHiddenScreen(context);
+    } else {
+      _verificationNotifier.add(false);
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        Utilities.getExitSnackBar(context, "Wrong Passcode"),
+      );
+    }
   }
-*/
-
-  Future<bool> _onBackPress() async {
-    Navigator.of(this.context)
-        .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-    return true;
-  }
-}
-
-class AnimatedBox extends StatefulWidget {
-  final clear;
-  final active;
-  final value;
-
-  const AnimatedBox(
-      {Key key, this.clear = false, this.active = false, this.value})
-      : super(key: key);
 
   @override
-  _AnimatedBoxState createState() => _AnimatedBoxState();
+  Widget build(BuildContext context) {
+    return MyLockScreen(
+      title: title,
+      onTap: _onTap,
+      onDelTap: _onDelTap,
+      onFingerTap: _onFingerTap,
+      enteredPassCode: enteredPassCode,
+      stream: _verificationNotifier.stream,
+      doneCallBack: callSetState,
+    );
+  }
 }
 
-class _AnimatedBoxState extends State<AnimatedBox>
-    with TickerProviderStateMixin {
-  AnimationController animationController;
+class MyLockScreen extends StatefulWidget {
+  final Widget title;
+  final KeyboardTapCallback onTap;
+  final DeleteTapCallback onDelTap;
+  final FingerTapCallback onFingerTap;
+  final String enteredPassCode;
+  final Stream<bool> stream;
+  final DoneCallBack doneCallBack;
 
+  const MyLockScreen({
+    Key key,
+    this.title,
+    this.onTap,
+    this.onDelTap,
+    this.onFingerTap,
+    this.enteredPassCode,
+    this.stream,
+    this.doneCallBack,
+  }) : super(key: key);
+
+  @override
+  _MyLockScreenState createState() => _MyLockScreenState();
+}
+
+class _MyLockScreenState extends State<MyLockScreen>
+    with SingleTickerProviderStateMixin {
+  StreamSubscription<bool> streamSubscription;
+  AnimationController controller;
+  Animation<double> animation;
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 250));
+    streamSubscription =
+        widget.stream.listen((isValid) => _showValidation(isValid));
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 400), vsync: this);
+    final Animation curve =
+        CurvedAnimation(parent: controller, curve: ShakeCurve());
+    animation = Tween(begin: 0.0, end: 10.0).animate(curve)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            widget.doneCallBack("");
+            controller.value = 0;
+          });
+        }
+      })
+      ..addListener(() {
+        setState(() {
+          // the animation object’s value is the changed state
+        });
+      });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.clear) {
-      animationController.forward(from: 0);
-    }
-    return AnimatedBuilder(
-      animation: animationController,
-      builder: (context, child) => Container(
-        margin: EdgeInsets.all(8.0),
+    return Scaffold(
+      body: SafeArea(
         child: Stack(
           children: [
-            Container(),
-            AnimatedContainer(
-              duration: Duration(milliseconds: 800),
-              width: 10.0,
-              height: 10.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.active ? Colors.yellow : Colors.blue,
-              ),
-            ),
-            Align(
-              alignment:
-                  Alignment(0, animationController.value / widget.value - 1),
-              child: Opacity(
-                opacity: 1 - animationController.value,
-                child: Container(
-                  height: 10.0,
-                  width: 10.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: widget.active ? Colors.red : Colors.blue,
-                  ),
+            Positioned(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: _buildDeleteButton(context),
+                    ),
+                    widget.title,
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Container(
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: _buildCircles(widget.enteredPassCode),
+                      ),
+                    ),
+                    _buildKeyBoard(widget.onTap, widget.onDelTap,
+                        widget.onFingerTap, widget.enteredPassCode),
+                  ],
                 ),
               ),
             ),
@@ -418,5 +205,217 @@ class _AnimatedBoxState extends State<AnimatedBox>
         ),
       ),
     );
+  }
+
+  _showValidation(bool isValid) {
+    if (!isValid) {
+      controller.forward();
+    }
+  }
+}
+
+List<Widget> _buildCircles(String enteredPassCode) {
+  var list = <Widget>[];
+  for (int i = 0; i < 4; ++i) {
+    list.add(Container(
+      margin: EdgeInsets.all(8),
+      child: Circle(
+        isFilled: i < enteredPassCode.length,
+      ),
+    ));
+  }
+  return list;
+}
+
+Widget _buildKeyBoard(KeyboardTapCallback _onTap, DeleteTapCallback onDelTap,
+    FingerTapCallback onFingerTap, String enteredPassCode) {
+  return Container(
+      child: Keyboard(
+    onKeyboardTap: _onTap,
+    onDelTap: onDelTap,
+    onFingerTap: onFingerTap,
+  ));
+}
+
+Widget _buildDeleteButton(BuildContext context) {
+  return Row(
+    children: [
+      IconButton(
+        icon: Icon(
+          Icons.cancel,
+          color: Colors.blue,
+          size: 25,
+        ),
+        onPressed: () {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+        },
+      ),
+    ],
+    mainAxisAlignment: MainAxisAlignment.end,
+  );
+}
+
+class Keyboard extends StatelessWidget {
+  final KeyboardTapCallback onKeyboardTap;
+  final DeleteTapCallback onDelTap;
+  final FingerTapCallback onFingerTap;
+  final List<String> keyBoardItem = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '-1',
+    '0',
+    '-1'
+  ];
+
+  Keyboard({Key key, this.onKeyboardTap, this.onDelTap, this.onFingerTap})
+      : super(key: key);
+
+  Widget _buildDigit(String text) {
+    return Container(
+      margin: EdgeInsets.all(2),
+      child: ClipOval(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              onKeyboardTap(text);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    text,
+                    semanticsLabel: text,
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExtra(Widget widget, DeleteTapCallback onDelTap) {
+    return Container(
+      margin: EdgeInsets.all(2),
+      child: ClipOval(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              onDelTap();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: widget,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: CustomAlign(
+        children: List.generate(12, (index) {
+          return index == 9 || index == 11
+              ? index == 9
+                  ? onFingerTap == null
+                      ? Container()
+                      : _buildExtra(
+                          Icon(Icons.fingerprint_outlined), onFingerTap)
+                  : _buildExtra(Icon(Icons.backspace_outlined), onDelTap)
+              : _buildDigit(keyBoardItem[index]);
+        }),
+      ),
+    );
+  }
+}
+
+class CustomAlign extends StatelessWidget {
+  final List<Widget> children;
+
+  const CustomAlign({Key key, this.children}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      shrinkWrap: true,
+      crossAxisCount: 3,
+      mainAxisSpacing: 5,
+      crossAxisSpacing: 5,
+      physics: NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(25),
+      childAspectRatio: 1,
+      children: children
+          .map((e) => Container(
+                width: 5,
+                height: 5,
+                child: e,
+              ))
+          .toList(),
+    );
+  }
+}
+
+class Circle extends StatefulWidget {
+  final isFilled;
+
+  const Circle({Key key, this.isFilled}) : super(key: key);
+
+  @override
+  _CircleState createState() => _CircleState();
+}
+
+class _CircleState extends State<Circle> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 1),
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+          color: widget.isFilled ? Colors.blueAccent : Colors.transparent,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.blueAccent, width: 2)),
+    );
+  }
+}
+
+class ShakeCurve extends Curve {
+  @override
+  double transform(double t) {
+    //t from 0.0 to 1.0
+    return sin(t * 2.5 * pi).abs();
   }
 }

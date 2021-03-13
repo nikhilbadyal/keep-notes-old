@@ -16,7 +16,8 @@ class Body extends StatefulWidget {
   final NoteState fromWhere;
   final DrawerManager drawerManager;
 
-  const Body({Key key, @required this.fromWhere, this.drawerManager}) : super(key: key);
+  const Body({Key key, @required this.fromWhere, this.drawerManager})
+      : super(key: key);
 
   @override
   _BodyState createState() => _BodyState();

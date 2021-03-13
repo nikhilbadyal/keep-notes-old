@@ -162,56 +162,7 @@ class Dismiss extends StatelessWidget {
                       },
                     ),
                   ],
-                )
-            /*CustomDialog(
-                  title: 'Action',
-                  descriptions: 'Are you sure you want to $action?',
-                  firstOption: 'Yes',
-                  secondOption: 'Cancel',
-                  onFirstPressed: () async {
-                    if (action == 'delete permanently') {
-                      var status =
-                          Provider.of<NotesHelper>(context, listen: false)
-                              .deleteNote(note);
-                      status.then((value) => {
-                            if (value)
-                              {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Note Deleted')))
-                              }
-                            else
-                              {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text('Unable to detele Note')))
-                              }
-                          });
-                    } else if (action == 'delete') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .trashNote(
-                              note: note,
-                              context: context,
-                              fromWhere: fromWhere);
-                    } else if (action == 'unarchive') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .unarchiveNote(note);
-                    } else if (action == 'archive') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .archiveNote(note);
-                    } else if (action == 'unhide') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .unhideNote(note);
-                    } else {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .undelete(note);
-                    }
-                    // Navigator.of(context).pop(true);
-                  },
-                  onSecondPressed: () {
-                    return Navigator.of(buildContext).pop(false);
-                  },
-                )*/
-            ) ??
+                )) ??
         false; // In case the user dismisses the dialog by clicking away from it
   }
 }

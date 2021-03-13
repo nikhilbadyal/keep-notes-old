@@ -2,19 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:notes/database/note.dart';
-import 'package:notes/util/Utilites.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../main.dart';
-
 class DatabaseHelper {
-  // static Database _database;
   static String tableName = 'notes';
   static var statPath;
 
   static final fieldMap = {
-    'id': 'INTEGER PRIMARY KEY ', //AUTOINCREMENT
+    'id': 'INTEGER PRIMARY KEY ',
     'title': 'text',
     'content': 'text',
     'creationDate': 'INTEGER',
@@ -59,11 +55,13 @@ class DatabaseHelper {
     final db = await database;
     try {
       await db.delete('notes', where: 'state = ?', whereArgs: [3]);
-      myNotes.lockChecker.passwordSet = false;
+      //TODO removed for debugging
+      /* myNotes.lockChecker.passwordSet = false;
       await Utilities.removeValues('password');
       await Utilities.removeValues('bio');
-      await myNotes.lockChecker.updateDetails();
-
+      await myNotes.lockChecker.updateDetails();*/
+      /* ScaffoldMessenger.of(context)
+          .showSnackBar(Utilities.getSnackBar("Deleted all Hidden Notes"));*/
       return true;
     } on Error {
       return false;
@@ -178,8 +176,6 @@ class DatabaseHelper {
   static Future<List<Map<String, dynamic>>> selectAllNotes(
       int noteState) async {
     final db = await database;
-
-    // query all the notes sorted by last edited
     var lol = db.query('notes',
         orderBy: 'lastModify desc', where: 'state = ?', whereArgs: [noteState]);
     return lol;

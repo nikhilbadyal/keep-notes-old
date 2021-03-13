@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 enum NoteState {
-  unspecified, //unarchive
+  unspecified,
   pinned,
   archived,
   hidden,
@@ -46,7 +46,6 @@ class Note {
   }
 
   Map<String, dynamic> toMap(bool isNew) {
-    debugPrint(content);
     Map<String, dynamic> data = {
       'title': title,
       'content': content,
@@ -95,11 +94,10 @@ class Note {
     var data = {
       'title': title,
       'content': content,
-      'creationDate':
-          creationDate.millisecondsSinceEpoch, //epochFromDate(creationDate),
+      'creationDate': creationDate.millisecondsSinceEpoch,
       'lastModify': lastModify.millisecondsSinceEpoch,
       'color': color.value,
-      'state': state.index, //  for later use for integrating archiving
+      'state': state.index,
       'imagePath': null,
     };
     data['id'] = id;

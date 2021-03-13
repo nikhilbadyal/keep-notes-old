@@ -6,7 +6,8 @@ import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-_AboutMeScreenHelperState aboutMe ;
+_AboutMeScreenHelperState aboutMe;
+
 class AboutMeScreenHelper extends StatefulWidget {
   @override
   _AboutMeScreenHelperState createState() {
@@ -38,8 +39,11 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
       throw 'Could not launch $url';
     }
   }
+
   void callSetState() {
-    setState(() {},);
+    setState(
+      () {},
+    );
   }
 
   @override
@@ -47,7 +51,9 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
     aboutMe = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .translate(
+              x: myNotes.drawerManager.xOffSet,
+              y: myNotes.drawerManager.yOffSet)
           .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),

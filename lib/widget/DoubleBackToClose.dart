@@ -14,7 +14,7 @@ class DoubleBackToCloseWidget extends StatefulWidget {
 }
 
 class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
-  bool isDrawerOpened= false;
+  bool isDrawerOpened = false;
   int _lastTimeBackButtonWasTapped;
   static const exitTimeInMillis = 700;
 
@@ -37,15 +37,13 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
 
     if (_lastTimeBackButtonWasTapped != null &&
         (_currentTime - _lastTimeBackButtonWasTapped) < exitTimeInMillis) {
-      debugPrint("Closing app");
       myNotes.drawerManager.closeDrawer();
-      // Scaffold.of(context).removeCurrentSnackBar();
       return true;
     } else {
       _lastTimeBackButtonWasTapped = DateTime.now().millisecondsSinceEpoch;
-      if(!isDrawerOpened){
+      if (!isDrawerOpened) {
         myNotes.drawerManager.openDrawer();
-      }else{
+      } else {
         myNotes.drawerManager.closeDrawer();
       }
       isDrawerOpened = !isDrawerOpened;

@@ -7,9 +7,9 @@ import 'package:notes/widget/Body.dart';
 import '../main.dart';
 // enum viewType { //TODO list grid toggle List, Grid }
 
-_TrashScreenHelperState trash ;
-class TrashScreenHelper extends StatefulWidget {
+_TrashScreenHelperState trash;
 
+class TrashScreenHelper extends StatefulWidget {
   @override
   _TrashScreenHelperState createState() => _TrashScreenHelperState();
 }
@@ -27,7 +27,9 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
   }
 
   void callSetState() {
-    setState(() {},);
+    setState(
+      () {},
+    );
   }
 
   @override
@@ -35,7 +37,9 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
     trash = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .translate(
+              x: myNotes.drawerManager.xOffSet,
+              y: myNotes.drawerManager.yOffSet)
           .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),

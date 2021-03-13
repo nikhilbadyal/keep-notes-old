@@ -34,7 +34,6 @@ class _MoreOptionsState extends State<MoreOptions> {
             onTap: () {
               if (!myNotes.lockChecker.passwordSet) {
                 errorPopUp(context, "Please set password first.");
-                // Navigator.of(context).pop(true);
               }
               widget.autoSaver.cancel();
               Provider.of<NotesHelper>(context, listen: false)

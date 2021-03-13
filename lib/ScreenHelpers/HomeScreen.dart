@@ -12,7 +12,6 @@ import '../main.dart';
 _HomeScreenHelperState homeScreen;
 
 class HomeScreenHelper extends StatefulWidget {
-
   @override
   _HomeScreenHelperState createState() => _HomeScreenHelperState();
 }
@@ -30,7 +29,9 @@ class _HomeScreenHelperState extends State<HomeScreenHelper> {
   }
 
   void callSetState() {
-    setState(() {},);
+    setState(
+      () {},
+    );
   }
 
   @override
@@ -38,7 +39,9 @@ class _HomeScreenHelperState extends State<HomeScreenHelper> {
     homeScreen = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .translate(
+              x: myNotes.drawerManager.xOffSet,
+              y: myNotes.drawerManager.yOffSet)
           .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),

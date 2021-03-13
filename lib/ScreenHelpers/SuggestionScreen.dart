@@ -52,6 +52,7 @@ class _SuggestionsScreenHelperState extends State<SuggestionsScreenHelper> {
         body: DoubleBackToCloseWidget(
           child: Center(
             child: AlertDialog(
+              elevation: 0,
               title: Text('Screen not implemented yet'),
               actions: [
                 TextButton(

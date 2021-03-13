@@ -1,10 +1,118 @@
 //20-12-2020
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:notes/main.dart';
+import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/util/Utilites.dart';
+import 'package:notes/widget/Navigations.dart';
+
+class SetPassword extends StatefulWidget {
+  @override
+  _SetPasswordState createState() => _SetPasswordState();
+}
+
+class _SetPasswordState extends State<SetPassword> {
+  String enteredPassCode = "";
+  bool isFirst;
+  String firstPass;
+  String title;
+  final StreamController<bool> _verificationNotifier =
+      StreamController<bool>.broadcast();
+
+  void _onTap(String text) {
+    setState(() {
+      if (isFirst) {
+        if (enteredPassCode.length < 4) {
+          enteredPassCode += text;
+          if (enteredPassCode.length == 4) {
+            _doneEnteringPass(enteredPassCode);
+          }
+        }
+      } else {
+        if (enteredPassCode.length < firstPass.length) {
+          enteredPassCode += text;
+          if (enteredPassCode.length == firstPass.length) {
+            _doneEnteringPass(enteredPassCode);
+          }
+        }
+      }
+    });
+  }
+
+  void _onDelTap() {
+    if (enteredPassCode.length > 0) {
+      setState(() {
+        enteredPassCode =
+            enteredPassCode.substring(0, enteredPassCode.length - 1);
+      });
+    }
+  }
+
+  Future<void> _doneEnteringPass(String enteredPassCode) async {
+    if (isFirst) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SetPassword(),
+              settings: RouteSettings(
+                arguments: DataObj(false, enteredPassCode, "Re Enter Password"),
+              )));
+    } else {
+      if (enteredPassCode == firstPass) {
+        myNotes.lockChecker.passwordSet = true;
+        myNotes.lockChecker.password = enteredPassCode;
+        await Utilities.addBoolToSF("passwordSet", true);
+        await Utilities.addStringToSF('password', enteredPassCode);
+        myNotes.lockChecker.updateDetails();
+        goTOHiddenScreen(context);
+      } else {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          Utilities.getExitSnackBar(context, "PassCodes doesn't match"),
+        );
+        goToSetPasswordScreen(context);
+      }
+    }
+  }
+
+  Widget _titleWidget(String title) {
+    return Container(
+        child: Text(
+      title,
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    ));
+  }
+
+  void ValidationCheck() {}
+
+  @override
+  Widget build(BuildContext context) {
+    final DataObj args = ModalRoute.of(context).settings.arguments;
+    isFirst = args.isFirst;
+    firstPass = args.firstPass;
+    title = args.heading;
+    Widget titleWidget = _titleWidget(title);
+    return MyLockScreen(
+        title: titleWidget,
+        onTap: _onTap,
+        onDelTap: _onDelTap,
+        onFingerTap: null,
+        enteredPassCode: enteredPassCode,
+        stream: _verificationNotifier.stream);
+  }
+}
+
+class DataObj {
+  final bool isFirst;
+  final String firstPass;
+  final String heading;
+
+  DataObj(this.isFirst, this.firstPass, this.heading);
+}
+
+/*
 
 class SetPassword extends StatefulWidget {
   @override
@@ -30,35 +138,19 @@ class _SetPasswordState extends State<SetPassword> {
         body: Column(
           children: [
             SizedBox(
-              height: 40.0,
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.cancel,
-                      color: Colors.blue,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/', (Route<dynamic> route) => false);
-                    },
-                  )
-                ],
-                mainAxisAlignment: MainAxisAlignment.end,
-              ),
+              height: 100.0,
             ),
             Expanded(
               flex: 10,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(
+                    height: 12.0,
+                  ),
                   Text(
                     'Enter New password',
                     style: TextStyle(
-                      // color: Colors.white,
                       color: Colors.blue,
                     ),
                   ),
@@ -67,7 +159,6 @@ class _SetPasswordState extends State<SetPassword> {
                   ),
                   Container(
                     height: 100,
-                    // color: Colors.blue,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -80,146 +171,39 @@ class _SetPasswordState extends State<SetPassword> {
                       ],
                     ),
                   ),
-                  /* Text(
-                    message,
-                    style: TextStyle(
-                      color: Colors.green ,
-                    ),
-                  ),*/
                 ],
               ),
             ),
             Expanded(
-              flex: 15,
-              child: GridView.builder(
-                padding: EdgeInsets.all(0.0),
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 0.8 / 0.6,
-                ),
-                itemBuilder: (context, index) => Container(
-                  margin: EdgeInsets.all(4.0),
-                  width: 50.0,
-                  height: 50.0,
-                  // height: MediaQuery.of(context).size.height/8,
-                  child: Center(
-                    child: index == 9
-                        ? GestureDetector(
-                            child: Icon(Icons.fingerprint_outlined),
-                            onTap: () async {
-                              await Utilities.getListOfBiometricTypes();
-                              await Utilities.authenticateUser(context);
-                            },
-                          )
-                        : Center(
-                            child: MaterialButton(
-                              // color: Colors.blue,
-                              minWidth: 55.0,
-                              height: 55.0,
-                              child: index == 11
-                                  ? Icon(
-                                      Icons.backspace_outlined,
-                                      // color: Colors.white,
-                                      color: Colors.blue,
-                                    )
-                                  : Text(
-                                      '${numbers[index == 10 ? index - 1 : index]}',
-                                      style: TextStyle(
-                                        // color: Colors.white,
-                                        color: Colors.blue,
-                                        fontSize: 26.0,
-                                      ),
-                                    ),
-                              onPressed: () async {
-                                if (index == 11) {
-                                  currentIndex--;
-                                  if (inputText.isEmpty) {
-                                    currentIndex = 0;
-                                  } else {
-                                    inputText = inputText.substring(
-                                        0, inputText.length - 1);
-                                    clears = clears.map((e) => false).toList();
-                                    setState(() {
-                                      clears[currentIndex] = true;
-                                      actives[currentIndex] = false;
-                                    });
-                                    return;
-                                  }
-                                } else {
-                                  inputText +=
-                                      numbers[index == 10 ? index - 1 : index]
-                                          .toString();
-                                  if (inputText.length == 5) {
-                                    setState(() {
-                                      clears = clears.map((e) => true).toList();
-                                      actives =
-                                          actives.map((e) => false).toList();
-                                    });
-                                    message = 'Pass is ' + inputText;
-                                    Utilities.showMyToast(message, 3,
-                                        ToastGravity.CENTER, Colors.green);
-                                    myNotes.lockChecker.passwordSet = true;
-                                    myNotes.lockChecker.password = inputText;
-                                    await Utilities.addBoolToSF(
-                                        "passwordSet", true);
-                                    await Utilities.addStringToSF(
-                                        'password', inputText);
-                                    myNotes.lockChecker.updateDetails();
-                                    inputText = '';
-                                    currentIndex = 0;
-                                    return;
-                                  }
-                                  clears = clears.map((e) => false).toList();
-                                  setState(() {
-                                    actives[currentIndex] = true;
-                                    currentIndex++;
-                                  });
-                                }
-                              },
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(60.0)),
-                            ),
-                          ),
+              flex: 1,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.cancel,
+                      color: Colors.blue,
+                      size: 25,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/', (Route<dynamic> route) => false);
+                    },
                   ),
-                ),
-                itemCount: 12,
+                  SizedBox(
+                    width: 30,
+                  )
+                ],
+                mainAxisAlignment: MainAxisAlignment.end,
               ),
             ),
-            /*  SizedBox(
+            SizedBox(
               height: 50.0,
-            ),*/
+            ),
           ],
         ),
       ),
     );
   }
-
-/*
-  Future<bool> promptUser(BuildContext contexto) async {
-    return await showDialog<bool>(
-          context: contexto,
-          builder: (context) => CustomDialog(
-            title: '',
-            descriptions: 'Want to set FingerPrint?',
-            firstOption: 'Yes',
-            secondOption: 'Cancel',
-            onFirstPressed: () async {
-              await Utilities.getListOfBiometricTypes();
-              await Utilities.authenticateUser(context);
-              return;
-            },
-            onSecondPressed: () async {
-              myNotes.lockChecker.bioEnabled = false;
-              Utilities.addBoolToSF('bio', false);
-              await myNotes.lockChecker.updateDetails();
-              await Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/lock', (Route<dynamic> route) => false);
-            },
-          ),
-        ) ??
-        false; // In case the user dismisses the dialog by clicking away from it
-  }*/
 
   Future<bool> _onBackPress() async {
     Navigator.of(this.context)
@@ -299,3 +283,97 @@ class _AnimatedBoxState extends State<AnimatedBox>
     );
   }
 }
+
+*/
+/*
+* Expanded(
+              flex: 15,
+              child: GridView.builder(
+                padding: EdgeInsets.all(0.0),
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 0.8 / 0.6,
+                ),
+                itemBuilder: (context, index) => Container(
+                  margin: EdgeInsets.all(4.0),
+                  width: 50.0,
+                  height: 50.0,
+                  // height: MediaQuery.of(context).size.height/8,
+                  child: Center(
+                    child: index == 9
+                        ? SizedBox()
+                        : Center(
+                            child: MaterialButton(
+                              minWidth: 55.0,
+                              height: 55.0,
+                              child: index == 11
+                                  ? Icon(
+                                      Icons.backspace_outlined,
+                                      color: Colors.blue,
+                                    )
+                                  : Text(
+                                      '${numbers[index == 10 ? index - 1 : index]}',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 26.0,
+                                      ),
+                                    ),
+                              onPressed: () async {
+                                if (index == 11) {
+                                  currentIndex--;
+                                  if (inputText.isEmpty) {
+                                    currentIndex = 0;
+                                  } else {
+                                    inputText = inputText.substring(
+                                        0, inputText.length - 1);
+                                    clears = clears.map((e) => false).toList();
+                                    setState(() {
+                                      clears[currentIndex] = true;
+                                      actives[currentIndex] = false;
+                                    });
+                                    return;
+                                  }
+                                } else {
+                                  inputText +=
+                                      numbers[index == 10 ? index - 1 : index]
+                                          .toString();
+                                  if (inputText.length == 5) {
+                                    setState(() {
+                                      clears = clears.map((e) => true).toList();
+                                      actives =
+                                          actives.map((e) => false).toList();
+                                    });
+                                    message = 'Pass is ' + inputText;
+                                    goTOHiddenScreen(context);
+                                    Utilities.showMyToast(message, 3,
+                                        ToastGravity.CENTER, Colors.green);
+                                    myNotes.lockChecker.passwordSet = true;
+                                    myNotes.lockChecker.password = inputText;
+                                    await Utilities.addBoolToSF(
+                                        "passwordSet", true);
+                                    await Utilities.addStringToSF(
+                                        'password', inputText);
+                                    myNotes.lockChecker.updateDetails();
+                                    inputText = '';
+                                    currentIndex = 0;
+                                    return;
+                                  }
+                                  clears = clears.map((e) => false).toList();
+                                  setState(() {
+                                    actives[currentIndex] = true;
+                                    currentIndex++;
+                                  });
+                                }
+                              },
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(60.0)),
+                            ),
+                          ),
+                  ),
+                ),
+                itemCount: 12,
+              ),
+            ),*/ /*
+
+*/

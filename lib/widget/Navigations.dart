@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/main.dart';
-import 'package:notes/util/Utilites.dart';
+import 'package:notes/screens/SetPassword.dart';
 
 //TODO optimize screen jumping
 void goTOArchiveScreen(BuildContext context) {
@@ -54,21 +54,22 @@ void goTOHiddenScreen(BuildContext context) {
 
 Future<void> goToLockScreen(BuildContext context) async {
   myNotes.drawerManager.resetDrawerState();
-
-  if (myNotes.lockChecker.bioEnabled) {
-    await Utilities.isBioAvailable();
-    await Utilities.getListOfBiometricTypes();
-    await Utilities.authenticateUser(context);
-  } else {
-    await Navigator.of(context)
-        .pushNamedAndRemoveUntil('/lock', (Route<dynamic> route) => false);
- }
+  await Navigator.of(context)
+      .pushNamedAndRemoveUntil('/lock', (Route<dynamic> route) => false);
 }
 
 void goToSetPasswordScreen(BuildContext context) {
   myNotes.drawerManager.resetDrawerState();
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/setpass', (Route<dynamic> route) => false);
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => SetPassword(),
+          settings: RouteSettings(
+            arguments: DataObj(true, "", "Enter New Password"),
+          )));
+  /*Navigator.of(context).pushNamedAndRemoveUntil(
+      '/setpass', (Route<dynamic> route) => false,
+      arguments: {"firstPass": "", "isFirst": false});*/
 }
 
 void goToBiometricSetup(BuildContext context) {

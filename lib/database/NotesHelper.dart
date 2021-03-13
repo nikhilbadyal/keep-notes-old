@@ -75,9 +75,9 @@ class NotesHelper with ChangeNotifier {
     if (note.id == -1) {
       return false;
     }
-      await DatabaseHelper.undelete(note);
-      await getNotesAll(4);
-      notifyListeners();
+    await DatabaseHelper.undelete(note);
+    await getNotesAll(4);
+    notifyListeners();
     return true;
   }
 

@@ -19,7 +19,6 @@ import 'package:notes/util/MyRouteObserver.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:provider/provider.dart';
 
-
 MyNotes myNotes;
 
 void main() {
@@ -36,7 +35,6 @@ void main() {
 }
 
 class MyNotes extends StatelessWidget {
-
   final MyRouteObserver myRouteObserver = MyRouteObserver();
   final DrawerManager drawerManager = DrawerManager();
   final LockChecker lockChecker = LockChecker(Utilities.passLength);

@@ -5,8 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:notes/database/NotesHelper.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
@@ -54,21 +56,69 @@ class Utilities {
     List<BiometricType> listOfBiometrics;
     try {
       listOfBiometrics = await _localAuthentication.getAvailableBiometrics();
-    } on PlatformException catch (e) {
-      print(e);
-    }
-
-    print(listOfBiometrics);
+    } on PlatformException catch (_) {}
   }
 
   static Future<bool> isBioAvailable() async {
     var isAvailable = false;
     try {
       isAvailable = await _localAuthentication.canCheckBiometrics;
-    } on PlatformException catch (e) {
-      print(e);
-    }
+    } on PlatformException catch (_) {}
     return isAvailable;
+  }
+
+  static SnackBar getExitSnackBar(BuildContext context, String data) {
+    return SnackBar(
+      action: SnackBarAction(
+        textColor: Colors.white,
+        label: "Reset?",
+        onPressed: () async {
+          showDialog<bool>(
+              context: context,
+              builder: (contexto) => AlertDialog(
+                    title: Text(
+                        'Passcode cant be reset. Delete all notes to reset Passcode'),
+                    actions: [
+                      TextButton(
+                        child: Text('Ok'),
+                        onPressed: () async {
+                          ScaffoldMessenger.of(contexto).showSnackBar(
+                              Utilities.getSnackBar(
+                                  "Deleted all Hidden Notes"));
+                          Provider.of<NotesHelper>(context, listen: false)
+                              .deleteAllHiddenNotes();
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/', (Route<dynamic> route) => false);
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () async {
+                          Navigator.of(context).pop(true);
+                        },
+                      ),
+                    ],
+                  ));
+        },
+      ),
+      content: Text(data),
+      backgroundColor: Colors.red,
+      duration: const Duration(
+        seconds: 2,
+      ),
+      behavior: SnackBarBehavior.floating,
+    );
+  }
+
+  static SnackBar getSnackBar(String data) {
+    return SnackBar(
+      content: Text(data),
+      backgroundColor: Colors.red,
+      duration: const Duration(
+        seconds: 2,
+      ),
+      behavior: SnackBarBehavior.floating,
+    );
   }
 
   static Future<void> authenticateUser(BuildContext context) async {
@@ -80,46 +130,18 @@ class Utilities {
         useErrorDialogs: true,
         stickyAuth: true,
       );
-    } on PlatformException catch (e) {
-      errorCode = e.code;
-      print(e);
+    } on PlatformException catch (_) {
+      //TODO handle auth fp
     }
 
     if (errorCode != '') {
       return _handleError(errorCode: errorCode, context: context);
     }
-    isAuthenticated
-        ? print('User is authenticated!')
-        : print('User is not authenticated.');
-
     if (isAuthenticated) {
       myNotes.lockChecker.bioEnabled = true;
       Utilities.addBoolToSF('bio', true);
       await Navigator.of(context)
           .pushNamedAndRemoveUntil('/hidden', (Route<dynamic> route) => false);
-    } else {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/lock', (Route<dynamic> route) => false);
-      /* myNotes.lockChecker.bioEnabled
-          ? await showDialog<bool>(
-              context: context,
-              builder: (context) => CustomDialog(
-                title: '',
-                descriptions: 'Want to use password ?',
-                firstOption: 'Yes',
-                secondOption: 'Cancel',
-                onFirstPressed: () {
-
-                },
-                onSecondPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            )
-          : myNotes.lockChecker.passwordSet
-              ? Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/lock', (Route<dynamic> route) => false)
-              : Navigator.of(context).pop(true);*/
     }
   }
 

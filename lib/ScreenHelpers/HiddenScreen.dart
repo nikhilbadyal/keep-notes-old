@@ -9,9 +9,9 @@ import 'package:notes/widget/FloatingActionButton.dart';
 
 import '../main.dart';
 
-_HiddenScreenHelperState hidden ;
-class HiddenScreenHelper extends StatefulWidget {
+_HiddenScreenHelperState hidden;
 
+class HiddenScreenHelper extends StatefulWidget {
   @override
   _HiddenScreenHelperState createState() => _HiddenScreenHelperState();
 }
@@ -29,8 +29,11 @@ class _HiddenScreenHelperState extends State<HiddenScreenHelper> {
       imagePath: 'assets/images/img3.jpg',
     );
   }
+
   void callSetState() {
-    setState(() {},);
+    setState(
+      () {},
+    );
   }
 
   @override
@@ -38,7 +41,9 @@ class _HiddenScreenHelperState extends State<HiddenScreenHelper> {
     hidden = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .translate(
+              x: myNotes.drawerManager.xOffSet,
+              y: myNotes.drawerManager.yOffSet)
           .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),

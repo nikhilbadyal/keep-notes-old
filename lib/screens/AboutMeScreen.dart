@@ -5,7 +5,6 @@ import 'package:notes/AnimatedDrawerHelper/SecondLayer.dart';
 import 'package:notes/ScreenHelpers/AboutMeScreen.dart';
 
 class AboutMeScreen extends StatefulWidget {
-
   @override
   _AboutMeScreenState createState() => _AboutMeScreenState();
 }

@@ -382,7 +382,6 @@ class _EditScreenState extends State<EditScreen> {
                   title: Text('Hide Note'),
                   onTap: () async {
                     if (myNotes.lockChecker.passwordSet) {
-                      debugPrint(" set");
                       _autoSaver.cancel();
                       saveNote();
                       Provider.of<NotesHelper>(this.context, listen: false)
@@ -398,7 +397,6 @@ class _EditScreenState extends State<EditScreen> {
                             '/hidden', (Route<dynamic> route) => false);
                       }
                     }
-                    debugPrint("NOt set");
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {

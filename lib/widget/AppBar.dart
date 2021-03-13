@@ -29,7 +29,7 @@ class _MyAppBarState extends State<MyAppBar> {
       actions: [
         GestureDetector(
           onTap: () {
-            Utilities.showMyToast('Hey Idiot 🥱', 1);
+            Utilities.showMyToast('Chin up King/Queen 👑', 1);
           },
           child: CircleAvatar(
             radius: 25,

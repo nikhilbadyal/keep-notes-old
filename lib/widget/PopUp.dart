@@ -36,7 +36,6 @@ class _CustomDialogState extends State<CustomDialog> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Building this");
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Utilities.padding),

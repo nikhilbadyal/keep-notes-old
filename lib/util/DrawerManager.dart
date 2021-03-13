@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:notes/AnimatedDrawerHelper/SecondLayer.dart';
 import 'package:notes/ScreenHelpers/AboutMeScreen.dart';
 import 'package:notes/ScreenHelpers/ArchiveScreen.dart';
@@ -16,7 +15,7 @@ class DrawerManager {
   bool localIsOpen = false;
   bool isIgnoring = false;
 
-  void callback(bool isOpen){
+  void callback(bool isOpen) {
     if (isOpen) {
       xOffSet = 0;
       yOffSet = 0;
@@ -36,7 +35,7 @@ class DrawerManager {
     }
   }
 
-  void resetDrawerState(){
+  void resetDrawerState() {
     xOffSet = 0;
     yOffSet = 0;
     angle = 0;
@@ -44,49 +43,52 @@ class DrawerManager {
     isIgnoring = false;
   }
 
-  void  openDrawer(){
-    debugPrint("Open drawer");
+  void openDrawer() {
     callback(false);
   }
 
   void closeDrawer() {
-    debugPrint("Close drawer");
     callback(true);
   }
 
-
   void callSetState() {
-    String currentScreen = myNotes.myRouteObserver.currentScreen ;
-    switch(currentScreen){
-      case "/":{
-        homeScreen.callSetState();
-      }
-      break;
-      case "/about":{
-        aboutMe.callSetState();
-      }
-      break;
-      case "/archive":{
-        archive.callSetState();
-      }
-      break;
-      case "/suggestions":{
-        suggestion.callSetState();
-      }
-      break;
-      case "/trash":{
-        trash.callSetState();
-    }
-      break;
-      case "/hidden":{
-        hidden.callSetState();
-    }
-      break;
-      case "/backup":{
-        backup.callSetState();
-    }
-      break;
+    String currentScreen = myNotes.myRouteObserver.currentScreen;
+    switch (currentScreen) {
+      case "/":
+        {
+          homeScreen.callSetState();
+        }
+        break;
+      case "/about":
+        {
+          aboutMe.callSetState();
+        }
+        break;
+      case "/archive":
+        {
+          archive.callSetState();
+        }
+        break;
+      case "/suggestions":
+        {
+          suggestion.callSetState();
+        }
+        break;
+      case "/trash":
+        {
+          trash.callSetState();
+        }
+        break;
+      case "/hidden":
+        {
+          hidden.callSetState();
+        }
+        break;
+      case "/backup":
+        {
+          backup.callSetState();
+        }
+        break;
     }
   }
-
 }

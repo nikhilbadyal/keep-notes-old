@@ -9,9 +9,9 @@ import 'package:notes/widget/FloatingActionButton.dart';
 
 import '../main.dart';
 
-_BackUpScreenHelperState backup ;
-class BackUpScreenHelper extends StatefulWidget {
+_BackUpScreenHelperState backup;
 
+class BackUpScreenHelper extends StatefulWidget {
   @override
   _BackUpScreenHelperState createState() => _BackUpScreenHelperState();
 }
@@ -27,16 +27,21 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
       imagePath: 'assets/images/img3.jpg',
     );
   }
+
   void callSetState() {
-    setState(() {},);
+    setState(
+      () {},
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    backup = this ;
+    backup = this;
     return AnimatedContainer(
       transform: Matrix4Transform()
-          .translate(x: myNotes.drawerManager.xOffSet, y: myNotes.drawerManager.yOffSet)
+          .translate(
+              x: myNotes.drawerManager.xOffSet,
+              y: myNotes.drawerManager.yOffSet)
           .rotate(myNotes.drawerManager.angle)
           .matrix4,
       duration: Duration(milliseconds: 250),
@@ -47,12 +52,17 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
         ),
         body: DoubleBackToCloseWidget(
           child: SafeArea(
-              child: Center(
-                child: Container(
-            child: Text("Hello I'm nikhil. Give me some sunshine and some ray and some fucking time to implement this.",style: TextStyle(
-              color: headerColor,fontSize: 18,
-            ),),
-          ),
+              child: Container(
+                padding: EdgeInsets.all(30),
+                child: Center(
+                  child: Text(
+                    "Hello I'm Nikhil. Give me some sunshine and some ray and some fucking time to implement this.",
+                    style: TextStyle(
+                      color: headerColor,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
               )),
         ),
         floatingActionButton: fab(context, NoteState.archived),
