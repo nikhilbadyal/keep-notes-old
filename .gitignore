@@ -51,6 +51,10 @@ analysis_benchmark.json
 #My custom
 /test
 /ios
+.gradle
+android
+.gitignore
+pubspec.yaml
 
 # Flutter/Dart/Pub related
 **/doc/api/
