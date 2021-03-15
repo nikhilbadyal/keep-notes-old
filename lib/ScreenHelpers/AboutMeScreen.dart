@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/main.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 _AboutMeScreenHelperState aboutMe;
 
@@ -29,15 +29,6 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
 
   void invokeSetState() {
     setState(() {});
-  }
-
-  void _launchUrl() async {
-    const url = 'https://github.com/ProblematicDude';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   void callSetState() {
@@ -87,7 +78,9 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
                   backgroundImage: AssetImage('assets/images/img3.jpg'),
                   radius: 50.0,
                 ),
-                onTap: _launchUrl,
+                onTap: (){
+                  Utilities.launchUrl("https://github.com/ProblematicDude");
+                },
               ),
             ),
             Divider(
