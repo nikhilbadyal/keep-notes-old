@@ -3,9 +3,10 @@ import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/Body.dart';
+import 'package:notes/widget/DoubleBackToClose.dart';
 
 import '../main.dart';
-// enum viewType { //TODO list grid toggle List, Grid }
+
 
 _TrashScreenHelperState trash;
 
@@ -48,9 +49,11 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
           title: 'Trash',
           imagePath: 'assets/images/img3.jpg',
         ),
-        body: SafeArea(
-          child: Body(
-            fromWhere: NoteState.deleted,
+        body: DoubleBackToCloseWidget(
+          child: SafeArea(
+            child: Body(
+              fromWhere: NoteState.deleted,
+            ),
           ),
         ),
       ),

@@ -23,7 +23,10 @@ class NotesHelper with ChangeNotifier {
 
   Future<bool> copyNote(Note note) async {
     if (note.id != -1) {
+      print(_items.length);
       _items.insert(0, note);
+      print(_items.length);
+
       await DatabaseHelper.copyNote(note);
       notifyListeners();
       return true;

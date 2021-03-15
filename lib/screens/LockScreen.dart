@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:notes/main.dart';
 import 'package:notes/util/Utilites.dart';
+import 'package:notes/widget/DoubleBackToClose.dart';
 import 'package:notes/widget/Navigations.dart';
 
 import '../main.dart';
@@ -58,15 +59,17 @@ class _LockScreenState extends State<LockScreen> {
           title: Text('Set Fingerprint first'),
           actions: [
             TextButton(
-              child: Text('Ok',style: TextStyle(fontSize: 100),),
+              child: Text(
+                'Ok',
+                style: TextStyle(fontSize: 20),
+              ),
               onPressed: () async {
                 Navigator.of(context).pop(true);
-                await Utilities.getListOfBiometricTypes();
                 await Utilities.authenticateUser(context);
               },
             ),
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(fontSize: 20)),
               onPressed: () async {
                 Navigator.of(context).pop(true);
               },
@@ -144,6 +147,7 @@ class _MyLockScreenState extends State<MyLockScreen>
   StreamSubscription<bool> streamSubscription;
   AnimationController controller;
   Animation<double> animation;
+
   @override
   void initState() {
     super.initState();
@@ -171,37 +175,39 @@ class _MyLockScreenState extends State<MyLockScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: _buildDeleteButton(context),
-                    ),
-                    widget.title,
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Container(
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: _buildCircles(widget.enteredPassCode),
+    return DoubleBackToCloseWidget(
+      child: Scaffold(
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Positioned(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: _buildDeleteButton(context),
                       ),
-                    ),
-                    _buildKeyBoard(widget.onTap, widget.onDelTap,
-                        widget.onFingerTap, widget.enteredPassCode),
-                  ],
+                      widget.title,
+                      SizedBox(
+                        height: 50,
+                      ),
+                      Container(
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: _buildCircles(widget.enteredPassCode),
+                        ),
+                      ),
+                      _buildKeyBoard(widget.onTap, widget.onDelTap,
+                          widget.onFingerTap, widget.enteredPassCode),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

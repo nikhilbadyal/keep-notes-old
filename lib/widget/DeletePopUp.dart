@@ -62,18 +62,5 @@ class DeletePopUp extends StatelessWidget {
         ),
       ],
     );
-    /*
-      title: "Delete",
-      descriptions: "Delete the note",
-      firstOption: "Yes",
-      secondOption: "Cancel",
-      onFirstPressed: () {
-
-      },
-      onSecondPressed: () {
-
-        //Navigator.popUntil(context, ModalRoute.withName('/'));
-      },
-    );*/
   }
 }

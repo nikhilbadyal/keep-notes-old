@@ -53,17 +53,17 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
         body: DoubleBackToCloseWidget(
           child: SafeArea(
               child: Container(
-                padding: EdgeInsets.all(30),
-                child: Center(
-                  child: Text(
-                    "Hello I'm Nikhil. Give me some sunshine and some ray and some fucking time to implement this.",
-                    style: TextStyle(
-                      color: headerColor,
-                      fontSize: 18,
-                    ),
-                  ),
+            padding: EdgeInsets.all(30),
+            child: Center(
+              child: Text(
+                "Hello I'm Nikhil. Give me some sunshine and some ray and some fucking time to implement this.",
+                style: TextStyle(
+                  color: headerColor,
+                  fontSize: 18,
                 ),
-              )),
+              ),
+            ),
+          )),
         ),
         floatingActionButton: fab(context, NoteState.archived),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

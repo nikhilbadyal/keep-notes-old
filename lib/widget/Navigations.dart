@@ -3,6 +3,7 @@ import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/main.dart';
 import 'package:notes/screens/SetPassword.dart';
+import 'package:notes/util/Utilites.dart';
 
 //TODO optimize screen jumping
 void goTOArchiveScreen(BuildContext context) {
@@ -34,9 +35,10 @@ void goTOAboutMeScreen(BuildContext context) {
 
 void goTOBugScreen(BuildContext context) {
   myNotes.drawerManager.resetDrawerState();
+  Utilities.launchUrl(Utilities.emailLaunchUri.toString());
 
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/suggestions', (Route<dynamic> route) => false);
+ /* Navigator.of(context)
+      .pushNamedAndRemoveUntil('/suggestions', (Route<dynamic> route) => false);*/
 }
 
 void goTOHomeScreen(BuildContext context) {

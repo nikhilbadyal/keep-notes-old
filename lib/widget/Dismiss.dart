@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/list_item.dart';
 import 'package:provider/provider.dart';
 
@@ -123,14 +124,15 @@ class Dismiss extends StatelessWidget {
                                 if (value)
                                   {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Note Deleted')))
+                                        Utilities.getSnackBar("Note Deleted",
+                                            Duration(seconds: 1),Colors.green))
                                   }
                                 else
                                   {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content:
-                                                Text('Unable to detele Note')))
+                                        Utilities.getSnackBar(
+                                            "Some error occurred",
+                                            Duration(seconds: 1),Colors.redAccent))
                                   }
                               });
                         } else if (action == 'delete') {

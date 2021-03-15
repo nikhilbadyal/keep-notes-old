@@ -4,7 +4,6 @@ import 'package:notes/ScreenHelpers/ArchiveScreen.dart';
 import 'package:notes/ScreenHelpers/BackupRestore.dart';
 import 'package:notes/ScreenHelpers/HiddenScreen.dart';
 import 'package:notes/ScreenHelpers/HomeScreen.dart';
-import 'package:notes/ScreenHelpers/SuggestionScreen.dart';
 import 'package:notes/ScreenHelpers/TrashScreen.dart';
 import 'package:notes/main.dart';
 
@@ -67,11 +66,6 @@ class DrawerManager {
       case "/archive":
         {
           archive.callSetState();
-        }
-        break;
-      case "/suggestions":
-        {
-          suggestion.callSetState();
         }
         break;
       case "/trash":

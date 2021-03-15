@@ -1,64 +1,24 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:notes/database/NotesHelper.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../main.dart';
 
 class Utilities {
   static final LocalAuthentication _localAuthentication = LocalAuthentication();
   static SharedPreferences prefs;
-
   static Color uiColor1 = Color(0xFFFD5872);
   static Color uiColor2 = Colors.blue;
   static const double padding = 20;
-
   static const double avatarRadius = 45;
   static const passLength = 4;
   static const Color dialogColor = Colors.white;
 
-  static Future<String> getImage(ImageSource imageSource) async {
-    final picker = ImagePicker();
-    var imageFile = await picker.getImage(source: imageSource);
-
-    if (imageFile == null) {
-      return "";
-    }
-    var tmpFile = File(imageFile.path);
-    final appDir = await getApplicationDocumentsDirectory();
-    final fileName = basename(imageFile.path);
-    tmpFile = await tmpFile.copy('${appDir.path}/$fileName');
-    return tmpFile.path;
-  }
-
-  static void showMyToast(String content, int time,
-      [ToastGravity bottom = ToastGravity.BOTTOM,
-      MaterialColor color = Colors.blue]) async {
-    await Fluttertoast.showToast(
-        msg: content,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: bottom,
-        timeInSecForIosWeb: 1,
-        backgroundColor: color,
-        textColor: Colors.white,
-        fontSize: 16.0);
-  }
-
-  static Future<void> getListOfBiometricTypes() async {
-    List<BiometricType> listOfBiometrics;
-    try {
-      listOfBiometrics = await _localAuthentication.getAvailableBiometrics();
-    } on PlatformException catch (_) {}
-  }
-
+  
   static Future<bool> isBioAvailable() async {
     var isAvailable = false;
     try {
@@ -83,8 +43,8 @@ class Utilities {
                         child: Text('Ok'),
                         onPressed: () async {
                           ScaffoldMessenger.of(contexto).showSnackBar(
-                              Utilities.getSnackBar(
-                                  "Deleted all Hidden Notes"));
+                              Utilities.getSnackBar("Deleted all Hidden Notes",
+                                  Duration(milliseconds: 2),Colors.green));
                           Provider.of<NotesHelper>(context, listen: false)
                               .deleteAllHiddenNotes();
                           Navigator.of(context).pushNamedAndRemoveUntil(
@@ -110,37 +70,50 @@ class Utilities {
     );
   }
 
-  static SnackBar getSnackBar(String data) {
+  static Future<bool> launchUrl(String url ) async {
+    if (await canLaunch(url)) {
+      return  launch(url);
+    } else {
+      return false;
+    }
+  }
+  static final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'nikhildevelops@gmail.com',
+      queryParameters: {
+        'subject': 'Suggestion/Issues in the app'
+      }
+  );
+
+  static SnackBar getSnackBar(String data, Duration duration,Color color) {
     return SnackBar(
       content: Text(data),
-      backgroundColor: Colors.red,
-      duration: const Duration(
-        seconds: 2,
-      ),
+      backgroundColor: color,
+      duration: duration,
       behavior: SnackBarBehavior.floating,
     );
   }
 
   static Future<void> authenticateUser(BuildContext context) async {
     var isAuthenticated = false;
-    String errorCode = '';
+    await _localAuthentication.getAvailableBiometrics();
     try {
-      isAuthenticated = await _localAuthentication.authenticateWithBiometrics(
+      isAuthenticated = await _localAuthentication.authenticate(
         localizedReason: 'Please authenticate',
-        useErrorDialogs: true,
+        useErrorDialogs: false,
         stickyAuth: true,
+        biometricOnly: true,
       );
-    } on PlatformException catch (_) {
-      //TODO handle auth fp
-    }
-
-    if (errorCode != '') {
-      return _handleError(errorCode: errorCode, context: context);
+    } on PlatformException catch (errorCode) {
+      isAuthenticated = false;
+      return _handleError(errorCode: errorCode.code, context: context);
     }
     if (isAuthenticated) {
-      myNotes.lockChecker.bioEnabled = true;
-      Utilities.addBoolToSF('bio', true);
-      await Navigator.of(context)
+      if (!myNotes.lockChecker.bioEnabled) {
+        Utilities.addBoolToSF('bio', true);
+        myNotes.lockChecker.bioEnabled = true;
+      }
+      Navigator.of(context)
           .pushNamedAndRemoveUntil('/hidden', (Route<dynamic> route) => false);
     }
   }
@@ -202,14 +175,17 @@ class Utilities {
   static Future<void> _handleError(
       {String errorCode, BuildContext context}) async {
     String error;
+    print(errorCode);
     if (errorCode == " PasscodeNotSet") {
       error = "Please first set passcode in your system settings";
     } else if (errorCode == "LockedOut") {
       error = "Too many attempts. Try after 30 seconds";
     } else if (errorCode == "PermanentlyLockedOut") {
       error = "Too many attempts. Please open your device with pass first";
+    } else if (errorCode == "NotAvailable") {
+      error = 'Setup biometric from setting first';
     } else {
-      error = 'Some issue occurred. Please report with code "errorCode"';
+      error = 'Some issue occurred. Please report with code ${errorCode}';
     }
     return showDialog<void>(
       context: context,

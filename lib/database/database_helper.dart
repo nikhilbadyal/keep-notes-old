@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:notes/database/note.dart';
+import 'package:notes/main.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -56,12 +58,10 @@ class DatabaseHelper {
     try {
       await db.delete('notes', where: 'state = ?', whereArgs: [3]);
       //TODO removed for debugging
-      /* myNotes.lockChecker.passwordSet = false;
+      myNotes.lockChecker.passwordSet = false;
       await Utilities.removeValues('password');
       await Utilities.removeValues('bio');
-      await myNotes.lockChecker.updateDetails();*/
-      /* ScaffoldMessenger.of(context)
-          .showSnackBar(Utilities.getSnackBar("Deleted all Hidden Notes"));*/
+      await myNotes.lockChecker.updateDetails();
       return true;
     } on Error {
       return false;
@@ -158,10 +158,11 @@ class DatabaseHelper {
   }
 
   static Future<int> copyNote(Note note) async {
+    note.id = -1;
     final db = await database;
     await db.insert(
       tableName,
-      note.toMap(false),
+      note.toMap(true),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     var one = await db.query(tableName,

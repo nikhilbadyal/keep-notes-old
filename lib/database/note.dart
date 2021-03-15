@@ -27,9 +27,6 @@ class Note {
   NoteState state;
   String imagePath;
 
-  /*Note(this.id, this.title, this.content, this.creationDate, this.lastModify,
-      this.color, this.state, this.imagePath);*/
-
   Note(
       {@required this.id,
       @required this.title,

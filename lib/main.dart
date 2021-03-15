@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +10,6 @@ import 'package:notes/screens/HiddenScreen.dart';
 import 'package:notes/screens/HomeScreen.dart';
 import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/screens/SetPassword.dart';
-import 'package:notes/screens/SuggestionScreen.dart';
 import 'package:notes/screens/TrashScreen.dart';
 import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/util/LockManager.dart';
@@ -38,6 +36,7 @@ class MyNotes extends StatelessWidget {
   final MyRouteObserver myRouteObserver = MyRouteObserver();
   final DrawerManager drawerManager = DrawerManager();
   final LockChecker lockChecker = LockChecker(Utilities.passLength);
+
   @override
   Widget build(BuildContext context) {
     myNotes = this;
@@ -51,7 +50,6 @@ class MyNotes extends StatelessWidget {
           '/': (context) => HomeScreen(), //d
           '/about': (context) => AboutMeScreen(), //d
           '/archive': (context) => ArchiveScreen(), //d
-          '/suggestions': (context) => SuggestionsScreen(), //d
           '/trash': (context) => TrashScreen(), //d
           '/hidden': (context) => HiddenScreen(), //d
           '/backup': (context) => BackUpScreen(), //d

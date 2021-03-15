@@ -149,7 +149,7 @@ class ListItem extends StatelessWidget {
         title: Text('Please remove note from trash before editing'),
         actions: [
           TextButton(
-            child: Text('Approve'),
+            child: Text('Ok'),
             onPressed: () {
               Navigator.of(context).pop(true);
             },

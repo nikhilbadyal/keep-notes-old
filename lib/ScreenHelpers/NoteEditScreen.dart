@@ -3,17 +3,13 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/DeletePopUp.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:notes/widget/MoreOptions.dart';
 import 'package:provider/provider.dart';
-
-import '../main.dart';
 
 // ignore: must_be_immutable
 class EditScreen extends StatefulWidget {
@@ -78,7 +74,6 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   Timer _autoSaver;
-  final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +269,7 @@ class _EditScreenState extends State<EditScreen> {
           noteIn.then((value) => noteInEditing = value);
         }
       }
-      // TODO show snackbar if saved.
+      Utilities.getSnackBar("Note Saved", Duration(milliseconds: 2),Colors.green);
       return;
     }
   }
@@ -345,152 +340,8 @@ class _EditScreenState extends State<EditScreen> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return moreOption(context, noteInEditing, _autoSaver);
+        return MoreOptions(noteInEditing, _autoSaver, saveNote);
       },
-    );
-  }
-
-  Future<void> getImage(ImageSource imageSource) async {
-    var imageFile = await picker.getImage(source: imageSource);
-
-    if (imageFile == null) {
-      return;
-    }
-    _image = File(imageFile.path);
-    final appDir = await getApplicationDocumentsDirectory();
-    final fileName = basename(imageFile.path);
-
-    _image = await _image.copy('${appDir.path}/$fileName');
-    setState(() {
-      noteInEditing.imagePath = _image.path;
-    });
-  }
-
-  Widget moreOption(BuildContext context, Note noteInEditing, Timer autoSaver) {
-    //TODO optimize this
-    return Container(
-      height: 200,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          noteInEditing.state != NoteState.hidden
-              ? ListTile(
-                  leading: Icon(
-                    TablerIcons.ghost,
-                    color: Colors.blue,
-                  ),
-                  title: Text('Hide Note'),
-                  onTap: () async {
-                    if (myNotes.lockChecker.passwordSet) {
-                      _autoSaver.cancel();
-                      saveNote();
-                      Provider.of<NotesHelper>(this.context, listen: false)
-                          .hideNote(noteInEditing);
-                      if (noteInEditing.state == NoteState.archived) {
-                        Navigator.of(this.context).pushNamedAndRemoveUntil(
-                            '/archive', (Route<dynamic> route) => false);
-                      } else if (noteInEditing.state == NoteState.unspecified) {
-                        Navigator.of(this.context).pushNamedAndRemoveUntil(
-                            '/', (Route<dynamic> route) => false);
-                      } else if (noteInEditing.state == NoteState.hidden) {
-                        Navigator.of(this.context).pushNamedAndRemoveUntil(
-                            '/hidden', (Route<dynamic> route) => false);
-                      }
-                    }
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CupertinoAlertDialog(
-                            title: Text("Please set password first"),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(this.context)
-                                        .pushNamedAndRemoveUntil('/setpass',
-                                            (Route<dynamic> route) => false);
-                                  },
-                                  child: Text("Ok")),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(true);
-                                  },
-                                  child: Text("Later")),
-                            ],
-                          );
-                        });
-                  },
-                )
-              : ListTile(
-                  leading: Icon(
-                    Icons.inbox_outlined,
-                    color: Colors.blue,
-                  ),
-                  title: Text('Unhide Note'),
-                  onTap: () {
-                    _autoSaver.cancel();
-                    saveNote();
-                    Provider.of<NotesHelper>(this.context, listen: false)
-                        .unhideNote(noteInEditing);
-                    if (noteInEditing.state == NoteState.archived) {
-                      Navigator.of(this.context).pushNamedAndRemoveUntil(
-                          '/archive', (Route<dynamic> route) => false);
-                    } else if (noteInEditing.state == NoteState.unspecified) {
-                      Navigator.of(this.context).pushNamedAndRemoveUntil(
-                          '/', (Route<dynamic> route) => false);
-                    } else if (noteInEditing.state == NoteState.hidden) {
-                      Navigator.of(this.context).pushNamedAndRemoveUntil(
-                          '/hidden', (Route<dynamic> route) => false);
-                    }
-                  },
-                ),
-          ListTile(
-            leading: Icon(
-              Icons.archive,
-              color: Colors.blue,
-            ),
-            title: Text('Archive Note'),
-            onTap: () {
-              _autoSaver.cancel();
-              saveNote();
-              Provider.of<NotesHelper>(this.context, listen: false)
-                  .archiveNote(noteInEditing);
-              if (noteInEditing.state == NoteState.archived) {
-                Navigator.of(this.context).pushNamedAndRemoveUntil(
-                    '/archive', (Route<dynamic> route) => false);
-              } else if (noteInEditing.state == NoteState.unspecified) {
-                Navigator.of(this.context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
-              } else if (noteInEditing.state == NoteState.hidden) {
-                Navigator.of(this.context).pushNamedAndRemoveUntil(
-                    '/hidden', (Route<dynamic> route) => false);
-              }
-            },
-          ),
-          ListTile(
-            leading: Icon(
-              TablerIcons.copy,
-              color: Colors.blue,
-            ),
-            title: Text('Copy Note'),
-            onTap: () {
-              _autoSaver.cancel();
-              saveNote();
-              Provider.of<NotesHelper>(this.context, listen: false)
-                  .copyNote(noteInEditing);
-              if (noteInEditing.state == NoteState.archived) {
-                Navigator.of(this.context).pushNamedAndRemoveUntil(
-                    '/archive', (Route<dynamic> route) => false);
-              } else if (noteInEditing.state == NoteState.unspecified) {
-                Navigator.of(this.context).pushNamedAndRemoveUntil(
-                    '/', (Route<dynamic> route) => false);
-              } else if (noteInEditing.state == NoteState.hidden) {
-                Navigator.of(this.context).pushNamedAndRemoveUntil(
-                    '/hidden', (Route<dynamic> route) => false);
-              }
-            },
-          ),
-        ],
-      ),
     );
   }
 }

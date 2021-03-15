@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes/main.dart';
-import 'package:notes/util/Utilites.dart';
+
+_MyAppBarState appBar;
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -18,10 +19,15 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _MyAppBarState extends State<MyAppBar> {
-  bool isOpened = false;
+  void callSetState() {
+    setState(() {
+      myNotes.drawerManager.localIsOpen = !myNotes.drawerManager.localIsOpen;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    appBar = this;
     return AppBar(
       elevation: 0.6,
       leading: _leading(),
@@ -29,7 +35,8 @@ class _MyAppBarState extends State<MyAppBar> {
       actions: [
         GestureDetector(
           onTap: () {
-            Utilities.showMyToast('Chin up King/Queen 👑', 1);
+            // Utilities.showMyToast('Chin up King/Queen 👑', 1);
+            // TODO do something
           },
           child: CircleAvatar(
             radius: 25,
@@ -45,11 +52,11 @@ class _MyAppBarState extends State<MyAppBar> {
   }
 
   Widget _leading() {
-    if (isOpened) {
+    if (myNotes.drawerManager.localIsOpen) {
       return IconButton(
         icon: Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () {
-          isOpened = false;
+          myNotes.drawerManager.localIsOpen = false;
           myNotes.drawerManager.callback(true);
         },
       );
@@ -60,7 +67,7 @@ class _MyAppBarState extends State<MyAppBar> {
           color: Colors.white,
         ),
         onPressed: () {
-          isOpened = true;
+          myNotes.drawerManager.localIsOpen = true;
           myNotes.drawerManager.callback(false);
         },
       );
