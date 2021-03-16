@@ -43,9 +43,12 @@ class Utilities {
                       TextButton(
                         child: Text('Ok'),
                         onPressed: () async {
-                          ScaffoldMessenger.of(contexto).showSnackBar(
-                              Utilities.getSnackBar("Deleted all Hidden Notes",Colors.white,
-                                  Duration(milliseconds: 2), Colors.green));
+                          Utilities.showSnackbar(
+                              contexto,
+                              "Deleted all Hidden Notes",
+                              Colors.white,
+                              Duration(milliseconds: 2),
+                              Colors.green);
                           Provider.of<NotesHelper>(context, listen: false)
                               .deleteAllHiddenNotes();
                           Navigator.of(context).pushNamedAndRemoveUntil(
@@ -108,13 +111,23 @@ class Utilities {
       path: 'nikhildevelops@gmail.com',
       queryParameters: {'subject': 'Suggestion/Issues in the app'});
 
-  static SnackBar getSnackBar(String data, Color dataColor  ,  Duration duration, Color color) {
+  static SnackBar getSnackBar(
+      String data, Color dataColor, Duration duration, Color color) {
     return SnackBar(
-      content: Text(data,style: TextStyle(color: dataColor),),
+      content: Text(
+        data,
+        style: TextStyle(color: dataColor),
+      ),
       backgroundColor: color,
       duration: duration,
       behavior: SnackBarBehavior.floating,
     );
+  }
+
+  static void showSnackbar(BuildContext context, String data, Color dataColor,
+      Duration duration, Color color) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(Utilities.getSnackBar(data, dataColor, duration, color));
   }
 
   static Future<void> authenticateUser(BuildContext context) async {

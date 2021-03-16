@@ -149,9 +149,9 @@ class _MoreOptionsState extends State<MoreOptions> {
         color: Colors.blue,
       ),
       title: Text('Copy Note'),
-      onTap: () {
+      onTap: () async {
         autoSaver.cancel();
-        widget.saveNote();
+        await widget.saveNote();
         Provider.of<NotesHelper>(this.context, listen: false).copyNote(note);
         String whereToNavigate = Utilities.navChecker(note.state);
         Navigator.of(this.context).pushNamedAndRemoveUntil(

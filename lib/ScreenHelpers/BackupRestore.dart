@@ -72,9 +72,8 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
                         await Provider.of<NotesHelper>(context, listen: false)
                             .getNotesAllForBackup();
                     await exportToFile(items);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        Utilities.getSnackBar("Notes Exported", Colors.white,
-                            Duration(seconds: 2), Colors.green));
+                    Utilities.showSnackbar(context, "Notes Exported",
+                        Colors.white, Duration(seconds: 2), Colors.green);
                   },
                   child: Text('Export Notes'),
                 ),
@@ -88,16 +87,11 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
                       File file;
                       if (result != null) {
                         file = File(result.files.single.path);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            Utilities.getSnackBar("No File Selected",Colors.white,
-                                Duration(seconds: 2), Colors.redAccent));
-                      }
+                      } else {}
                       importFromFile(file);
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          Utilities.getSnackBar("Permission Not granted",Colors.white,
-                              Duration(seconds: 2), Colors.green));
+                      Utilities.showSnackbar(context, "Permission Not granted",
+                          Colors.white, Duration(seconds: 2), Colors.green);
                     }
                   },
                   child: Text('Import Notes'),
@@ -145,24 +139,24 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
     } catch (e) {
       print(e);
 
-      ScaffoldMessenger.of(context).showSnackBar(Utilities.getSnackBar(
-          "Error while exporting", Colors.white,Duration(seconds: 2), Colors.green));
+      Utilities.showSnackbar(context, "Error while exporting", Colors.white,
+          Duration(seconds: 2), Colors.green);
     }
   }
 
   Future<void> importFromFile(File file) async {
     try {
-        var StringContent = file.readAsStringSync();
-        List jsonList = json.decode(StringContent);
-        List<Note> notesList = jsonList.map((json) => Note.fromJson(json)).toList();
-        await Provider.of<NotesHelper>(context, listen: false)
-            .addAllNotesToBackup(notesList);
-      ScaffoldMessenger.of(context).showSnackBar(Utilities.getSnackBar(
-          "Done importing",Colors.white, Duration(seconds: 2), Colors.green));
+      var StringContent = file.readAsStringSync();
+      List jsonList = json.decode(StringContent);
+      List<Note> notesList =
+          jsonList.map((json) => Note.fromJson(json)).toList();
+      await Provider.of<NotesHelper>(context, listen: false)
+          .addAllNotesToBackup(notesList);
+      Utilities.showSnackbar(context, "Done importing", Colors.white,
+          Duration(seconds: 2), Colors.green);
     } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(context).showSnackBar(Utilities.getSnackBar(
-          "Error while importing", Colors.white, Duration(seconds: 2), Colors.redAccent));
+      Utilities.showSnackbar(context, "Error while importing", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
     }
   }
 }

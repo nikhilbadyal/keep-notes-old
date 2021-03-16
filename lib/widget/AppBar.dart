@@ -33,18 +33,12 @@ class _MyAppBarState extends State<MyAppBar> {
       leading: _leading(),
       title: _title(),
       actions: [
-        GestureDetector(
-          onTap: () {
-            // Utilities.showMyToast('Chin up King/Queen 👑', 1);
-            // TODO do something
-          },
+        CircleAvatar(
+          radius: 25,
+          backgroundColor: Color(0xffFDCF09),
           child: CircleAvatar(
-            radius: 25,
-            backgroundColor: Color(0xffFDCF09),
-            child: CircleAvatar(
-              radius: 22,
-              backgroundImage: AssetImage(widget.imagePath),
-            ),
+            radius: 22,
+            backgroundImage: AssetImage(widget.imagePath),
           ),
         ),
       ],

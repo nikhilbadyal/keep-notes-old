@@ -175,7 +175,6 @@ class DatabaseHelper {
   }
 
   static Future<int> copyNote(Note note) async {
-    note.id = -1;
     final db = await database;
     await db.insert(
       tableName,

@@ -21,7 +21,6 @@ class ThirdLayer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
-                    //TODO ask for long tap or tap
                     onTap: () async {
                       if (ModalRoute.of(context).settings.name != '/hidden') {
                         var status = myNotes.lockChecker.passwordSet;

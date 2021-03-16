@@ -14,7 +14,11 @@ class NotesHelper with ChangeNotifier {
     if (isNew) {
       _items.insert(0, note);
     } else {
-      _items[_items.indexWhere((element) => note.id == element.id)] = note;
+      try{
+        _items[_items.indexWhere((element) => note.id == element.id)] = note;
+      }catch(e){
+        print(e);
+      }
     }
     note = await DatabaseHelper.insertNote(note, isNew);
     notifyListeners();
@@ -23,10 +27,7 @@ class NotesHelper with ChangeNotifier {
 
   Future<bool> copyNote(Note note) async {
     if (note.id != -1) {
-      print(_items.length);
       _items.insert(0, note);
-      print(_items.length);
-
       await DatabaseHelper.copyNote(note);
       notifyListeners();
       return true;

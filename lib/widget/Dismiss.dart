@@ -122,17 +122,21 @@ class Dismiss extends StatelessWidget {
                           context, listen: false)
                           .deleteNote(note);
                       if (value) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            Utilities.getSnackBar("Note Deleted",Colors.white,
-                                Duration(seconds: 1), Colors.green));
-                      }
-                      else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            Utilities.getSnackBar(
-                                "Some error occurred",Colors.white,
-                                Duration(seconds: 1), Colors.redAccent));
-                      }
-                    } else if (action == 'delete') {
+                            Utilities.showSnackbar(
+                                context,
+                                "Note Deleted",
+                                Colors.white,
+                                Duration(seconds: 1),
+                                Colors.green);
+                          } else {
+                            Utilities.showSnackbar(
+                                context,
+                                "Some error occurred",
+                                Colors.white,
+                                Duration(seconds: 1),
+                                Colors.redAccent);
+                          }
+                        } else if (action == 'delete') {
                       await Provider.of<NotesHelper>(context, listen: false)
                           .trashNote(
                           note: note,

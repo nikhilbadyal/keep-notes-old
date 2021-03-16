@@ -251,7 +251,6 @@ class _EditScreenState extends State<EditScreen> {
   void saveNote() {
     var isEdited = updateNote();
     var isEmptyNote = isEmpty();
-    //TODO implement
     if (isEdited) {
       if (noteInEditing.id == -1) {
         if (!isEmptyNote) {

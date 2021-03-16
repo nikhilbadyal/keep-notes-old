@@ -50,11 +50,8 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
         appBar.callSetState();
         myNotes.drawerManager.closeDrawer();
       }
-      ScaffoldMessenger.of(context).showSnackBar(Utilities.getSnackBar(
-          "Press back again to exit",
-          Colors.black87,
-          Duration(milliseconds: 3000),
-          Colors.white60));
+      Utilities.showSnackbar(context, "Press back again to exit",
+          Colors.black87, Duration(milliseconds: 3000), Colors.white60);
       return false;
     }
   }

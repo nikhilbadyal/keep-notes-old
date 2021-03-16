@@ -54,8 +54,7 @@ class Note {
       'state': state.index, //  for later use for integrating archiving
       'imagePath': imagePath,
     };
-
-    if (id != -1) {
+    if(!isNew){
       data['id'] = id;
     }
     return data;
@@ -73,7 +72,6 @@ class Note {
     } else {
       lastModify = other.lastModify;
     }
-    //   notifyListeners();
   }
 
   static Note fromJson(Map<String, dynamic> json) {

@@ -98,6 +98,7 @@ class _LockScreenState extends State<LockScreen> {
     } else {
       _verificationNotifier.add(false);
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
       ScaffoldMessenger.of(context).showSnackBar(
         Utilities.getExitSnackBar(context, "Wrong Passcode"),
       );
