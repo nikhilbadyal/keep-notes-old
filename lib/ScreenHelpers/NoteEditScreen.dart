@@ -40,7 +40,7 @@ class _EditScreenState extends State<EditScreen> {
     noteColor = noteInEditing.color;
     _titleFromInitial = widget.currentNote.title;
     _contentFromInitial = widget.currentNote.content;
-    _imagePathFromInitial = widget.currentNote.imagePath;
+    // _imagePathFromInitial = widget.currentNote.imagePath;
     if (widget.currentNote.id == -1) {
       isNew = true;
     }
@@ -67,7 +67,7 @@ class _EditScreenState extends State<EditScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (noteInEditing.imagePath != '') {
-      _image = File(noteInEditing.imagePath);
+      // _image = File(noteInEditing.imagePath);
     } else {
       _image = null;
     }
@@ -269,11 +269,10 @@ class _EditScreenState extends State<EditScreen> {
           noteIn.then((value) => noteInEditing = value);
         }
       }
-      Utilities.getSnackBar("Note Saved", Duration(milliseconds: 2),Colors.green);
+      Utilities.getSnackBar("Note Saved",Colors.white, Duration(milliseconds: 2),Colors.green);
       return;
     }
   }
-
   bool isEmpty() {
     if (noteInEditing.title == '' &&
         noteInEditing.content == '' &&

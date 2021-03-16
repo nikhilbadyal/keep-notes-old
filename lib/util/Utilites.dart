@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:notes/database/NotesHelper.dart';
+import 'package:notes/database/note.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,7 +20,6 @@ class Utilities {
   static const passLength = 4;
   static const Color dialogColor = Colors.white;
 
-  
   static Future<bool> isBioAvailable() async {
     var isAvailable = false;
     try {
@@ -43,8 +44,8 @@ class Utilities {
                         child: Text('Ok'),
                         onPressed: () async {
                           ScaffoldMessenger.of(contexto).showSnackBar(
-                              Utilities.getSnackBar("Deleted all Hidden Notes",
-                                  Duration(milliseconds: 2),Colors.green));
+                              Utilities.getSnackBar("Deleted all Hidden Notes",Colors.white,
+                                  Duration(milliseconds: 2), Colors.green));
                           Provider.of<NotesHelper>(context, listen: false)
                               .deleteAllHiddenNotes();
                           Navigator.of(context).pushNamedAndRemoveUntil(
@@ -70,24 +71,46 @@ class Utilities {
     );
   }
 
-  static Future<bool> launchUrl(String url ) async {
+  static Future<bool> launchUrl(String url) async {
     if (await canLaunch(url)) {
-      return  launch(url);
+      return launch(url);
     } else {
       return false;
     }
   }
+
+  static String navChecker(NoteState state) {
+    if (state == NoteState.archived) {
+      return '/archive';
+    } else if (state == NoteState.unspecified) {
+      return '/';
+    } else if (state == NoteState.deleted) {
+      return '/trash';
+    } else {
+      return '/hidden';
+    }
+  }
+
+  static Future<bool> requestPermission(Permission permission) async {
+    if (await permission.isGranted) {
+      return true;
+    } else {
+      var result = await permission.request();
+      if (result == PermissionStatus.granted) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   static final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: 'nikhildevelops@gmail.com',
-      queryParameters: {
-        'subject': 'Suggestion/Issues in the app'
-      }
-  );
+      queryParameters: {'subject': 'Suggestion/Issues in the app'});
 
-  static SnackBar getSnackBar(String data, Duration duration,Color color) {
+  static SnackBar getSnackBar(String data, Color dataColor  ,  Duration duration, Color color) {
     return SnackBar(
-      content: Text(data),
+      content: Text(data,style: TextStyle(color: dataColor),),
       backgroundColor: color,
       duration: duration,
       behavior: SnackBarBehavior.floating,

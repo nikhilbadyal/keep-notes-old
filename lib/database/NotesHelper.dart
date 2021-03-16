@@ -85,14 +85,19 @@ class NotesHelper with ChangeNotifier {
   }
 
   Future<bool> deleteNote(Note note) async {
+    bool status = false;
     if (note.id == -1) {
-      return false;
+      return status;
     }
-    _items.removeWhere((element) {
-      return element.id == note.id;
-    });
+    try {
+      _items.removeWhere((element) => element.id == note.id);
+      status = await DatabaseHelper.deleteNote(note);
+    } catch (e) {
+      print(e);
+    }
+    print(status);
     notifyListeners();
-    return DatabaseHelper.deleteNote(note);
+    return status;
   }
 
   Future<bool> deleteAllHiddenNotes() async {
@@ -165,5 +170,37 @@ class NotesHelper with ChangeNotifier {
             imagePath: itemVar['imagePath']);
       },
     ).toList();
+  }
+
+  Future<List> getNotesAllForBackup() async {
+    final notesList = await DatabaseHelper.selectAllNotesForBackup();
+    List items = notesList.map(
+      (itemVar) {
+        return Note(
+            id: itemVar['id'],
+            title: itemVar['title'].toString(),
+            content: itemVar['content'].toString(),
+            creationDate:
+                DateTime.fromMillisecondsSinceEpoch(itemVar['creationDate']),
+            lastModify:
+                DateTime.fromMillisecondsSinceEpoch(itemVar['lastModify']),
+            color: Color(itemVar['color']),
+            state: NoteState.values[itemVar['state']],
+            imagePath: itemVar['imagePath']);
+      },
+    ).toList();
+    return items;
+  }
+
+  Future<void> addAllNotesToBackup(List<Note> notesList) async {
+    bool status = await DatabaseHelper.addAllNotesToBackup(notesList);
+    notifyListeners();
+    return status;
+  }
+
+  Future<bool> deleteAllTrashNotes() async {
+    bool status = await DatabaseHelper.deleteAllTrashNote();
+    notifyListeners();
+    return status;
   }
 }

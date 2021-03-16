@@ -5,6 +5,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/main.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/Navigations.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +54,7 @@ class _MoreOptionsState extends State<MoreOptions> {
           autoSaver.cancel();
           widget.saveNote();
           Provider.of<NotesHelper>(this.context, listen: false).hideNote(note);
-          String whereToNavigate = navChecker(note.state);
+          String whereToNavigate = Utilities.navChecker(note.state);
           Navigator.of(this.context).pushNamedAndRemoveUntil(
               whereToNavigate, (Route<dynamic> route) => false);
         } else {
@@ -97,7 +98,7 @@ class _MoreOptionsState extends State<MoreOptions> {
         autoSaver.cancel();
         widget.saveNote();
         Provider.of<NotesHelper>(this.context, listen: false).unhideNote(note);
-        String whereToNavigate = navChecker(note.state);
+        String whereToNavigate = Utilities.navChecker(note.state);
         Navigator.of(this.context).pushNamedAndRemoveUntil(
             whereToNavigate, (Route<dynamic> route) => false);
       },
@@ -115,7 +116,7 @@ class _MoreOptionsState extends State<MoreOptions> {
         autoSaver.cancel();
         widget.saveNote();
         Provider.of<NotesHelper>(this.context, listen: false).archiveNote(note);
-        String whereToNavigate = navChecker(note.state);
+        String whereToNavigate = Utilities.navChecker(note.state);
         Navigator.of(this.context).pushNamedAndRemoveUntil(
             whereToNavigate, (Route<dynamic> route) => false);
       },
@@ -134,7 +135,7 @@ class _MoreOptionsState extends State<MoreOptions> {
         widget.saveNote();
         Provider.of<NotesHelper>(this.context, listen: false)
             .unarchiveNote(note);
-        String whereToNavigate = navChecker(note.state);
+        String whereToNavigate = Utilities.navChecker(note.state);
         Navigator.of(this.context).pushNamedAndRemoveUntil(
             whereToNavigate, (Route<dynamic> route) => false);
       },
@@ -152,20 +153,10 @@ class _MoreOptionsState extends State<MoreOptions> {
         autoSaver.cancel();
         widget.saveNote();
         Provider.of<NotesHelper>(this.context, listen: false).copyNote(note);
-        String whereToNavigate = navChecker(note.state);
+        String whereToNavigate = Utilities.navChecker(note.state);
         Navigator.of(this.context).pushNamedAndRemoveUntil(
             whereToNavigate, (Route<dynamic> route) => false);
       },
     );
-  }
-
-  String navChecker(NoteState state) {
-    if (state == NoteState.archived) {
-      return '/archive';
-    } else if (state == NoteState.unspecified) {
-      return '/';
-    } else {
-      return '/hidden';
-    }
   }
 }

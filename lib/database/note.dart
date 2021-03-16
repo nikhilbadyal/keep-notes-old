@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:notes/main.dart';
 
 enum NoteState {
   unspecified,
@@ -75,15 +76,19 @@ class Note {
     //   notifyListeners();
   }
 
-  Note fromJson(Map<String, dynamic> json) {
+  static Note fromJson(Map<String, dynamic> json) {
+    int state = json['state'];
+    if(state==3 && !myNotes.lockChecker.passwordSet){
+      state = 0 ;
+    }
     return Note(
-        id: json['id'],
+        id: -1,
         title: json['title'].toString(),
         content: json['content'].toString(),
         creationDate: DateTime.fromMillisecondsSinceEpoch(json['creationDate']),
         lastModify: DateTime.fromMillisecondsSinceEpoch(json['lastModify']),
         color: Color(json['color']),
-        state: NoteState.values[json['state']],
+        state: NoteState.values[state],
         imagePath: null);
   }
 
@@ -97,7 +102,6 @@ class Note {
       'state': state.index,
       'imagePath': null,
     };
-    data['id'] = id;
     return data;
   }
 

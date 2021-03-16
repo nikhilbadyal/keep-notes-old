@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
+import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/util/Utilites.dart';
+import 'package:notes/util/constants.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/Body.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
+import 'package:provider/provider.dart';
 
 import '../main.dart';
 
@@ -56,7 +60,71 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
             ),
           ),
         ),
+        bottomSheet: _bottomBar(context),
       ),
+    );
+  }
+  Widget _bottomBar(BuildContext context) {
+    return BottomAppBar(
+      child: Container(
+        height: kBottomNavigationBarHeight,
+        padding: EdgeInsets.symmetric(horizontal: 1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 6,
+            ),
+            IconButton(
+              onPressed: () {
+                _moreOptions(context);
+              },
+              icon: Icon(Icons.more_vert_outlined),
+              color: headerColor,
+              tooltip: 'More ',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _moreOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return _moreOptionsMenu(context);
+      },
+    );
+  }
+
+ Widget  _moreOptionsMenu(BuildContext context) {
+   return Container(
+     child: SingleChildScrollView(
+       child: Column(
+         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+         children: [
+           deleteAllIcon(context),
+         ],
+       ),
+     ),
+   );
+  }
+
+  Widget deleteAllIcon(BuildContext context) {
+    return ListTile(
+      leading: Icon(
+        Icons.delete_forever_outlined,
+        color: Colors.blue,
+      ),
+      title: Text('Delete all Notes'),
+      onTap: () async {
+        await Provider.of<NotesHelper>(this.context, listen: false).deleteAllTrashNotes();
+        Navigator.of(context).pop();
+        String whereToNavigate = Utilities.navChecker(NoteState.deleted);
+        Navigator.of(this.context).pushNamedAndRemoveUntil(
+            whereToNavigate, (Route<dynamic> route) => false);
+      },
     );
   }
 }

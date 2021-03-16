@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes/main.dart';
 import 'package:notes/util/DrawerManager.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/AppBar.dart';
 
 class DoubleBackToCloseWidget extends StatefulWidget {
@@ -16,7 +17,7 @@ class DoubleBackToCloseWidget extends StatefulWidget {
 
 class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
   int _lastTimeBackButtonWasTapped;
-  static const exitTimeInMillis = 1;
+  static const exitTimeInMillis = 3000;
 
   bool get _isAndroid => Theme.of(context).platform == TargetPlatform.android;
 
@@ -37,9 +38,8 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
 
     if (_lastTimeBackButtonWasTapped != null &&
         (_currentTime - _lastTimeBackButtonWasTapped) < exitTimeInMillis) {
-      appBar.callSetState();
-      myNotes.drawerManager.closeDrawer();
-
+      await appBar.callSetState();
+      await myNotes.drawerManager.closeDrawer();
       return true;
     } else {
       _lastTimeBackButtonWasTapped = DateTime.now().millisecondsSinceEpoch;
@@ -50,6 +50,11 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
         appBar.callSetState();
         myNotes.drawerManager.closeDrawer();
       }
+      ScaffoldMessenger.of(context).showSnackBar(Utilities.getSnackBar(
+          "Press back again to exit",
+          Colors.black87,
+          Duration(milliseconds: 3000),
+          Colors.white60));
       return false;
     }
   }

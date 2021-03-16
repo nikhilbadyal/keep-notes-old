@@ -57,11 +57,10 @@ class DatabaseHelper {
     final db = await database;
     try {
       await db.delete('notes', where: 'state = ?', whereArgs: [3]);
-      //TODO removed for debugging
       myNotes.lockChecker.passwordSet = false;
-      await Utilities.removeValues('password');
-      await Utilities.removeValues('bio');
-      await myNotes.lockChecker.updateDetails();
+      Utilities.removeValues('password');
+      Utilities.removeValues('bio');
+      myNotes.lockChecker.updateDetails();
       return true;
     } on Error {
       return false;
@@ -69,20 +68,38 @@ class DatabaseHelper {
   }
 
   static Future<bool> deleteNote(Note note) async {
-    if (note.id != -1) {
-      final db = await database;
-      try {
-        await db.delete('notes', where: 'id = ?', whereArgs: [note.id]);
+    try{
+      if (note.id != -1) {
+        final db = await database;
+        try {
+          await db.delete('notes', where: 'id = ?', whereArgs: [note.id]);
 
-        if (note.imagePath != "" && await File(note.imagePath).exists()) {
-          await File(note.imagePath).delete();
+          if (note.imagePath != "" && await File(note.imagePath).exists()) {
+            await File(note.imagePath).delete();
+          }
+          return true;
+        } on Error {
+          return false;
         }
-        return true;
-      } on Error {
-        return false;
       }
+    }catch(e){
+      throw e;
     }
     return false;
+  }
+
+  static Future<bool> deleteAllTrashNote() async {
+    try{
+        final db = await database;
+        try {
+          await db.delete('notes', where: 'state = ?', whereArgs: [NoteState.deleted.index]);
+          return true;
+        } on Error {
+          return false;
+        }
+    }catch(e){
+      throw e;
+    }
   }
 
   static Future<bool> undelete(Note note) async {
@@ -180,5 +197,20 @@ class DatabaseHelper {
     var lol = db.query('notes',
         orderBy: 'lastModify desc', where: 'state = ?', whereArgs: [noteState]);
     return lol;
+  }
+
+  static Future<List<Map<String, dynamic>>> selectAllNotesForBackup() async {
+    final db = await database;
+    var lol = db.query('notes', orderBy: 'lastModify desc');
+    return lol;
+  }
+
+  static Future<bool> addAllNotesToBackup(List<Note> notes) async {
+    try{
+      notes.forEach((element) => insertNote(element, true));
+      return true;
+    }catch(_){
+      return false;
+    }
   }
 }

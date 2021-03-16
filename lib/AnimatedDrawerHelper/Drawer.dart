@@ -64,7 +64,9 @@ class ThirdLayer extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (ModalRoute.of(context).settings.name != '/') {
+                    if (ModalRoute.of(context).settings.name == '/') {
+                      myNotes.drawerManager.closeDrawer();
+                    } else {
                       goTOHomeScreen(context);
                     }
                   },
@@ -81,7 +83,9 @@ class ThirdLayer extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (ModalRoute.of(context).settings.name != '/archive') {
+                    if (ModalRoute.of(context).settings.name == '/archive') {
+                      myNotes.drawerManager.closeDrawer();
+                    } else {
                       goTOArchiveScreen(context);
                     }
                     //TODO implement this
@@ -99,11 +103,11 @@ class ThirdLayer extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    //TODO
-                    if (ModalRoute.of(context).settings.name != '/backup') {
+                    if (ModalRoute.of(context).settings.name == '/backup') {
+                      myNotes.drawerManager.closeDrawer();
+                    } else {
                       goToBackUpScreen(context);
                     }
-                    //TODO implement this
                   },
                   child: Text(
                     'Backup and Restore',
@@ -125,7 +129,9 @@ class ThirdLayer extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (ModalRoute.of(context).settings.name != '/trash') {
+                    if (ModalRoute.of(context).settings.name == '/trash') {
+                      myNotes.drawerManager.closeDrawer();
+                    } else {
                       goTODeleteScreen(context);
                     }
                   },
@@ -142,11 +148,11 @@ class ThirdLayer extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (ModalRoute.of(context).settings.name != '/about') {
+                    if (ModalRoute.of(context).settings.name == '/about') {
+                      myNotes.drawerManager.closeDrawer();
+                    } else {
                       goTOAboutMeScreen(context);
                     }
-
-                    //TODO implement this
                   },
                   child: Text(
                     'About Me',
@@ -168,10 +174,7 @@ class ThirdLayer extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (ModalRoute.of(context).settings.name !=
-                        '/suggestions') {
-                      goTOBugScreen(context);
-                    }
+                    goTOBugScreen(context);
                   },
                   child: Text(
                     'Report/Suggest',

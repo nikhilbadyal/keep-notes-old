@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
 import 'package:notes/database/note.dart';
@@ -94,30 +92,6 @@ class ListItem extends StatelessWidget {
                   ),
                 ),
               ),
-              if (note.imagePath.isNotEmpty)
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 12.0,
-                    ),
-                    Hero(
-                      tag: note.imagePath,
-                      child: Container(
-                        width: 80.0,
-                        height: 95.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.0),
-                          image: DecorationImage(
-                            image: FileImage(
-                              File(note.imagePath),
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
             ],
           ),
         ),
