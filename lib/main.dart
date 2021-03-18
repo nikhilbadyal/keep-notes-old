@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,12 +49,12 @@ class MyNotes extends StatelessWidget {
         title: 'Notes App',
         navigatorObservers: [myRouteObserver],
         routes: {
-          '/': (context) => HomeScreen(), //d
-          '/about': (context) => AboutMeScreen(), //d
-          '/archive': (context) => ArchiveScreen(), //d
-          '/trash': (context) => TrashScreen(), //d
-          '/hidden': (context) => HiddenScreen(), //d
-          '/backup': (context) => BackUpScreen(), //d
+          '/': (context) => HomeScreen(),
+          '/about': (context) => AboutMeScreen(),
+          '/archive': (context) => ArchiveScreen(),
+          '/trash': (context) => TrashScreen(),
+          '/hidden': (context) => HiddenScreen(),
+          '/backup': (context) => BackUpScreen(),
           '/lock': (context) => LockScreen(),
           '/setpass': (context) => SetPassword(),
         },

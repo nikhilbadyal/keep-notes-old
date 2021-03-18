@@ -16,9 +16,22 @@ class ListItem extends StatelessWidget {
       height: 135.0,
       margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: InkWell(
-        onTap: () {
+        onTap: () async {
           if (note.state == NoteState.deleted) {
-            PopUp(context);
+            await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Please remove note from trash before editing'),
+                actions: [
+                  TextButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ],
+              ),
+            );
           } else {
             Navigator.push(
                 context,
@@ -36,7 +49,6 @@ class ListItem extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
             color: white,
-            boxShadow: shadow,
             borderRadius: BorderRadius.circular(15.0),
             border: Border.all(
               color: grey,
@@ -95,40 +107,6 @@ class ListItem extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  static Future<void> errorPopUp(BuildContext context, String data) async {
-    await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text(data),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Ok'),
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> PopUp(BuildContext context) async {
-    await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Please remove note from trash before editing'),
-        actions: [
-          TextButton(
-            child: Text('Ok'),
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-          ),
-        ],
       ),
     );
   }

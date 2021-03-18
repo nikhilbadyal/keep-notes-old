@@ -100,9 +100,9 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
             )),
           )),
         ),
-        floatingActionButton: fab(context, NoteState.archived),
+        floatingActionButton: Fab( NoteState.archived),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: bottomBar(context, NoteState.archived),
+        bottomNavigationBar: BottomBar(),
       ),
     );
   }

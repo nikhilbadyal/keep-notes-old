@@ -21,7 +21,7 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _MyAppBarState extends State<MyAppBar> {
   void callSetState() {
     setState(() {
-      myNotes.drawerManager.localIsOpen = !myNotes.drawerManager.localIsOpen;
+      myNotes.drawerManager.isOpened = !myNotes.drawerManager.isOpened;
     });
   }
 
@@ -30,8 +30,8 @@ class _MyAppBarState extends State<MyAppBar> {
     appBar = this;
     return AppBar(
       elevation: 0.6,
-      leading: _leading(),
-      title: _title(),
+      leading: Leading(),
+      title: Text("${widget.title}"),
       actions: [
         CircleAvatar(
           radius: 25,
@@ -45,12 +45,16 @@ class _MyAppBarState extends State<MyAppBar> {
     );
   }
 
-  Widget _leading() {
-    if (myNotes.drawerManager.localIsOpen) {
+}
+
+class Leading extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    if (myNotes.drawerManager.isOpened) {
       return IconButton(
         icon: Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () {
-          myNotes.drawerManager.localIsOpen = false;
+          myNotes.drawerManager.isOpened = false;
           myNotes.drawerManager.callback(true);
         },
       );
@@ -61,18 +65,10 @@ class _MyAppBarState extends State<MyAppBar> {
           color: Colors.white,
         ),
         onPressed: () {
-          myNotes.drawerManager.localIsOpen = true;
+          myNotes.drawerManager.isOpened = true;
           myNotes.drawerManager.callback(false);
         },
       );
-    }
-  }
-
-  Widget _title() {
-    try {
-      return Text("${widget.title}");
-    } catch (_) {
-      return Center(child: Text(widget.title));
     }
   }
 }

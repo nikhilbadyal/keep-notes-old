@@ -11,7 +11,7 @@ class DrawerManager {
   double xOffSet = 0;
   double yOffSet = 0;
   double angle = 0;
-  bool localIsOpen = false;
+  bool isOpened = false;
   bool isIgnoring = false;
 
   void callback(bool isOpen) {
@@ -19,7 +19,7 @@ class DrawerManager {
       xOffSet = 0;
       yOffSet = 0;
       angle = 0;
-      localIsOpen = false;
+      isOpened = false;
       isIgnoring = false;
       secondLayer.callSetState(0, 0, 0);
       callSetState();
@@ -27,7 +27,7 @@ class DrawerManager {
       xOffSet = 150;
       yOffSet = 80;
       angle = -0.2;
-      localIsOpen = true;
+      isOpened = true;
       isIgnoring = true;
       secondLayer.callSetState(123, 110, -0.275);
       callSetState();
@@ -38,7 +38,7 @@ class DrawerManager {
     xOffSet = 0;
     yOffSet = 0;
     angle = 0;
-    localIsOpen = false;
+    isOpened = false;
     isIgnoring = false;
   }
 

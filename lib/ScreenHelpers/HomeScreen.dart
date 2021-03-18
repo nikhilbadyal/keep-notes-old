@@ -57,9 +57,9 @@ class _HomeScreenHelperState extends State<HomeScreenHelper> {
             ),
           ),
         ),
-        floatingActionButton: fab(context, NoteState.unspecified),
+        floatingActionButton: Fab(NoteState.unspecified),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: bottomBar(context, NoteState.unspecified),
+        bottomNavigationBar: BottomBar(),
       ),
     );
   }
