@@ -26,7 +26,9 @@ class DatabaseHelper {
     final databasePath = await getDatabasesPath();
     return openDatabase(join(databasePath, 'notes_database.db'),
         onCreate: (database, version) {
-      return database.execute(_query());
+      return database.execute(
+        _query(),
+      );
     }, version: 1);
   }
 
@@ -68,7 +70,7 @@ class DatabaseHelper {
   }
 
   static Future<bool> deleteNote(Note note) async {
-    try{
+    try {
       if (note.id != -1) {
         final db = await database;
         try {
@@ -82,22 +84,23 @@ class DatabaseHelper {
           return false;
         }
       }
-    }catch(e){
+    } catch (e) {
       throw e;
     }
     return false;
   }
 
   static Future<bool> deleteAllTrashNote() async {
-    try{
-        final db = await database;
-        try {
-          await db.delete('notes', where: 'state = ?', whereArgs: [NoteState.deleted.index]);
-          return true;
-        } on Error {
-          return false;
-        }
-    }catch(e){
+    try {
+      final db = await database;
+      try {
+        await db.delete('notes',
+            where: 'state = ?', whereArgs: [NoteState.deleted.index]);
+        return true;
+      } on Error {
+        return false;
+      }
+    } catch (e) {
       throw e;
     }
   }
@@ -205,10 +208,12 @@ class DatabaseHelper {
   }
 
   static Future<bool> addAllNotesToBackup(List<Note> notes) async {
-    try{
-      notes.forEach((element) => insertNote(element, true));
+    try {
+      notes.forEach(
+        (element) => insertNote(element, true),
+      );
       return true;
-    }catch(_){
+    } catch (_) {
       return false;
     }
   }

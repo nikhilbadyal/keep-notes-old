@@ -27,10 +27,6 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
     );
   }
 
-  void invokeSetState() {
-    setState(() {});
-  }
-
   void callSetState() {
     setState(
       () {},
@@ -78,7 +74,7 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
                   backgroundImage: AssetImage('assets/images/img3.jpg'),
                   radius: 50.0,
                 ),
-                onTap: (){
+                onTap: () {
                   Utilities.launchUrl("https://github.com/ProblematicDude");
                 },
               ),

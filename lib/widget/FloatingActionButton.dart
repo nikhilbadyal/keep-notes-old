@@ -8,7 +8,6 @@ class Fab extends StatelessWidget {
 
   const Fab(this.noteState);
 
-
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(

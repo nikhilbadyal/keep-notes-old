@@ -56,10 +56,11 @@ class _SetPasswordState extends State<SetPassword> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => SetPassword(),
-              settings: RouteSettings(
-                arguments: DataObj(false, enteredPassCode, "Re Enter Password"),
-              )));
+            builder: (context) => SetPassword(),
+            settings: RouteSettings(
+              arguments: DataObj(false, enteredPassCode, "Re Enter Password"),
+            ),
+          ));
     } else {
       if (enteredPassCode == firstPass) {
         myNotes.lockChecker.passwordSet = true;
@@ -80,10 +81,11 @@ class _SetPasswordState extends State<SetPassword> {
 
   Widget _titleWidget(String title) {
     return Container(
-        child: Text(
-      title,
-      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    ));
+      child: Text(
+        title,
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    );
   }
 
   void ValidationCheck() {}

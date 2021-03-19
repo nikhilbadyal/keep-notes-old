@@ -34,14 +34,16 @@ class ListItem extends StatelessWidget {
             );
           } else {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => EditScreen(
-                          currentNote: note,
-                          shouldAutoFocus: true,
-                          fromWhere: fromWhere,
-                          isImageNote: false,
-                        )));
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditScreen(
+                  currentNote: note,
+                  shouldAutoFocus: true,
+                  fromWhere: fromWhere,
+                  isImageNote: false,
+                ),
+              ),
+            );
           }
         },
         child: Container(
@@ -49,6 +51,7 @@ class ListItem extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
             color: white,
+            boxShadow: shadow,
             borderRadius: BorderRadius.circular(15.0),
             border: Border.all(
               color: grey,

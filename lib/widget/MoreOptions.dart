@@ -108,7 +108,7 @@ class _MoreOptionsState extends State<MoreOptions> {
   Widget archiveIcon(BuildContext context, Note note, Timer autoSaver) {
     return ListTile(
       leading: Icon(
-      Icons.archive_outlined,
+        Icons.archive_outlined,
         color: Colors.blue,
       ),
       title: Text('Archive Note'),
@@ -126,7 +126,7 @@ class _MoreOptionsState extends State<MoreOptions> {
   Widget unarchiveIcon(BuildContext context, Note note, Timer autoSaver) {
     return ListTile(
       leading: Icon(
-      Icons.unarchive_outlined,
+        Icons.unarchive_outlined,
         color: Colors.blue,
       ),
       title: Text('Unarchive Note'),

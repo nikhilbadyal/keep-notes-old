@@ -59,7 +59,7 @@ class _HiddenScreenHelperState extends State<HiddenScreenHelper> {
             ),
           ),
         ),
-        floatingActionButton: Fab( NoteState.hidden),
+        floatingActionButton: Fab(NoteState.hidden),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         bottomNavigationBar: BottomBar(),
       ),

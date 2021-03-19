@@ -8,9 +8,6 @@ import 'package:provider/provider.dart';
 
 import '../main.dart';
 
-class Count {
-  static int i = 0;
-}
 
 class Body extends StatefulWidget {
   final NoteState fromWhere;
@@ -24,19 +21,16 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  Future _future;
-
   @override
   void initState() {
     super.initState();
-    _future = Provider.of<NotesHelper>(context, listen: false)
-        .getNotesAll(widget.fromWhere.index);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _future,
+      future: Provider.of<NotesHelper>(context, listen: false)
+          .getNotesAll(widget.fromWhere.index),
       builder: (context, projectSnap) {
         if (projectSnap.connectionState == ConnectionState.done) {
           return Container(
@@ -46,10 +40,8 @@ class _BodyState extends State<Body> {
                 child: noNotesUi(context, widget.fromWhere),
                 builder: (context, notehelper, child) {
                   if (notehelper.items.isEmpty) {
-                    Count.i++;
                     return child;
                   } else {
-                    Count.i++;
                     return Padding(
                       padding: const EdgeInsets.only(top: 0),
                       child: AbsorbPointer(
@@ -71,7 +63,6 @@ class _BodyState extends State<Body> {
                 }),
           );
         } else {
-          Count.i++;
           return Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,

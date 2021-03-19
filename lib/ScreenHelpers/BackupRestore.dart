@@ -61,46 +61,54 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
         ),
         body: DoubleBackToCloseWidget(
           child: SafeArea(
-              child: Container(
-            padding: EdgeInsets.all(30),
-            child: Center(
+            child: Container(
+              padding: EdgeInsets.all(30),
+              child: Center(
                 child: Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    List<Note> items =
-                        await Provider.of<NotesHelper>(context, listen: false)
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        List<Note> items = await Provider.of<NotesHelper>(
+                                context,
+                                listen: false)
                             .getNotesAllForBackup();
-                    await exportToFile(items);
-                    Utilities.showSnackbar(context, "Notes Exported",
-                        Colors.white, Duration(seconds: 2), Colors.green);
-                  },
-                  child: Text('Export Notes'),
+                        await exportToFile(items);
+                        Utilities.showSnackbar(context, "Notes Exported",
+                            Colors.white, Duration(seconds: 2), Colors.green);
+                      },
+                      child: Text('Export Notes'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (await Utilities.requestPermission(
+                            Permission.storage)) {
+                          FilePickerResult result = await FilePicker.platform
+                              .pickFiles(
+                                  type: FileType.custom,
+                                  allowedExtensions: ["json"]);
+                          File file;
+                          if (result != null) {
+                            file = File(result.files.single.path);
+                          } else {}
+                          importFromFile(file);
+                        } else {
+                          Utilities.showSnackbar(
+                              context,
+                              "Permission Not granted",
+                              Colors.white,
+                              Duration(seconds: 2),
+                              Colors.green);
+                        }
+                      },
+                      child: Text('Import Notes'),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (await Utilities.requestPermission(Permission.storage)) {
-                      FilePickerResult result = await FilePicker.platform
-                          .pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ["json"]);
-                      File file;
-                      if (result != null) {
-                        file = File(result.files.single.path);
-                      } else {}
-                      importFromFile(file);
-                    } else {
-                      Utilities.showSnackbar(context, "Permission Not granted",
-                          Colors.white, Duration(seconds: 2), Colors.green);
-                    }
-                  },
-                  child: Text('Import Notes'),
-                ),
-              ],
-            )),
-          )),
+              ),
+            ),
+          ),
         ),
-        floatingActionButton: Fab( NoteState.archived),
+        floatingActionButton: Fab(NoteState.archived),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         bottomNavigationBar: BottomBar(),
       ),
@@ -127,14 +135,24 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
         if (!await directory.exists()) {
           await directory.create(recursive: true);
         }
-        String str = DateFormat("yyyyMMdd_HHmmss").format(DateTime.now());
+        String str = DateFormat("yyyyMMdd_HHmmss").format(
+          DateTime.now(),
+        );
         var file = "notesExport_${str}.json";
         print(directory);
         File filePath = File(directory.path + "/$file");
-        items.sort((a, b) => a.lastModify.compareTo(b.lastModify));
+        items.sort(
+          (a, b) => a.lastModify.compareTo(b.lastModify),
+        );
         List jsonList = [];
-        items.forEach((element) => jsonList.add(json.encode(element.toJson())));
-        filePath.writeAsStringSync(jsonList.toString());
+        items.forEach(
+          (element) => jsonList.add(json.encode(
+            element.toJson(),
+          )),
+        );
+        filePath.writeAsStringSync(
+          jsonList.toString(),
+        );
       }
     } catch (e) {
       print(e);
@@ -148,8 +166,11 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
     try {
       var StringContent = file.readAsStringSync();
       List jsonList = json.decode(StringContent);
-      List<Note> notesList =
-          jsonList.map((json) => Note.fromJson(json)).toList();
+      List<Note> notesList = jsonList
+          .map(
+            (json) => Note.fromJson(json),
+          )
+          .toList();
       await Provider.of<NotesHelper>(context, listen: false)
           .addAllNotesToBackup(notesList);
       Utilities.showSnackbar(context, "Done importing", Colors.white,

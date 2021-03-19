@@ -35,34 +35,31 @@ class Utilities {
         label: "Reset?",
         onPressed: () async {
           showDialog<bool>(
-              context: context,
-              builder: (contexto) => AlertDialog(
-                    title: Text(
-                        'Passcode cant be reset. Delete all notes to reset Passcode'),
-                    actions: [
-                      TextButton(
-                        child: Text('Ok'),
-                        onPressed: () async {
-                          Utilities.showSnackbar(
-                              contexto,
-                              "Deleted all Hidden Notes",
-                              Colors.white,
-                              Duration(milliseconds: 2),
-                              Colors.green);
-                          Provider.of<NotesHelper>(context, listen: false)
-                              .deleteAllHiddenNotes();
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/', (Route<dynamic> route) => false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Cancel'),
-                        onPressed: () async {
-                          Navigator.of(context).pop(true);
-                        },
-                      ),
-                    ],
-                  ));
+            context: context,
+            builder: (contexto) => AlertDialog(
+              title: Text(
+                  'Passcode cant be reset. Delete all notes to reset Passcode'),
+              actions: [
+                TextButton(
+                  child: Text('Ok'),
+                  onPressed: () async {
+                    Utilities.showSnackbar(contexto, "Deleted all Hidden Notes",
+                        Colors.white, Duration(milliseconds: 2), Colors.green);
+                    Provider.of<NotesHelper>(context, listen: false)
+                        .deleteAllHiddenNotes();
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/', (Route<dynamic> route) => false);
+                  },
+                ),
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () async {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            ),
+          );
         },
       ),
       content: Text(data),
@@ -126,8 +123,9 @@ class Utilities {
 
   static void showSnackbar(BuildContext context, String data, Color dataColor,
       Duration duration, Color color) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(Utilities.getSnackBar(data, dataColor, duration, color));
+    ScaffoldMessenger.of(context).showSnackBar(
+      Utilities.getSnackBar(data, dataColor, duration, color),
+    );
   }
 
   static Future<void> authenticateUser(BuildContext context) async {

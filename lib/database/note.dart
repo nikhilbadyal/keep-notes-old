@@ -54,7 +54,7 @@ class Note {
       'state': state.index, //  for later use for integrating archiving
       'imagePath': imagePath,
     };
-    if(!isNew){
+    if (!isNew) {
       data['id'] = id;
     }
     return data;
@@ -76,8 +76,8 @@ class Note {
 
   static Note fromJson(Map<String, dynamic> json) {
     int state = json['state'];
-    if(state==3 && !myNotes.lockChecker.passwordSet){
-      state = 0 ;
+    if (state == 3 && !myNotes.lockChecker.passwordSet) {
+      state = 0;
     }
     return Note(
         id: -1,

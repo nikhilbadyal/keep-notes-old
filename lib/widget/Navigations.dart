@@ -35,10 +35,9 @@ void goTOAboutMeScreen(BuildContext context) {
 
 void goTOBugScreen(BuildContext context) {
   myNotes.drawerManager.resetDrawerState();
-  Utilities.launchUrl(Utilities.emailLaunchUri.toString());
-
- /* Navigator.of(context)
-      .pushNamedAndRemoveUntil('/suggestions', (Route<dynamic> route) => false);*/
+  Utilities.launchUrl(
+    Utilities.emailLaunchUri.toString(),
+  );
 }
 
 void goTOHomeScreen(BuildContext context) {
@@ -63,15 +62,14 @@ Future<void> goToLockScreen(BuildContext context) async {
 void goToSetPasswordScreen(BuildContext context) {
   myNotes.drawerManager.resetDrawerState();
   Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => SetPassword(),
-          settings: RouteSettings(
-            arguments: DataObj(true, "", "Enter New Password"),
-          )));
-  /*Navigator.of(context).pushNamedAndRemoveUntil(
-      '/setpass', (Route<dynamic> route) => false,
-      arguments: {"firstPass": "", "isFirst": false});*/
+    context,
+    MaterialPageRoute(
+      builder: (context) => SetPassword(),
+      settings: RouteSettings(
+        arguments: DataObj(true, "", "Enter New Password"),
+      ),
+    ),
+  );
 }
 
 void goToBiometricSetup(BuildContext context) {
@@ -103,10 +101,11 @@ void goToNoteEditScreen(
   Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => EditScreen(
-                currentNote: emptyNote,
-                shouldAutoFocus: autoFocus,
-                fromWhere: noteState,
-                isImageNote: imagePath == '' ? false : true,
-              )));
+        builder: (context) => EditScreen(
+          currentNote: emptyNote,
+          shouldAutoFocus: autoFocus,
+          fromWhere: noteState,
+          isImageNote: imagePath == '' ? false : true,
+        ),
+      ));
 }

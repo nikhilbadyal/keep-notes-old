@@ -36,7 +36,7 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
             _lastTimeBackButtonWasTapped =
                 DateTime.now().millisecondsSinceEpoch;
 
-            if(myNotes.drawerManager.isOpened){
+            if (myNotes.drawerManager.isOpened) {
               Utilities.showSnackbar(
                   context,
                   "Press twice to exit",
@@ -44,7 +44,7 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
                   Duration(
                       milliseconds: DoubleBackToCloseWidget.exitTimeInMillis),
                   Colors.white60);
-            }else{
+            } else {
               appBar.callSetState();
               myNotes.drawerManager.openDrawer();
             }
@@ -58,26 +58,3 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
     }
   }
 }
-
-/* Future<bool> _handleWillPop() async {
-    final _currentTime = DateTime.now().millisecondsSinceEpoch;
-
-    if (_lastTimeBackButtonWasTapped != null &&
-        (_currentTime - _lastTimeBackButtonWasTapped) < exitTimeInMillis) {
-      await appBar.callSetState();
-      await myNotes.drawerManager.closeDrawer();
-      return true;
-    } else {
-      _lastTimeBackButtonWasTapped = DateTime.now().millisecondsSinceEpoch;
-      if (!myNotes.drawerManager.localIsOpen) {
-        appBar.callSetState();
-        myNotes.drawerManager.openDrawer();
-      } else {
-        appBar.callSetState();
-        myNotes.drawerManager.closeDrawer();
-      }
-      Utilities.showSnackbar(context, "Press back again to exit",
-          Colors.black87, Duration(milliseconds: 3000), Colors.white60);
-      return false;
-    }
-  }*/

@@ -44,7 +44,6 @@ class _MyAppBarState extends State<MyAppBar> {
       ],
     );
   }
-
 }
 
 class Leading extends StatelessWidget {

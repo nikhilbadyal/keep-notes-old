@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/screens/AboutMeScreen.dart';
 import 'package:notes/screens/ArchiveScreen.dart';
@@ -30,8 +29,11 @@ void main() {
     }
   };
   SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-  runApp(Phoenix(child: MyNotes()));
+    SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+  );
+  runApp(
+    MyNotes(),
+  );
 }
 
 class MyNotes extends StatelessWidget {

@@ -226,7 +226,8 @@ class _EditScreenState extends State<EditScreen> {
               width: MediaQuery.of(context).size.width / 6,
             ),
             Center(
-                child: Text('Modified ${noteInEditing.strLastModifiedDate1}')),
+              child: Text('Modified ${noteInEditing.strLastModifiedDate1}'),
+            ),
             IconButton(
               onPressed: () {
                 _moreMenu(context);
@@ -268,10 +269,12 @@ class _EditScreenState extends State<EditScreen> {
           noteIn.then((value) => noteInEditing = value);
         }
       }
-      Utilities.getSnackBar("Note Saved",Colors.white, Duration(milliseconds: 2),Colors.green);
+      Utilities.getSnackBar(
+          "Note Saved", Colors.white, Duration(milliseconds: 2), Colors.green);
       return;
     }
   }
+
   bool isEmpty() {
     if (noteInEditing.title == '' &&
         noteInEditing.content == '' &&

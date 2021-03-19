@@ -109,63 +109,53 @@ class Dismiss extends StatelessWidget {
       action = 'undelete';
     }
     return await showDialog<bool>(
-        context: buildContext,
-        builder: (context) =>
-            AlertDialog(
-              title: Text('Are you sure you want to $action?'),
-              actions: [
-                TextButton(
-                  child: Text('Yes'),
-                  onPressed: () async {
-                    if (action == 'delete permanently') {
-                      bool value = await Provider.of<NotesHelper>(
-                          context, listen: false)
-                          .deleteNote(note);
-                      if (value) {
-                            Utilities.showSnackbar(
-                                context,
-                                "Note Deleted",
-                                Colors.white,
-                                Duration(seconds: 1),
-                                Colors.green);
-                          } else {
-                            Utilities.showSnackbar(
-                                context,
-                                "Some error occurred",
-                                Colors.white,
-                                Duration(seconds: 1),
-                                Colors.redAccent);
-                          }
-                        } else if (action == 'delete') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .trashNote(
-                          note: note,
-                          context: context,
-                          fromWhere: fromWhere);
-                    } else if (action == 'unarchive') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .unarchiveNote(note);
-                    } else if (action == 'archive') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .archiveNote(note);
-                    } else if (action == 'unhide') {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .unhideNote(note);
+          context: buildContext,
+          builder: (context) => AlertDialog(
+            title: Text('Are you sure you want to $action?'),
+            actions: [
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () async {
+                  if (action == 'delete permanently') {
+                    bool value =
+                        await Provider.of<NotesHelper>(context, listen: false)
+                            .deleteNote(note);
+                    if (value) {
+                      Utilities.showSnackbar(context, "Note Deleted",
+                          Colors.white, Duration(seconds: 1), Colors.green);
                     } else {
-                      await Provider.of<NotesHelper>(context, listen: false)
-                          .undelete(note);
+                      Utilities.showSnackbar(context, "Some error occurred",
+                          Colors.white, Duration(seconds: 1), Colors.redAccent);
                     }
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(buildContext).pop(false);
-                  },
-                ),
-              ],
-            )) ??
+                  } else if (action == 'delete') {
+                    await Provider.of<NotesHelper>(context, listen: false)
+                        .trashNote(
+                            note: note, context: context, fromWhere: fromWhere);
+                  } else if (action == 'unarchive') {
+                    await Provider.of<NotesHelper>(context, listen: false)
+                        .unarchiveNote(note);
+                  } else if (action == 'archive') {
+                    await Provider.of<NotesHelper>(context, listen: false)
+                        .archiveNote(note);
+                  } else if (action == 'unhide') {
+                    await Provider.of<NotesHelper>(context, listen: false)
+                        .unhideNote(note);
+                  } else {
+                    await Provider.of<NotesHelper>(context, listen: false)
+                        .undelete(note);
+                  }
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(buildContext).pop(false);
+                },
+              ),
+            ],
+          ),
+        ) ??
         false; // In case the user dismisses the dialog by clicking away from it
   }
 }

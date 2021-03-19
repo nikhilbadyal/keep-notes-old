@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:notes/AnimatedDrawerHelper/SecondLayer.dart';
 import 'package:notes/ScreenHelpers/AboutMeScreen.dart';
 import 'package:notes/ScreenHelpers/ArchiveScreen.dart';
@@ -7,7 +8,7 @@ import 'package:notes/ScreenHelpers/HomeScreen.dart';
 import 'package:notes/ScreenHelpers/TrashScreen.dart';
 import 'package:notes/main.dart';
 
-class DrawerManager {
+class DrawerManager with ChangeNotifier {
   double xOffSet = 0;
   double yOffSet = 0;
   double angle = 0;

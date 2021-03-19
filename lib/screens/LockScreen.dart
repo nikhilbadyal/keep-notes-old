@@ -69,7 +69,10 @@ class _LockScreenState extends State<LockScreen> {
               },
             ),
             TextButton(
-              child: Text('Cancel', style: TextStyle(fontSize: 20)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(fontSize: 20),
+              ),
               onPressed: () async {
                 Navigator.of(context).pop(true);
               },
@@ -81,10 +84,11 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   Widget title = Container(
-      child: Text(
-    'Enter Password',
-    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-  ));
+    child: Text(
+      'Enter Password',
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    ),
+  );
 
   void callSetState(String data) {
     setState(() {
@@ -152,12 +156,15 @@ class _MyLockScreenState extends State<MyLockScreen>
   @override
   void initState() {
     super.initState();
-    streamSubscription =
-        widget.stream.listen((isValid) => _showValidation(isValid));
+    streamSubscription = widget.stream.listen(
+      (isValid) => _showValidation(isValid),
+    );
     controller = AnimationController(
         duration: const Duration(milliseconds: 400), vsync: this);
-    final Animation curve =
-        CurvedAnimation(parent: controller, curve: ShakeCurve());
+    final Animation curve = CurvedAnimation(
+      parent: controller,
+      curve: ShakeCurve(),
+    );
     animation = Tween(begin: 0.0, end: 10.0).animate(curve)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
@@ -224,12 +231,14 @@ class _MyLockScreenState extends State<MyLockScreen>
 List<Widget> _buildCircles(String enteredPassCode) {
   var list = <Widget>[];
   for (int i = 0; i < 4; ++i) {
-    list.add(Container(
-      margin: EdgeInsets.all(8),
-      child: Circle(
-        isFilled: i < enteredPassCode.length,
+    list.add(
+      Container(
+        margin: EdgeInsets.all(8),
+        child: Circle(
+          isFilled: i < enteredPassCode.length,
+        ),
       ),
-    ));
+    );
   }
   return list;
 }
@@ -237,11 +246,12 @@ List<Widget> _buildCircles(String enteredPassCode) {
 Widget _buildKeyBoard(KeyboardTapCallback _onTap, DeleteTapCallback onDelTap,
     FingerTapCallback onFingerTap, String enteredPassCode) {
   return Container(
-      child: Keyboard(
-    onKeyboardTap: _onTap,
-    onDelTap: onDelTap,
-    onFingerTap: onFingerTap,
-  ));
+    child: Keyboard(
+      onKeyboardTap: _onTap,
+      onDelTap: onDelTap,
+      onFingerTap: onFingerTap,
+    ),
+  );
 }
 
 Widget _buildDeleteButton(BuildContext context) {
@@ -385,11 +395,13 @@ class CustomAlign extends StatelessWidget {
       padding: const EdgeInsets.all(25),
       childAspectRatio: 1,
       children: children
-          .map((e) => Container(
-                width: 5,
-                height: 5,
-                child: e,
-              ))
+          .map(
+            (e) => Container(
+              width: 5,
+              height: 5,
+              child: e,
+            ),
+          )
           .toList(),
     );
   }
@@ -412,9 +424,10 @@ class _CircleState extends State<Circle> {
       width: 30,
       height: 30,
       decoration: BoxDecoration(
-          color: widget.isFilled ? Colors.blueAccent : Colors.transparent,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.blueAccent, width: 2)),
+        color: widget.isFilled ? Colors.blueAccent : Colors.transparent,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.blueAccent, width: 2),
+      ),
     );
   }
 }

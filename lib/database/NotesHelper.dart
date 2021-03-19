@@ -14,9 +14,9 @@ class NotesHelper with ChangeNotifier {
     if (isNew) {
       _items.insert(0, note);
     } else {
-      try{
+      try {
         _items[_items.indexWhere((element) => note.id == element.id)] = note;
-      }catch(e){
+      } catch (e) {
         print(e);
       }
     }

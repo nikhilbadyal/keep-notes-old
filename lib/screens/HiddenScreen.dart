@@ -24,13 +24,4 @@ class _HiddenScreenState extends State<HiddenScreen> {
       ),
     );
   }
-
-/* @override
-  void initState() {
-    super.initState();
-    disableCapture();
-  }
-  Future<void> disableCapture() async {
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-  }*/
 }

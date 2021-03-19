@@ -28,21 +28,22 @@ class SecondLayerState extends State<SecondLayer> {
   Widget build(BuildContext context) {
     secondLayer = this;
     return AnimatedContainer(
-        transform: Matrix4Transform()
-            .translate(x: xOffSet, y: yOffSet)
-            .rotate(angle)
-            .matrix4,
-        duration: Duration(milliseconds: 550),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Color(0xFFBAFF29),
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [],
-            )
-          ],
-        ));
+      transform: Matrix4Transform()
+          .translate(x: xOffSet, y: yOffSet)
+          .rotate(angle)
+          .matrix4,
+      duration: Duration(milliseconds: 550),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Color(0xFFBAFF29),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [],
+          )
+        ],
+      ),
+    );
   }
 }

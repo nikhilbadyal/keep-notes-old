@@ -12,16 +12,17 @@ const white = Colors.white;
 
 var shadow = [
   BoxShadow(
-    color: Colors.grey[300],
+    color: Colors.grey[200],
     blurRadius: 30,
     offset: Offset(0, 10),
   )
 ];
 var createTitle = GoogleFonts.roboto(
-    textStyle: TextStyle(
-  fontSize: 10.0,
-  //fontWeight: FontWeight.w900,
-));
+  textStyle: TextStyle(
+    fontSize: 10.0,
+    //fontWeight: FontWeight.w900,
+  ),
+);
 var itemTitle = GoogleFonts.roboto(
   textStyle: TextStyle(
     fontSize: 18.0,

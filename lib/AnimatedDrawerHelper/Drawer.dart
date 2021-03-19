@@ -24,7 +24,7 @@ class ThirdLayer extends StatelessWidget {
                     onTap: () async {
                       if (ModalRoute.of(context).settings.name == '/hidden') {
                         myNotes.drawerManager.closeDrawer();
-                      }else{
+                      } else {
                         var status = myNotes.lockChecker.passwordSet;
                         if (status) {
                           await goToLockScreen(context);
@@ -213,9 +213,10 @@ class ThirdLayer extends StatelessWidget {
                               child: const BackButtonIcon(),
                             ),
                             label: Text(
-                              MaterialLocalizations.of(context).backButtonTooltip,
-                              style:
-                              textTheme.button.apply(color: colorScheme.onPrimary),
+                              MaterialLocalizations.of(context)
+                                  .backButtonTooltip,
+                              style: textTheme.button
+                                  .apply(color: colorScheme.onPrimary),
                             ),
                           ),
                         ),

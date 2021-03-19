@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 
 import '../main.dart';
 
-
 _TrashScreenHelperState trash;
 
 class TrashScreenHelper extends StatefulWidget {
@@ -64,6 +63,7 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
       ),
     );
   }
+
   Widget _bottomBar(BuildContext context) {
     return BottomAppBar(
       child: Container(
@@ -98,17 +98,17 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
     );
   }
 
- Widget  _moreOptionsMenu(BuildContext context) {
-   return Container(
-     child: SingleChildScrollView(
-       child: Column(
-         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-         children: [
-           deleteAllIcon(context),
-         ],
-       ),
-     ),
-   );
+  Widget _moreOptionsMenu(BuildContext context) {
+    return Container(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            deleteAllIcon(context),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget deleteAllIcon(BuildContext context) {
@@ -119,7 +119,8 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
       ),
       title: Text('Delete all Notes'),
       onTap: () async {
-        await Provider.of<NotesHelper>(this.context, listen: false).deleteAllTrashNotes();
+        await Provider.of<NotesHelper>(this.context, listen: false)
+            .deleteAllTrashNotes();
         Navigator.of(context).pop();
         String whereToNavigate = Utilities.navChecker(NoteState.deleted);
         Navigator.of(this.context).pushNamedAndRemoveUntil(
