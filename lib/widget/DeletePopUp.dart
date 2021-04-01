@@ -47,8 +47,8 @@ class DeletePopUp extends StatelessWidget {
           child: Text('Yes'),
           onPressed: () {
             autoSaver.cancel();
-            Provider.of<NotesHelper>(context, listen: false).trashNote(
-                note: toBeDeleted, context: context, fromWhere: fromWhere);
+            Provider.of<NotesHelper>(context, listen: false)
+                .trashNote(note: toBeDeleted);
             Navigator.of(context).pushNamedAndRemoveUntil(
                 toWhere, (Route<dynamic> route) => false);
           },

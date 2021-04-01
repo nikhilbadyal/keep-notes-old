@@ -17,7 +17,7 @@ class NotesHelper with ChangeNotifier {
       try {
         _items[_items.indexWhere((element) => note.id == element.id)] = note;
       } catch (e) {
-        print(e);
+        print('Some shit occurred');
       }
     }
     note = await DatabaseHelper.insertNote(note, isNew);
@@ -55,7 +55,7 @@ class NotesHelper with ChangeNotifier {
     return false;
   }
 
-  Future<bool> unhideNote(Note note) async {
+  Future<bool> unHideNote(Note note) async {
     if (note.id != -1) {
       await DatabaseHelper.unhideNote(note);
       await getNotesAll(3);
@@ -96,7 +96,6 @@ class NotesHelper with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    print(status);
     notifyListeners();
     return status;
   }
@@ -106,27 +105,36 @@ class NotesHelper with ChangeNotifier {
     return DatabaseHelper.deleteAllHiddenNotes();
   }
 
-  Future<void> trashNote(
-      {Note note, BuildContext context, @required NoteState fromWhere}) async {
+  Future<bool> trashNote({Note note, BuildContext context}) async {
     if (note.id != -1) {
-      var nav = fromWhere.index.toString();
+      //TODO fix this
+      var nav = note.state.index.toString();
+      print(nav);
       switch (nav) {
         case '0':
           {
-            await DatabaseHelper.trashNote(note);
+            print('Here');
+            bool stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(0);
+            notifyListeners();
+            return stat;
           }
           break;
         case '2':
           {
-            await DatabaseHelper.trashNote(note);
+            bool stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(2);
+            notifyListeners();
+
+            return stat;
           }
           break;
         case '3':
           {
-            await DatabaseHelper.trashNote(note);
-            await getNotesAll(3);
+            bool stat = await DatabaseHelper.trashNote(note);
+            await  getNotesAll(3);
+            notifyListeners();
+            return stat;
           }
           break;
         default:
@@ -138,16 +146,19 @@ class NotesHelper with ChangeNotifier {
                 TextButton(
                   child: Text('Ok'),
                   onPressed: () async {
-                    await Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/', (Route<dynamic> route) => false);
+                    bool stat = await Navigator.of(context)
+                        .pushNamedAndRemoveUntil(
+                            '/', (Route<dynamic> route) => false);
+                    notifyListeners();
+                    return stat;
                   },
                 ),
               ],
             );
           }
       }
-      notifyListeners();
     }
+    return false;
   }
 
   void falseDelete() {

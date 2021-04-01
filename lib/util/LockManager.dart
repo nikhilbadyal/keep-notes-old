@@ -8,6 +8,7 @@ class LockChecker {
   bool passwordSet;
   bool bioEnabled;
   bool bioAvailable;
+  bool firstTimeNeeded;
 
   void updateDetails() async {}
 
@@ -23,6 +24,7 @@ class LockChecker {
     password = await Utilities.getStringValuesSF('password');
     passwordSet = password == null ? false : true;
     bioEnabled = await Utilities.getBoolValuesSF('bio');
+    firstTimeNeeded = await Utilities.getBoolValuesSF('firstTimeNeeded');
     bioEnabled == null ? false : bioEnabled;
     if (bioEnabled == null) {
       bioEnabled = false;
@@ -31,6 +33,9 @@ class LockChecker {
       bioAvailable = true;
     } else {
       bioAvailCheck();
+    }
+    if (firstTimeNeeded == null) {
+      firstTimeNeeded = true;
     }
   }
 }

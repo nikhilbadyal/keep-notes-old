@@ -97,7 +97,7 @@ class _MoreOptionsState extends State<MoreOptions> {
       onTap: () {
         autoSaver.cancel();
         widget.saveNote();
-        Provider.of<NotesHelper>(this.context, listen: false).unhideNote(note);
+        Provider.of<NotesHelper>(this.context, listen: false).unHideNote(note);
         String whereToNavigate = Utilities.navChecker(note.state);
         Navigator.of(this.context).pushNamedAndRemoveUntil(
             whereToNavigate, (Route<dynamic> route) => false);

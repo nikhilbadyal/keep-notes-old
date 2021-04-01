@@ -22,14 +22,20 @@ class DatabaseHelper {
     'imagePath': 'text'
   };
 
+  static Database _database;
+
   static Future<Database> get database async {
     final databasePath = await getDatabasesPath();
-    return openDatabase(join(databasePath, 'notes_database.db'),
-        onCreate: (database, version) {
-      return database.execute(
-        _query(),
-      );
-    }, version: 1);
+    bool status = await databaseExists(databasePath);
+    if (!status) {
+      _database = await openDatabase(join(databasePath, 'notes_database.db'),
+          onCreate: (database, version) {
+        return database.execute(
+          _query(),
+        );
+      }, version: 1);
+    }
+    return _database;
   }
 
   static String _query() {

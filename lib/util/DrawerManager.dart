@@ -35,20 +35,20 @@ class DrawerManager with ChangeNotifier {
     }
   }
 
-  void resetDrawerState() {
-    xOffSet = 0;
-    yOffSet = 0;
-    angle = 0;
-    isOpened = false;
-    isIgnoring = false;
-  }
-
   void openDrawer() {
     callback(false);
   }
 
   void closeDrawer() {
     callback(true);
+  }
+
+  void resetDrawerState() {
+    xOffSet = 0;
+    yOffSet = 0;
+    angle = 0;
+    isOpened = false;
+    isIgnoring = false;
   }
 
   void callSetState() {

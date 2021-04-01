@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
@@ -36,28 +38,36 @@ class Utilities {
         onPressed: () async {
           showDialog<bool>(
             context: context,
-            builder: (contexto) => AlertDialog(
-              title: Text(
-                  'Passcode cant be reset. Delete all notes to reset Passcode'),
-              actions: [
-                TextButton(
-                  child: Text('Ok'),
-                  onPressed: () async {
-                    Utilities.showSnackbar(contexto, "Deleted all Hidden Notes",
-                        Colors.white, Duration(milliseconds: 2), Colors.green);
-                    Provider.of<NotesHelper>(context, listen: false)
-                        .deleteAllHiddenNotes();
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/', (Route<dynamic> route) => false);
-                  },
+            builder: (context) => Center(
+              child: SingleChildScrollView(
+                child: AlertDialog(
+                  title: Text(
+                      'Passcode cant be reset. Delete all notes to reset Passcode'),
+                  actions: [
+                    TextButton(
+                      child: Text('Ok'),
+                      onPressed: () async {
+                        Utilities.showSnackbar(
+                            context,
+                            "Deleted all Hidden Notes",
+                            Colors.white,
+                            Duration(seconds: 2),
+                            Colors.green);
+                        Provider.of<NotesHelper>(context, listen: false)
+                            .deleteAllHiddenNotes();
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/', (Route<dynamic> route) => false);
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Cancel'),
+                      onPressed: () async {
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  ],
                 ),
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () async {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-              ],
+              ),
             ),
           );
         },
@@ -128,7 +138,7 @@ class Utilities {
     );
   }
 
-  static Future<void> authenticateUser(BuildContext context) async {
+  static Future<bool> authenticateUser(BuildContext context) async {
     var isAuthenticated = false;
     await _localAuthentication.getAvailableBiometrics();
     try {
@@ -140,16 +150,31 @@ class Utilities {
       );
     } on PlatformException catch (errorCode) {
       isAuthenticated = false;
-      return _handleError(errorCode: errorCode.code, context: context);
+      _handleError(errorCode: errorCode.code, context: context);
+    }
+    return isAuthenticated;
+  }
+
+  static Future<bool> authenticateFirstTimeUser(BuildContext context) async {
+    var isAuthenticated = false;
+    await _localAuthentication.getAvailableBiometrics();
+    try {
+      isAuthenticated = await _localAuthentication.authenticate(
+        localizedReason: 'Please authenticate',
+        useErrorDialogs: false,
+        stickyAuth: true,
+        biometricOnly: true,
+      );
+    } on PlatformException catch (errorCode) {
+      isAuthenticated = false;
+      _handleError(errorCode: errorCode.code, context: context);
     }
     if (isAuthenticated) {
-      if (!myNotes.lockChecker.bioEnabled) {
-        Utilities.addBoolToSF('bio', true);
-        myNotes.lockChecker.bioEnabled = true;
-      }
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/hidden', (Route<dynamic> route) => false);
+      Utilities.addBoolToSF('bio', true);
+      Utilities.addBoolToSF('firstTimeNeeded', true);
+      myNotes.lockChecker.bioEnabled = true;
     }
+    return isAuthenticated;
   }
 
   static void addStringToSF(String key, String value) async {
@@ -209,7 +234,6 @@ class Utilities {
   static Future<void> _handleError(
       {String errorCode, BuildContext context}) async {
     String error;
-    print(errorCode);
     if (errorCode == " PasscodeNotSet") {
       error = "Please first set passcode in your system settings";
     } else if (errorCode == "LockedOut") {
@@ -246,5 +270,184 @@ class Utilities {
         );
       },
     );
+  }
+
+  static Widget hideAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: TablerIcons.ghost,
+      caption: "Hide",
+      color: Colors.blueAccent,
+      onTap: () => _onHideTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onHideTap(BuildContext context, Note note) async {
+    bool value =
+        await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
+    if (value) {
+      Utilities.showSnackbar(context, "Note Hidden", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
+  }
+
+  static Widget deleteAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: Icons.delete_forever_outlined,
+      caption: "Delete",
+      color: Colors.redAccent,
+      onTap: () => _onDeleteTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onDeleteTap(BuildContext context, Note note) async {
+    bool value =
+        await Provider.of<NotesHelper>(context, listen: false).deleteNote(note);
+    if (value) {
+      Utilities.showSnackbar(context, "Note Deleted", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
+  }
+
+  static Widget trashAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: Icons.delete_outline,
+      caption: "Trash",
+      color: Colors.redAccent,
+      onTap: () => _onTrashTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onTrashTap(BuildContext context, Note note) async {
+    bool value =
+        await Provider.of<NotesHelper>(context, listen: false).trashNote(
+      note: note,
+      context: context,
+    );
+    if (value) {
+      Utilities.showSnackbar(context, "Note Trashed", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
+  }
+
+  static Widget archiveAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: Icons.archive_outlined,
+      caption: "Archive",
+      color: Colors.green,
+      onTap: () => _onArchiveTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onArchiveTap(BuildContext context, Note note) async {
+    bool value = await Provider.of<NotesHelper>(context, listen: false)
+        .archiveNote(note);
+    if (value) {
+      Utilities.showSnackbar(context, "Note Archived", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
+  }
+
+  static Widget copyAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: TablerIcons.copy,
+      caption: "Copy",
+      color: Colors.black,
+      onTap: () => _onCopyTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onCopyTap(BuildContext context, Note note) async {
+    bool value =
+        await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
+    if (value) {
+      Utilities.showSnackbar(context, "Note Copied", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
+  }
+
+  static Widget unHideAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: Icons.inbox_outlined,
+      caption: "UnHide",
+      color: Colors.blueAccent,
+      onTap: () => _onUnHideTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onUnHideTap(BuildContext context, Note note) async {
+    bool value =
+        await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
+    if (value) {
+      Utilities.showSnackbar(context, "Note Restored", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
+  }
+
+  static Widget unArchiveAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: TablerIcons.ghost,
+      caption: "Unarchive",
+      color: Colors.green,
+      onTap: () => _onUnArchiveTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onUnArchiveTap(BuildContext context, Note note) async {
+    bool value = await Provider.of<NotesHelper>(context, listen: false)
+        .unarchiveNote(note);
+    if (value) {
+      Utilities.showSnackbar(context, "Note Unarchived", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
+  }
+
+  static Widget restoreAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: Icons.inbox_outlined,
+      caption: "Restore",
+      color: Colors.green,
+      onTap: () => _onRestoreActionTap(context, note),
+      closeOnTap: true,
+    );
+  }
+
+  static _onRestoreActionTap(BuildContext context, Note note) async {
+    bool value =
+        await Provider.of<NotesHelper>(context, listen: false).undelete(note);
+    if (value) {
+      Utilities.showSnackbar(context, "Note Restored", Colors.white,
+          Duration(seconds: 2), Colors.green);
+    } else {
+      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
+          Duration(seconds: 2), Colors.redAccent);
+    }
   }
 }

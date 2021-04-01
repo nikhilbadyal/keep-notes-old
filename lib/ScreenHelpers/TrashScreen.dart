@@ -20,6 +20,7 @@ class TrashScreenHelper extends StatefulWidget {
 
 class _TrashScreenHelperState extends State<TrashScreenHelper> {
   MyAppBar appbar;
+  Note note;
 
   @override
   void initState() {
@@ -56,12 +57,26 @@ class _TrashScreenHelperState extends State<TrashScreenHelper> {
           child: SafeArea(
             child: Body(
               fromWhere: NoteState.deleted,
+              primary: primary,
+              secondary: secondary,
             ),
           ),
         ),
         bottomSheet: _bottomBar(context),
       ),
     );
+  }
+
+  List<Widget> secondary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.deleteAction(context, note));
+    return actionList;
+  }
+
+  List<Widget> primary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.restoreAction(context, note));
+    return actionList;
   }
 
   Widget _bottomBar(BuildContext context) {

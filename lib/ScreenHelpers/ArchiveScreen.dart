@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/database/note.dart';
 import 'package:notes/main.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/Body.dart';
 import 'package:notes/widget/BottomBar.dart';
@@ -17,6 +18,7 @@ class ArchiveScreenHelper extends StatefulWidget {
 
 class _ArchiveScreenHelperState extends State<ArchiveScreenHelper> {
   MyAppBar appbar;
+  Note note;
 
   @override
   void initState() {
@@ -53,6 +55,8 @@ class _ArchiveScreenHelperState extends State<ArchiveScreenHelper> {
           child: SafeArea(
             child: Body(
               fromWhere: NoteState.archived,
+              primary: primary,
+              secondary: secondary,
             ),
           ),
         ),
@@ -61,5 +65,19 @@ class _ArchiveScreenHelperState extends State<ArchiveScreenHelper> {
         bottomNavigationBar: BottomBar(),
       ),
     );
+  }
+
+  List<Widget> secondary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.hideAction(context, note));
+    actionList.add(Utilities.unArchiveAction(context, note));
+    return actionList;
+  }
+
+  List<Widget> primary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.trashAction(context, note));
+    actionList.add(Utilities.copyAction(context, note));
+    return actionList;
   }
 }

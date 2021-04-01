@@ -64,45 +64,47 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
             child: Container(
               padding: EdgeInsets.all(30),
               child: Center(
-                child: Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        List<Note> items = await Provider.of<NotesHelper>(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          List<Note> items = await Provider.of<NotesHelper>(
+                                  context,
+                                  listen: false)
+                              .getNotesAllForBackup();
+                          await exportToFile(items);
+                          Utilities.showSnackbar(context, "Notes Exported",
+                              Colors.white, Duration(seconds: 2), Colors.green);
+                        },
+                        child: Text('Export Notes'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (await Utilities.requestPermission(
+                              Permission.storage)) {
+                            FilePickerResult result = await FilePicker.platform
+                                .pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: ["json"]);
+                            File file;
+                            if (result != null) {
+                              file = File(result.files.single.path);
+                            } else {}
+                            importFromFile(file);
+                          } else {
+                            Utilities.showSnackbar(
                                 context,
-                                listen: false)
-                            .getNotesAllForBackup();
-                        await exportToFile(items);
-                        Utilities.showSnackbar(context, "Notes Exported",
-                            Colors.white, Duration(seconds: 2), Colors.green);
-                      },
-                      child: Text('Export Notes'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (await Utilities.requestPermission(
-                            Permission.storage)) {
-                          FilePickerResult result = await FilePicker.platform
-                              .pickFiles(
-                                  type: FileType.custom,
-                                  allowedExtensions: ["json"]);
-                          File file;
-                          if (result != null) {
-                            file = File(result.files.single.path);
-                          } else {}
-                          importFromFile(file);
-                        } else {
-                          Utilities.showSnackbar(
-                              context,
-                              "Permission Not granted",
-                              Colors.white,
-                              Duration(seconds: 2),
-                              Colors.green);
-                        }
-                      },
-                      child: Text('Import Notes'),
-                    ),
-                  ],
+                                "Permission Not granted",
+                                Colors.white,
+                                Duration(seconds: 2),
+                                Colors.green);
+                          }
+                        },
+                        child: Text('Import Notes'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -139,7 +141,6 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
           DateTime.now(),
         );
         var file = "notesExport_${str}.json";
-        print(directory);
         File filePath = File(directory.path + "/$file");
         items.sort(
           (a, b) => a.lastModify.compareTo(b.lastModify),

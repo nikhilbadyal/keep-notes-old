@@ -31,9 +31,11 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
-  runApp(
-    MyNotes(),
-  );
+  SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
+      .then((_) => runApp(
+            MyNotes(),
+          ));
 }
 
 class MyNotes extends StatelessWidget {
@@ -44,8 +46,12 @@ class MyNotes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     myNotes = this;
-    return ChangeNotifierProvider.value(
-      value: NotesHelper(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<NotesHelper>(
+          create: (_) => NotesHelper(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Notes App',

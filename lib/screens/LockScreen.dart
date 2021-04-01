@@ -48,14 +48,45 @@ class _LockScreenState extends State<LockScreen> {
     }
   }
 
-  void _onFingerTap() {
+  Future<void> _onFingerTap() async {
     if (myNotes.lockChecker.bioEnabled) {
-      Utilities.authenticateUser(context);
+      if (myNotes.lockChecker.firstTimeNeeded) {
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false, // user must tap button!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text("Please enter password at least once"),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Sure'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        bool status = await Utilities.authenticateUser(context);
+        if (status) {
+          goTOHiddenScreen(context);
+        } else {
+          Navigator.of(context).pop(false);
+        }
+      }
     } else {
       showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          // TODO user must enter password once after setting up fp
           title: Text('Set Fingerprint first'),
           actions: [
             TextButton(
@@ -65,7 +96,13 @@ class _LockScreenState extends State<LockScreen> {
               ),
               onPressed: () async {
                 Navigator.of(context).pop(true);
-                await Utilities.authenticateUser(context);
+                bool status =
+                    await Utilities.authenticateFirstTimeUser(context);
+                print(status);
+                if (status) {
+                  Utilities.showSnackbar(context, "User Registered",
+                      Colors.green, Duration(seconds: 2), Colors.white);
+                }
               },
             ),
             TextButton(
@@ -98,11 +135,15 @@ class _LockScreenState extends State<LockScreen> {
 
   void _doneEnteringPass(String enteredPassCode) {
     if (enteredPassCode == myNotes.lockChecker.password) {
+      if (myNotes.lockChecker.bioEnabled &&
+          myNotes.lockChecker.firstTimeNeeded) {
+        Utilities.addBoolToSF("firstTimeNeeded", false);
+        myNotes.lockChecker.firstTimeNeeded = false;
+      }
       goTOHiddenScreen(context);
     } else {
       _verificationNotifier.add(false);
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
-
       ScaffoldMessenger.of(context).showSnackBar(
         Utilities.getExitSnackBar(context, "Wrong Passcode"),
       );
@@ -190,27 +231,29 @@ class _MyLockScreenState extends State<MyLockScreen>
             children: [
               Positioned(
                 child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: _buildDeleteButton(context),
-                      ),
-                      widget.title,
-                      SizedBox(
-                        height: 50,
-                      ),
-                      Container(
-                        height: 40,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: _buildCircles(widget.enteredPassCode),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: _buildDeleteButton(context),
                         ),
-                      ),
-                      _buildKeyBoard(widget.onTap, widget.onDelTap,
-                          widget.onFingerTap, widget.enteredPassCode),
-                    ],
+                        widget.title,
+                        SizedBox(
+                          height: 50,
+                        ),
+                        Container(
+                          height: 40,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: _buildCircles(widget.enteredPassCode),
+                          ),
+                        ),
+                        _buildKeyBoard(widget.onTap, widget.onDelTap,
+                            widget.onFingerTap, widget.enteredPassCode),
+                      ],
+                    ),
                   ),
                 ),
               ),

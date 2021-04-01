@@ -65,70 +65,72 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Center(
-              child: GestureDetector(
-                child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/img3.jpg'),
-                  radius: 50.0,
-                ),
-                onTap: () {
-                  Utilities.launchUrl("https://github.com/ProblematicDude");
-                },
-              ),
-            ),
-            Divider(
-              height: 60.0,
-              color: Colors.black,
-            ),
-            Text(
-              'Name',
-              style: TextStyle(
-                color: Colors.black,
-                letterSpacing: 2.0,
-              ),
-            ),
-            SizedBox(height: 30.0),
-            Text(
-              'Nikhil',
-              style: TextStyle(
-                color: headerColor,
-                letterSpacing: 2.0,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 30.0),
-            Text(
-              'Email',
-              style: TextStyle(
-                color: Colors.black,
-                letterSpacing: 2.0,
-              ),
-            ),
-            SizedBox(height: 30.0),
-            Row(
-              children: <Widget>[
-                Icon(
-                  Icons.email,
-                  color: headerColor,
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Text(
-                  'nahibtaunga@gmail.com',
-                  style: TextStyle(
-                    color: headerColor,
-                    letterSpacing: 2.0,
-                    fontSize: 15.0,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Center(
+                child: GestureDetector(
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/img3.jpg'),
+                    radius: 50.0,
                   ),
+                  onTap: () {
+                    Utilities.launchUrl("https://github.com/ProblematicDude");
+                  },
                 ),
-              ],
-            ),
-          ],
+              ),
+              Divider(
+                height: 60.0,
+                color: Colors.black,
+              ),
+              Text(
+                'Name',
+                style: TextStyle(
+                  color: Colors.black,
+                  letterSpacing: 2.0,
+                ),
+              ),
+              SizedBox(height: 30.0),
+              Text(
+                'Nikhil',
+                style: TextStyle(
+                  color: headerColor,
+                  letterSpacing: 2.0,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 30.0),
+              Text(
+                'Email',
+                style: TextStyle(
+                  color: Colors.black,
+                  letterSpacing: 2.0,
+                ),
+              ),
+              SizedBox(height: 30.0),
+              Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.email,
+                    color: headerColor,
+                  ),
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  Text(
+                    'nahibtaunga@gmail.com',
+                    style: TextStyle(
+                      color: headerColor,
+                      letterSpacing: 2.0,
+                      fontSize: 15.0,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/Body.dart';
 import 'package:notes/widget/BottomBar.dart';
@@ -18,6 +19,7 @@ class HomeScreenHelper extends StatefulWidget {
 
 class _HomeScreenHelperState extends State<HomeScreenHelper> {
   MyAppBar appbar;
+  Note note;
 
   @override
   void initState() {
@@ -51,10 +53,10 @@ class _HomeScreenHelperState extends State<HomeScreenHelper> {
           imagePath: 'assets/images/img3.jpg',
         ),
         body: DoubleBackToCloseWidget(
-          child: SafeArea(
-            child: Body(
-              fromWhere: NoteState.unspecified,
-            ),
+          child: Body(
+            fromWhere: NoteState.unspecified,
+            primary: primary,
+            secondary: secondary,
           ),
         ),
         floatingActionButton: Fab(NoteState.unspecified),
@@ -62,5 +64,19 @@ class _HomeScreenHelperState extends State<HomeScreenHelper> {
         bottomNavigationBar: BottomBar(),
       ),
     );
+  }
+
+  List<Widget> primary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.hideAction(context, note));
+    actionList.add(Utilities.archiveAction(context, note));
+    return actionList;
+  }
+
+  List<Widget> secondary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.trashAction(context, note));
+    actionList.add(Utilities.copyAction(context, note));
+    return actionList;
   }
 }

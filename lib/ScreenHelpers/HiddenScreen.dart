@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/Body.dart';
 import 'package:notes/widget/BottomBar.dart';
@@ -18,6 +19,7 @@ class HiddenScreenHelper extends StatefulWidget {
 
 class _HiddenScreenHelperState extends State<HiddenScreenHelper> {
   MyAppBar appbar;
+  Note note;
 
   Widget currentPage;
 
@@ -56,6 +58,8 @@ class _HiddenScreenHelperState extends State<HiddenScreenHelper> {
           child: SafeArea(
             child: Body(
               fromWhere: NoteState.hidden,
+              primary: primary,
+              secondary: secondary,
             ),
           ),
         ),
@@ -64,5 +68,17 @@ class _HiddenScreenHelperState extends State<HiddenScreenHelper> {
         bottomNavigationBar: BottomBar(),
       ),
     );
+  }
+
+  List<Widget> secondary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.unHideAction(context, note));
+    return actionList;
+  }
+
+  List<Widget> primary(Note note) {
+    List<Widget> actionList = [];
+    actionList.add(Utilities.deleteAction(context, note));
+    return actionList;
   }
 }

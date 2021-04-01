@@ -4,7 +4,6 @@ import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/AppBar.dart';
 
-// ignore: must_be_immutable  //TODO, must_be_immutable
 class DoubleBackToCloseWidget extends StatefulWidget {
   final Widget child;
   final DrawerManager drawerManager;
