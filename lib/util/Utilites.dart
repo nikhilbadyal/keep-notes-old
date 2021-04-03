@@ -15,8 +15,8 @@ import '../main.dart';
 class Utilities {
   static final LocalAuthentication _localAuthentication = LocalAuthentication();
   static SharedPreferences prefs;
-  static Color uiColor1 = Color(0xFFFD5872);
-  static Color uiColor2 = Colors.blue;
+  static const Color uiColor1 = Color(0xFFFD5872);
+  static const Color uiColor2 = Colors.blue;
   static const double padding = 20;
   static const double avatarRadius = 45;
   static const passLength = 4;
@@ -41,11 +41,11 @@ class Utilities {
             builder: (context) => Center(
               child: SingleChildScrollView(
                 child: AlertDialog(
-                  title: Text(
+                  title: const Text(
                       'Passcode cant be reset. Delete all notes to reset Passcode'),
                   actions: [
                     TextButton(
-                      child: Text('Ok'),
+                      child: const Text('Ok'),
                       onPressed: () async {
                         Utilities.showSnackbar(
                             context,
@@ -60,7 +60,7 @@ class Utilities {
                       },
                     ),
                     TextButton(
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                       onPressed: () async {
                         Navigator.of(context).pop(true);
                       },
@@ -74,7 +74,7 @@ class Utilities {
       ),
       content: Text(data),
       backgroundColor: Colors.red,
-      duration: const Duration(
+      duration: Duration(
         seconds: 2,
       ),
       behavior: SnackBarBehavior.floating,
@@ -133,6 +133,7 @@ class Utilities {
 
   static void showSnackbar(BuildContext context, String data, Color dataColor,
       Duration duration, Color color) {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       Utilities.getSnackBar(data, dataColor, duration, color),
     );
@@ -250,7 +251,7 @@ class Utilities {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -260,7 +261,7 @@ class Utilities {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Ok :('),
+              child: const Text('Ok :('),
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/lock', (Route<dynamic> route) => false);

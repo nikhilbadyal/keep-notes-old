@@ -56,17 +56,17 @@ class _LockScreenState extends State<LockScreen> {
           barrierDismissible: false, // user must tap button!
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error'),
+              title: const Text('Error'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text("Please enter password at least once"),
+                    const Text("Please enter password at least once"),
                   ],
                 ),
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Sure'),
+                  child: const Text('Sure'),
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
@@ -78,7 +78,7 @@ class _LockScreenState extends State<LockScreen> {
       } else {
         bool status = await Utilities.authenticateUser(context);
         if (status) {
-          goTOHiddenScreen(context);
+          goToHiddenScreen(context);
         } else {
           Navigator.of(context).pop(false);
         }
@@ -87,18 +87,17 @@ class _LockScreenState extends State<LockScreen> {
       showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Set Fingerprint first'),
+          title: const Text('Set Fingerprint First'),
           actions: [
             TextButton(
-              child: Text(
+              child: const Text(
                 'Ok',
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
               onPressed: () async {
                 Navigator.of(context).pop(true);
                 bool status =
                     await Utilities.authenticateFirstTimeUser(context);
-                print(status);
                 if (status) {
                   Utilities.showSnackbar(context, "User Registered",
                       Colors.green, Duration(seconds: 2), Colors.white);
@@ -106,9 +105,9 @@ class _LockScreenState extends State<LockScreen> {
               },
             ),
             TextButton(
-              child: Text(
+              child: const Text(
                 'Cancel',
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
               onPressed: () async {
                 Navigator.of(context).pop(true);
@@ -121,9 +120,9 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   Widget title = Container(
-    child: Text(
+    child: const Text(
       'Enter Password',
-      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
   );
 
@@ -140,7 +139,7 @@ class _LockScreenState extends State<LockScreen> {
         Utilities.addBoolToSF("firstTimeNeeded", false);
         myNotes.lockChecker.firstTimeNeeded = false;
       }
-      goTOHiddenScreen(context);
+      goToHiddenScreen(context);
     } else {
       _verificationNotifier.add(false);
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -152,6 +151,7 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 23');
     return MyLockScreen(
       title: title,
       onTap: _onTap,
@@ -175,12 +175,12 @@ class MyLockScreen extends StatefulWidget {
 
   const MyLockScreen({
     Key key,
-    this.title,
-    this.onTap,
-    this.onDelTap,
-    this.onFingerTap,
-    this.enteredPassCode,
-    this.stream,
+    @required this.title,
+    @required this.onTap,
+    @required this.onDelTap,
+    @required this.onFingerTap,
+    @required this.enteredPassCode,
+    @required this.stream,
     this.doneCallBack,
   }) : super(key: key);
 
@@ -200,8 +200,8 @@ class _MyLockScreenState extends State<MyLockScreen>
     streamSubscription = widget.stream.listen(
       (isValid) => _showValidation(isValid),
     );
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 400), vsync: this);
+    controller =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     final Animation curve = CurvedAnimation(
       parent: controller,
       curve: ShakeCurve(),
@@ -224,6 +224,7 @@ class _MyLockScreenState extends State<MyLockScreen>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 24');
     return DoubleBackToCloseWidget(
       child: Scaffold(
         body: SafeArea(
@@ -276,7 +277,7 @@ List<Widget> _buildCircles(String enteredPassCode) {
   for (int i = 0; i < 4; ++i) {
     list.add(
       Container(
-        margin: EdgeInsets.all(8),
+        margin: const EdgeInsets.all(8),
         child: Circle(
           isFilled: i < enteredPassCode.length,
         ),
@@ -336,12 +337,16 @@ class Keyboard extends StatelessWidget {
     '-1'
   ];
 
-  Keyboard({Key key, this.onKeyboardTap, this.onDelTap, this.onFingerTap})
+  Keyboard(
+      {Key key,
+      @required this.onKeyboardTap,
+      @required this.onDelTap,
+      @required this.onFingerTap})
       : super(key: key);
 
   Widget _buildDigit(String text) {
     return Container(
-      margin: EdgeInsets.all(2),
+      margin: const EdgeInsets.all(2),
       child: ClipOval(
         child: Material(
           color: Colors.transparent,
@@ -362,7 +367,7 @@ class Keyboard extends StatelessWidget {
                   child: Text(
                     text,
                     semanticsLabel: text,
-                    style: TextStyle(fontSize: 30),
+                    style: const TextStyle(fontSize: 30),
                   ),
                 ),
               ),
@@ -375,7 +380,7 @@ class Keyboard extends StatelessWidget {
 
   Widget _buildExtra(Widget widget, DeleteTapCallback onDelTap) {
     return Container(
-      margin: EdgeInsets.all(2),
+      margin: const EdgeInsets.all(2),
       child: ClipOval(
         child: Material(
           color: Colors.transparent,
@@ -405,6 +410,7 @@ class Keyboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 25');
     return Container(
       child: CustomAlign(
         children: List.generate(12, (index) {
@@ -425,10 +431,11 @@ class Keyboard extends StatelessWidget {
 class CustomAlign extends StatelessWidget {
   final List<Widget> children;
 
-  const CustomAlign({Key key, this.children}) : super(key: key);
+  const CustomAlign({Key key, @required this.children}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 26');
     return GridView.count(
       shrinkWrap: true,
       crossAxisCount: 3,
@@ -453,7 +460,7 @@ class CustomAlign extends StatelessWidget {
 class Circle extends StatefulWidget {
   final isFilled;
 
-  const Circle({Key key, this.isFilled}) : super(key: key);
+  const Circle({Key key, @required this.isFilled}) : super(key: key);
 
   @override
   _CircleState createState() => _CircleState();
@@ -462,8 +469,9 @@ class Circle extends StatefulWidget {
 class _CircleState extends State<Circle> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 27 ');
     return Container(
-      margin: EdgeInsets.only(bottom: 1),
+      margin: const EdgeInsets.only(bottom: 1),
       width: 30,
       height: 30,
       decoration: BoxDecoration(

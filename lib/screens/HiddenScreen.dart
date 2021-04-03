@@ -13,12 +13,13 @@ class HiddenScreen extends StatefulWidget {
 class _HiddenScreenState extends State<HiddenScreen> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 21 ');
     return Scaffold(
       body: Stack(
         children: [
-          FirstLayer(),
-          SecondLayer(),
-          ThirdLayer(),
+          const FirstLayer(),
+          const SecondLayer(),
+          const ThirdLayer(),
           HiddenScreenHelper(),
         ],
       ),

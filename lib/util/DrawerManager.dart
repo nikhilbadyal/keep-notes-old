@@ -5,6 +5,7 @@ import 'package:notes/ScreenHelpers/ArchiveScreen.dart';
 import 'package:notes/ScreenHelpers/BackupRestore.dart';
 import 'package:notes/ScreenHelpers/HiddenScreen.dart';
 import 'package:notes/ScreenHelpers/HomeScreen.dart';
+import 'package:notes/ScreenHelpers/SettingsScreen.dart';
 import 'package:notes/ScreenHelpers/TrashScreen.dart';
 import 'package:notes/main.dart';
 
@@ -14,6 +15,8 @@ class DrawerManager with ChangeNotifier {
   double angle = 0;
   bool isOpened = false;
   bool isIgnoring = false;
+  static int animationTime = 350;
+  static int SecondLayerAnimationTime = 600;
 
   void callback(bool isOpen) {
     if (isOpen) {
@@ -22,16 +25,16 @@ class DrawerManager with ChangeNotifier {
       angle = 0;
       isOpened = false;
       isIgnoring = false;
-      secondLayer.callSetState(0, 0, 0);
-      callSetState();
+      secondLayer.animate();
+      animatedDrawer();
     } else {
       xOffSet = 150;
       yOffSet = 80;
       angle = -0.2;
       isOpened = true;
       isIgnoring = true;
-      secondLayer.callSetState(123, 110, -0.275);
-      callSetState();
+      secondLayer.animate();
+      animatedDrawer();
     }
   }
 
@@ -51,37 +54,42 @@ class DrawerManager with ChangeNotifier {
     isIgnoring = false;
   }
 
-  void callSetState() {
+  void animatedDrawer() {
     String currentScreen = myNotes.myRouteObserver.currentScreen;
     switch (currentScreen) {
       case "/":
         {
-          homeScreen.callSetState();
+          homeScreen.animate();
         }
         break;
       case "/about":
         {
-          aboutMe.callSetState();
+          aboutMe.animate();
         }
         break;
       case "/archive":
         {
-          archive.callSetState();
+          archive.animate();
         }
         break;
       case "/trash":
         {
-          trash.callSetState();
+          trash.animate();
         }
         break;
       case "/hidden":
         {
-          hidden.callSetState();
+          hidden.animate();
         }
         break;
       case "/backup":
         {
-          backup.callSetState();
+          backup.animate();
+        }
+        break;
+      case "/settings":
+        {
+          settings.animate();
         }
         break;
     }

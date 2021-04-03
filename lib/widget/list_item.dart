@@ -7,24 +7,26 @@ class ListItem extends StatelessWidget {
   final Note note;
   final NoteState fromWhere;
 
-  const ListItem({Key key, this.note, this.fromWhere}) : super(key: key);
+  const ListItem({Key key, @required this.note, @required this.fromWhere})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 110.0,
-      margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: InkWell(
         onTap: () async {
           if (note.state == NoteState.deleted) {
             await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
-                title: Text('Please remove note from trash before editing'),
+                title:
+                    const Text('Please remove note from trash before editing'),
                 actions: [
                   TextButton(
-                    child: Text('Ok'),
+                    child: const Text('Ok'),
                     onPressed: () {
                       Navigator.of(context).pop(true);
                     },
@@ -48,7 +50,7 @@ class ListItem extends StatelessWidget {
         },
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
             color: white,
             boxShadow: shadow,
@@ -62,7 +64,7 @@ class ListItem extends StatelessWidget {
             children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     vertical: 10.0,
                   ),
                   child: Column(
@@ -72,24 +74,24 @@ class ListItem extends StatelessWidget {
                         note.title,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18.0,
                           color: black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 4.0,
                       ),
                       Text(
                         note.strLastModifiedDate,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 11.0,
                           color: grey2,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8.0,
                       ),
                       Expanded(
@@ -97,7 +99,7 @@ class ListItem extends StatelessWidget {
                           note.content,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15.0,
                             color: grey2,
                           ),

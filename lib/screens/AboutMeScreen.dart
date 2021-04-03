@@ -12,13 +12,14 @@ class AboutMeScreen extends StatefulWidget {
 class _AboutMeScreenState extends State<AboutMeScreen> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 18');
     return Scaffold(
       body: Stack(
         children: [
-          FirstLayer(),
-          SecondLayer(),
-          ThirdLayer(),
-          AboutMeScreenHelper(),
+          const FirstLayer(),
+          const SecondLayer(),
+          const ThirdLayer(),
+          const AboutMeScreenHelper(),
         ],
       ),
     );

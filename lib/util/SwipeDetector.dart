@@ -10,12 +10,12 @@ class SwipeSensitivity {
   double horizontalMinVelocity = 300.0;
 
   SwipeSensitivity(
-      {this.verticalMinDisplacement,
-      this.verticalMaxThreshold,
-      this.verticalMinVelocity,
-      this.horizontalMinDisplacement,
-      this.horizontalMaxThreshold,
-      this.horizontalMinVelocity});
+      {@required this.verticalMinDisplacement,
+      @required this.verticalMaxThreshold,
+      @required this.verticalMinVelocity,
+      @required this.horizontalMinDisplacement,
+      @required this.horizontalMaxThreshold,
+      @required this.horizontalMinVelocity});
 }
 
 class SwipeDetector extends StatelessWidget {
@@ -29,16 +29,17 @@ class SwipeDetector extends StatelessWidget {
 
   const SwipeDetector(
       {Key key,
-      @required this.child,
-      this.onSwipeUp,
-      this.onSwipeDown,
-      this.onSwipeRight,
-      this.onSwipeLeft,
-      this.swipeSensitivity})
+      @required @required this.child,
+      @required this.onSwipeUp,
+      @required this.onSwipeDown,
+      @required this.onSwipeRight,
+      @required this.onSwipeLeft,
+      @required this.swipeSensitivity})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 31 ');
     DragStartDetails verticalStartDetails;
     DragUpdateDetails verticalUpdateDetails;
 

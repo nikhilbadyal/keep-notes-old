@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
-import 'package:notes/ScreenHelpers/ArchiveScreen.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/main.dart';
 import 'package:notes/util/DrawerManager.dart';
-import 'package:notes/util/Utilites.dart';
+import 'package:notes/widget/AppBar.dart';
+import 'package:notes/widget/DoubleBackToClose.dart';
+import 'package:notes/widget/Navigations.dart';
 
-_HiddenScreenHelperState hidden;
+_SettingsScreenHelperState settings;
 
-class HiddenScreenHelper extends StatefulWidget {
+class SettingsScreenHelper extends StatefulWidget {
   @override
-  _HiddenScreenHelperState createState() => _HiddenScreenHelperState();
+  _SettingsScreenHelperState createState() {
+    return _SettingsScreenHelperState();
+  }
+
+  const SettingsScreenHelper();
 }
 
-class _HiddenScreenHelperState extends State<HiddenScreenHelper>
+class _SettingsScreenHelperState extends State<SettingsScreenHelper>
     with TickerProviderStateMixin {
-  Note note;
-
   AnimationController _xController;
   AnimationController _yController;
   AnimationController _angleController;
@@ -65,8 +68,8 @@ class _HiddenScreenHelperState extends State<HiddenScreenHelper>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 8');
-    hidden = this;
+    debugPrint('building 11');
+    settings = this;
     return AnimatedBuilder(
       animation: _xController,
       builder: (BuildContext context, Widget child) {
@@ -78,24 +81,40 @@ class _HiddenScreenHelperState extends State<HiddenScreenHelper>
           child: child,
         );
       },
-      child: BodyOfBody(
-        primary: primary,
-        secondary: secondary,
-        noteState: NoteState.hidden,
-        title: "Hidden",
+      child: DoubleBackToCloseWidget(
+        child: Scaffold(
+          appBar: MyAppBar(
+            title: "Settings",
+          ),
+          body: DoubleBackToCloseWidget(
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: body(context),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  List<Widget> secondary(Note note) {
-    List<Widget> actionList = [];
-    actionList.add(Utilities.unHideAction(context, note));
-    return actionList;
-  }
-
-  List<Widget> primary(Note note) {
-    List<Widget> actionList = [];
-    actionList.add(Utilities.deleteAction(context, note));
-    return actionList;
+  Widget body(BuildContext context) {
+    return ListView(
+      children: [
+        ListTile(
+          title: const Text(
+            "Change Password",
+          ),
+          leading: Icon(Icons.fingerprint_outlined),
+          onTap: () {
+            goToSetPasswordScreen(
+              context,
+              myNotes.lockChecker.password,
+            );
+          },
+        ),
+      ],
+    );
   }
 }

@@ -12,13 +12,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('home building 22');
     return Scaffold(
       body: Stack(
         children: [
-          FirstLayer(),
-          SecondLayer(),
-          ThirdLayer(),
-          HomeScreenHelper(),
+          const FirstLayer(),
+          const SecondLayer(),
+          const ThirdLayer(),
+          const HomeScreenHelper(),
         ],
       ),
     );

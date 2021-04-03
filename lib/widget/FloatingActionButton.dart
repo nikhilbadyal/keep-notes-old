@@ -10,13 +10,14 @@ class Fab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('FAB building 35');
     return FloatingActionButton(
       onPressed: () async {
         goToNoteEditScreen(
             context: context, noteState: noteState, shouldAutoFocus: true);
       },
       tooltip: 'Add Notes',
-      child: Icon(Icons.add),
+      child: const Icon(Icons.add),
       foregroundColor: Colors.white,
       backgroundColor: headerColor,
     );

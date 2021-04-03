@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
-import 'package:notes/main.dart';
+import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/AppBar.dart';
@@ -13,42 +13,78 @@ class AboutMeScreenHelper extends StatefulWidget {
   _AboutMeScreenHelperState createState() {
     return _AboutMeScreenHelperState();
   }
+
+  const AboutMeScreenHelper();
 }
 
-class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
-  MyAppBar appbar;
+class _AboutMeScreenHelperState extends State<AboutMeScreenHelper>
+    with TickerProviderStateMixin {
+  AnimationController xController;
+  AnimationController yController;
+  AnimationController angleController;
 
   @override
   void initState() {
-    super.initState();
-    appbar = MyAppBar(
-      title: 'Archive',
-      imagePath: 'assets/images/img3.jpg',
+    xController = AnimationController(
+      duration: Duration(milliseconds: DrawerManager.animationTime),
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 150,
     );
+    yController = AnimationController(
+      duration: Duration(milliseconds: DrawerManager.animationTime),
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 80,
+    );
+    angleController = AnimationController(
+      duration: Duration(milliseconds: DrawerManager.animationTime),
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 0.2,
+    );
+    super.initState();
   }
 
-  void callSetState() {
-    setState(
-      () {},
-    );
+  animate() {
+    if (xController.isCompleted) {
+      xController.reverse();
+      yController.reverse();
+      angleController.reverse();
+    } else {
+      xController.forward(from: 0);
+      yController.forward(from: 0);
+      angleController.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    xController.dispose();
+    yController.dispose();
+    angleController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 4 ');
     aboutMe = this;
-    return AnimatedContainer(
-      transform: Matrix4Transform()
-          .translate(
-              x: myNotes.drawerManager.xOffSet,
-              y: myNotes.drawerManager.yOffSet)
-          .rotate(myNotes.drawerManager.angle)
-          .matrix4,
-      duration: Duration(milliseconds: 250),
+    return AnimatedBuilder(
+      animation: xController,
+      builder: (BuildContext context, Widget child) {
+        return Transform(
+          transform: Matrix4Transform()
+              .translate(x: xController.value, y: yController.value)
+              .rotate(-angleController.value)
+              .matrix4,
+          child: child,
+        );
+      },
       child: DoubleBackToCloseWidget(
         child: Scaffold(
           appBar: MyAppBar(
-            title: 'About',
-            imagePath: 'assets/images/img3.jpg',
+            title: "About Me",
           ),
           body: DoubleBackToCloseWidget(
             child: SafeArea(
@@ -64,7 +100,7 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,17 +120,17 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
                 height: 60.0,
                 color: Colors.black,
               ),
-              Text(
+              const Text(
                 'Name',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                   letterSpacing: 2.0,
                 ),
               ),
               SizedBox(height: 30.0),
-              Text(
+              const Text(
                 'Nikhil',
-                style: TextStyle(
+                style: const TextStyle(
                   color: headerColor,
                   letterSpacing: 2.0,
                   fontSize: 20.0,
@@ -102,9 +138,9 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
                 ),
               ),
               SizedBox(height: 30.0),
-              Text(
+              const Text(
                 'Email',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                   letterSpacing: 2.0,
                 ),
@@ -119,9 +155,9 @@ class _AboutMeScreenHelperState extends State<AboutMeScreenHelper> {
                   SizedBox(
                     width: 10.0,
                   ),
-                  Text(
-                    'nahibtaunga@gmail.com',
-                    style: TextStyle(
+                  const Text(
+                    'nikhildevelops@gmail.com',
+                    style: const TextStyle(
                       color: headerColor,
                       letterSpacing: 2.0,
                       fontSize: 15.0,

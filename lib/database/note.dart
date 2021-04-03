@@ -29,14 +29,14 @@ class Note {
   String imagePath;
 
   Note(
-      {@required this.id,
-      @required this.title,
-      @required this.content,
-      @required this.creationDate,
-      @required this.lastModify,
-      @required this.color,
-      @required this.state,
-      @required this.imagePath}) {}
+      {@required @required this.id,
+      @required @required this.title,
+      @required @required this.content,
+      @required @required this.creationDate,
+      @required @required this.lastModify,
+      @required @required this.color,
+      @required @required this.state,
+      @required @required this.imagePath}) {}
 
   @override
   String toString() {

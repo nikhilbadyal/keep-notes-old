@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:notes/main.dart';
-import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/AppBar.dart';
+import 'package:notes/widget/Navigations.dart';
 
 class DoubleBackToCloseWidget extends StatefulWidget {
   final Widget child;
-  final DrawerManager drawerManager;
 
-  DoubleBackToCloseWidget({@required this.child, this.drawerManager});
+  const DoubleBackToCloseWidget({@required @required this.child});
 
   static const exitTimeInMillis = 1500;
 
@@ -22,6 +21,7 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('double back building 34');
     bool _isAndroid = Theme.of(context).platform == TargetPlatform.android;
     if (_isAndroid) {
       return WillPopScope(
@@ -44,8 +44,13 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
                       milliseconds: DoubleBackToCloseWidget.exitTimeInMillis),
                   Colors.white60);
             } else {
-              appBar.callSetState();
-              myNotes.drawerManager.openDrawer();
+              if (ModalRoute.of(context).settings.name == '/lock' ||
+                  ModalRoute.of(context).settings.name == '/setpass') {
+                goToHomeScreen(context);
+              } else {
+                appBar.drawerNotifier.value = false;
+                myNotes.drawerManager.openDrawer();
+              }
             }
             return false;
           }

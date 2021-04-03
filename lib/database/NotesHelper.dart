@@ -16,9 +16,7 @@ class NotesHelper with ChangeNotifier {
     } else {
       try {
         _items[_items.indexWhere((element) => note.id == element.id)] = note;
-      } catch (e) {
-        print('Some shit occurred');
-      }
+      } catch (e) {}
     }
     note = await DatabaseHelper.insertNote(note, isNew);
     notifyListeners();
@@ -93,9 +91,7 @@ class NotesHelper with ChangeNotifier {
     try {
       _items.removeWhere((element) => element.id == note.id);
       status = await DatabaseHelper.deleteNote(note);
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
     notifyListeners();
     return status;
   }
@@ -109,11 +105,9 @@ class NotesHelper with ChangeNotifier {
     if (note.id != -1) {
       //TODO fix this
       var nav = note.state.index.toString();
-      print(nav);
       switch (nav) {
         case '0':
           {
-            print('Here');
             bool stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(0);
             notifyListeners();
@@ -132,7 +126,7 @@ class NotesHelper with ChangeNotifier {
         case '3':
           {
             bool stat = await DatabaseHelper.trashNote(note);
-            await  getNotesAll(3);
+            await getNotesAll(3);
             notifyListeners();
             return stat;
           }
@@ -140,11 +134,11 @@ class NotesHelper with ChangeNotifier {
         default:
           {
             AlertDialog(
-              content: Text(
+              content: const Text(
                   'If you\'re seeing this please consider submitting a bug :-)'),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Ok'),
+                  child: const Text('Ok'),
                   onPressed: () async {
                     bool stat = await Navigator.of(context)
                         .pushNamedAndRemoveUntil(

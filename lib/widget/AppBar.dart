@@ -5,9 +5,8 @@ _MyAppBarState appBar;
 
 class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
-  final String imagePath;
 
-  MyAppBar({Key key, @required this.title, @required this.imagePath})
+  MyAppBar({Key key, @required @required this.title})
       : preferredSize = Size.fromHeight(60.0),
         super(key: key);
 
@@ -19,26 +18,23 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _MyAppBarState extends State<MyAppBar> {
-  void callSetState() {
-    setState(() {
-      myNotes.drawerManager.isOpened = !myNotes.drawerManager.isOpened;
-    });
-  }
+  final drawerNotifier = ValueNotifier<bool>(true);
 
   @override
   Widget build(BuildContext context) {
     appBar = this;
+    debugPrint('Building app bar');
     return AppBar(
       elevation: 0.6,
       leading: Leading(),
       title: Text("${widget.title}"),
       actions: [
-        CircleAvatar(
+        const CircleAvatar(
           radius: 25,
           backgroundColor: Color(0xffFDCF09),
-          child: CircleAvatar(
+          child: const CircleAvatar(
             radius: 22,
-            backgroundImage: AssetImage(widget.imagePath),
+            backgroundImage: const AssetImage("assets/images/img3.jpg"),
           ),
         ),
       ],
@@ -49,25 +45,15 @@ class _MyAppBarState extends State<MyAppBar> {
 class Leading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (myNotes.drawerManager.isOpened) {
-      return IconButton(
-        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-        onPressed: () {
-          myNotes.drawerManager.isOpened = false;
-          myNotes.drawerManager.callback(true);
-        },
-      );
-    } else {
-      return IconButton(
-        icon: Icon(
-          Icons.menu,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          myNotes.drawerManager.isOpened = true;
-          myNotes.drawerManager.callback(false);
-        },
-      );
-    }
+    debugPrint('building app bar icon 14');
+    return IconButton(
+      icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+      onPressed: () {
+        myNotes.drawerManager.callback(true);
+        appBar.drawerNotifier.value = true;
+      },
+    );
   }
+
+  const Leading();
 }

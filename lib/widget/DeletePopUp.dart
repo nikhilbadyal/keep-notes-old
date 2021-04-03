@@ -16,6 +16,7 @@ class DeletePopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 33');
     var toWhere = '/';
     String currentScreen = myNotes.myRouteObserver.currentScreen;
     switch (currentScreen) {
@@ -41,10 +42,10 @@ class DeletePopUp extends StatelessWidget {
         break;
     }
     return AlertDialog(
-      title: Text('Delete'),
+      title: const Text('Delete'),
       actions: [
         TextButton(
-          child: Text('Yes'),
+          child: const Text('Yes'),
           onPressed: () {
             autoSaver.cancel();
             Provider.of<NotesHelper>(context, listen: false)
@@ -54,7 +55,7 @@ class DeletePopUp extends StatelessWidget {
           },
         ),
         TextButton(
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
           onPressed: () {
             Provider.of<NotesHelper>(context, listen: false).falseDelete();
             Navigator.of(context).pop();

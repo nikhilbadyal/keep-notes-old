@@ -53,14 +53,11 @@ class _SetPasswordState extends State<SetPassword> {
 
   Future<void> _doneEnteringPass(String enteredPassCode) async {
     if (isFirst) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SetPassword(),
-            settings: RouteSettings(
-              arguments: DataObj(false, enteredPassCode, "Re Enter Password"),
-            ),
-          ));
+      await Navigator.of(context).pushNamedAndRemoveUntil(
+        '/setpass',
+        (Route<dynamic> route) => false,
+        arguments: DataObj(false, enteredPassCode, "Re Enter Password"),
+      );
     } else {
       if (enteredPassCode == firstPass) {
         myNotes.lockChecker.passwordSet = true;
@@ -68,7 +65,7 @@ class _SetPasswordState extends State<SetPassword> {
         await Utilities.addBoolToSF("passwordSet", true);
         await Utilities.addStringToSF('password', enteredPassCode);
         myNotes.lockChecker.updateDetails();
-        goTOHiddenScreen(context);
+        goToHiddenScreen(context);
       } else {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +80,7 @@ class _SetPasswordState extends State<SetPassword> {
     return Container(
       child: Text(
         title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -92,6 +89,7 @@ class _SetPasswordState extends State<SetPassword> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 28 ');
     final DataObj args = ModalRoute.of(context).settings.arguments;
     isFirst = args.isFirst;
     firstPass = args.firstPass;

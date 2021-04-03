@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/database/NotesHelper.dart';
 import 'package:notes/database/note.dart';
+import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/BottomBar.dart';
@@ -16,8 +17,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-import '../main.dart';
-
 _BackUpScreenHelperState backup;
 
 class BackUpScreenHelper extends StatefulWidget {
@@ -25,44 +24,78 @@ class BackUpScreenHelper extends StatefulWidget {
   _BackUpScreenHelperState createState() => _BackUpScreenHelperState();
 }
 
-class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
-  MyAppBar appbar;
+class _BackUpScreenHelperState extends State<BackUpScreenHelper>
+    with TickerProviderStateMixin {
+  AnimationController _xController;
+  AnimationController _yController;
+  AnimationController _angleController;
 
   @override
   void initState() {
-    super.initState();
-    appbar = MyAppBar(
-      title: 'Archive',
-      imagePath: 'assets/images/img3.jpg',
+    _xController = AnimationController(
+      duration: Duration(milliseconds: DrawerManager.animationTime),
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 150,
     );
+    _yController = AnimationController(
+      duration: Duration(milliseconds: DrawerManager.animationTime),
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 80,
+    );
+    _angleController = AnimationController(
+      duration: Duration(milliseconds: DrawerManager.animationTime),
+      vsync: this,
+      lowerBound: 0,
+      upperBound: 0.2,
+    );
+    super.initState();
   }
 
-  void callSetState() {
-    setState(
-      () {},
-    );
+  animate() {
+    if (_xController.isCompleted) {
+      _xController.reverse();
+      _yController.reverse();
+      _angleController.reverse();
+    } else {
+      _xController.forward(from: 0);
+      _yController.forward(from: 0);
+      _angleController.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _xController.dispose();
+    _yController.dispose();
+    _angleController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 7');
     backup = this;
-    return AnimatedContainer(
-      transform: Matrix4Transform()
-          .translate(
-              x: myNotes.drawerManager.xOffSet,
-              y: myNotes.drawerManager.yOffSet)
-          .rotate(myNotes.drawerManager.angle)
-          .matrix4,
-      duration: Duration(milliseconds: 250),
+    return AnimatedBuilder(
+      animation: _xController,
+      builder: (BuildContext context, Widget child) {
+        return Transform(
+          transform: Matrix4Transform()
+              .translate(x: _xController.value, y: _yController.value)
+              .rotate(-_angleController.value)
+              .matrix4,
+          child: child,
+        );
+      },
       child: Scaffold(
         appBar: MyAppBar(
-          title: 'Backup and Restore',
-          imagePath: 'assets/images/img3.jpg',
+          title: "Backup&Restore",
         ),
         body: DoubleBackToCloseWidget(
           child: SafeArea(
             child: Container(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Center(
                 child: SingleChildScrollView(
                   child: Column(
@@ -77,7 +110,7 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
                           Utilities.showSnackbar(context, "Notes Exported",
                               Colors.white, Duration(seconds: 2), Colors.green);
                         },
-                        child: Text('Export Notes'),
+                        child: const Text('Export Notes'),
                       ),
                       ElevatedButton(
                         onPressed: () async {
@@ -101,7 +134,7 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
                                 Colors.green);
                           }
                         },
-                        child: Text('Import Notes'),
+                        child: const Text('Import Notes'),
                       ),
                     ],
                   ),
@@ -112,7 +145,7 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
         ),
         floatingActionButton: Fab(NoteState.archived),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: BottomBar(),
+        bottomNavigationBar: const BottomBar(),
       ),
     );
   }
@@ -156,8 +189,6 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper> {
         );
       }
     } catch (e) {
-      print(e);
-
       Utilities.showSnackbar(context, "Error while exporting", Colors.white,
           Duration(seconds: 2), Colors.green);
     }

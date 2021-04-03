@@ -19,7 +19,7 @@ class EditScreen extends StatefulWidget {
   final NoteState fromWhere;
 
   EditScreen(
-      {this.currentNote,
+      {@required this.currentNote,
       this.shouldAutoFocus = true,
       @required this.fromWhere,
       @required this.isImageNote});
@@ -76,6 +76,7 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 10');
     return WillPopScope(
       onWillPop: _onBackPress,
       child: Scaffold(
@@ -92,13 +93,13 @@ class _EditScreenState extends State<EditScreen> {
         children: <Widget>[
           Flexible(
             child: Container(
-              padding: EdgeInsets.only(
+              padding: const EdgeInsets.only(
                   left: 10.0, right: 5.0, top: 10.0, bottom: 5.0),
               child: TextField(
                 controller: _titleController,
                 maxLines: null,
                 textCapitalization: TextCapitalization.sentences,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15.0,
                 ),
@@ -109,7 +110,7 @@ class _EditScreenState extends State<EditScreen> {
           ),
           if (_image != null)
             Container(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               width: MediaQuery.of(context).size.width,
               height: 250.0,
               child: Stack(
@@ -129,7 +130,7 @@ class _EditScreenState extends State<EditScreen> {
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Padding(
-                      padding: EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: Container(
                         height: 30.0,
                         width: 30.0,
@@ -165,7 +166,7 @@ class _EditScreenState extends State<EditScreen> {
                 autofocus: widget.shouldAutoFocus,
                 controller: _contentController,
                 maxLines: null,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15.0,
                 ),
@@ -209,7 +210,7 @@ class _EditScreenState extends State<EditScreen> {
     return BottomAppBar(
       child: Container(
         height: kBottomNavigationBarHeight,
-        padding: EdgeInsets.symmetric(horizontal: 1),
+        padding: const EdgeInsets.symmetric(horizontal: 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[

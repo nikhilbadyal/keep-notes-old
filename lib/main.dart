@@ -11,6 +11,7 @@ import 'package:notes/screens/HiddenScreen.dart';
 import 'package:notes/screens/HomeScreen.dart';
 import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/screens/SetPassword.dart';
+import 'package:notes/screens/SettingsScreen.dart';
 import 'package:notes/screens/TrashScreen.dart';
 import 'package:notes/util/DrawerManager.dart';
 import 'package:notes/util/LockManager.dart';
@@ -45,6 +46,7 @@ class MyNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('building main');
     myNotes = this;
     return MultiProvider(
       providers: [
@@ -65,6 +67,7 @@ class MyNotes extends StatelessWidget {
           '/backup': (context) => BackUpScreen(),
           '/lock': (context) => LockScreen(),
           '/setpass': (context) => SetPassword(),
+          '/settings': (context) => SettingsScreen(),
         },
       ),
     );

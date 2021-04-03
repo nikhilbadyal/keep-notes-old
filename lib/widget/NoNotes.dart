@@ -4,47 +4,29 @@ import 'package:notes/database/note.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/Navigations.dart';
 
-Widget noNotesUi(BuildContext context, NoteState noteState) {
-  if (noteState == NoteState.deleted) {
+class NoNotesUi extends StatelessWidget {
+  const NoNotesUi({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('building 17');
     return Center(
       child: ListView(
         children: [
-          image(),
+          const ImageWig(),
           Center(
             child: RichText(
               text: TextSpan(
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22.0,
                   color: black2,
                   fontWeight: FontWeight.w600,
                 ),
                 children: [
-                  TextSpan(text: ' No Deleted Notes'),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  } else {
-    return Center(
-      child: ListView(
-        children: [
-          image(),
-          Center(
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 22.0,
-                  color: black2,
-                  fontWeight: FontWeight.w600,
-                ),
-                children: [
-                  TextSpan(text: ' There is no note available\nTap on "'),
+                  const TextSpan(text: ' Nothing here\nTap on "'),
                   TextSpan(
                       text: '+',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 30.0,
                         color: headerColor,
                         fontWeight: FontWeight.bold,
@@ -52,9 +34,10 @@ Widget noNotesUi(BuildContext context, NoteState noteState) {
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           goToNoteEditScreen(
-                              context: context, noteState: noteState);
+                              context: context,
+                              noteState: NoteState.unspecified);
                         }),
-                  TextSpan(text: '" to add new note'),
+                  const TextSpan(text: '" to add new note'),
                 ],
               ),
             ),
@@ -65,13 +48,19 @@ Widget noNotesUi(BuildContext context, NoteState noteState) {
   }
 }
 
-Widget image() {
-  return Container(
-    child: Image.asset(
-      'assets/images/crying_emoji.png',
-      fit: BoxFit.contain,
-      width: 120.0,
-      height: 200.0,
-    ),
-  );
+class ImageWig extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('building 16');
+    return Container(
+      child: Image.asset(
+        'assets/images/crying_emoji.png',
+        fit: BoxFit.contain,
+        width: 120.0,
+        height: 200.0,
+      ),
+    );
+  }
+
+  const ImageWig();
 }

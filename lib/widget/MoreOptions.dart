@@ -23,6 +23,7 @@ class MoreOptions extends StatefulWidget {
 class _MoreOptionsState extends State<MoreOptions> {
   @override
   Widget build(BuildContext context) {
+    debugPrint('building 36');
     return Container(
       height: 200,
       child: SingleChildScrollView(
@@ -30,41 +31,175 @@ class _MoreOptionsState extends State<MoreOptions> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             widget.note.state == NoteState.hidden
-                ? unhideIcon(context, widget.note, widget.autoSaver)
-                : hideIcon(context, widget.note, widget.autoSaver),
+                ? UnHideIcon(
+                    note: widget.note,
+                    autoSaver: widget.autoSaver,
+                    saveNote: widget.saveNote,
+                  )
+                : HideIcon(
+                    note: widget.note,
+                    autoSaver: widget.autoSaver,
+                    saveNote: widget.saveNote,
+                  ),
             widget.note.state == NoteState.archived
-                ? unarchiveIcon(context, widget.note, widget.autoSaver)
-                : archiveIcon(context, widget.note, widget.autoSaver),
-            copyIcon(context, widget.note, widget.autoSaver),
+                ? UnArchiveIcon(
+                    note: widget.note,
+                    autoSaver: widget.autoSaver,
+                    saveNote: widget.saveNote,
+                  )
+                : ArchiveIcon(
+                    note: widget.note,
+                    autoSaver: widget.autoSaver,
+                    saveNote: widget.saveNote,
+                  ),
+            CopyIcon(
+              note: widget.note,
+              autoSaver: widget.autoSaver,
+              saveNote: widget.saveNote,
+            ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget hideIcon(BuildContext context, Note note, Timer autoSaver) {
+class CopyIcon extends StatelessWidget {
+  final Note note;
+  final Timer autoSaver;
+  final Function() saveNote;
+
+  const CopyIcon(
+      {Key key,
+      @required this.note,
+      @required this.autoSaver,
+      @required this.saveNote})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('building 37');
+    return ListTile(
+      leading: const Icon(
+        Icons.copy_outlined,
+        color: Colors.blue,
+      ),
+      title: const Text('Copy Note'),
+      onTap: () async {
+        autoSaver.cancel();
+        await saveNote();
+        Provider.of<NotesHelper>(context, listen: false).copyNote(note);
+        String whereToNavigate = Utilities.navChecker(note.state);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            whereToNavigate, (Route<dynamic> route) => false);
+      },
+    );
+  }
+}
+
+class UnHideIcon extends StatelessWidget {
+  final Note note;
+  final Timer autoSaver;
+  final Function() saveNote;
+
+  const UnHideIcon(
+      {Key key,
+      @required this.note,
+      @required this.autoSaver,
+      @required this.saveNote})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('building 38');
+    return ListTile(
+      leading: Icon(
+        Icons.inbox_outlined,
+        color: Colors.blue,
+      ),
+      title: const Text('Unhide Note'),
+      onTap: () {
+        autoSaver.cancel();
+        saveNote();
+        Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
+        String whereToNavigate = Utilities.navChecker(note.state);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            whereToNavigate, (Route<dynamic> route) => false);
+      },
+    );
+  }
+}
+
+class UnArchiveIcon extends StatelessWidget {
+  final Note note;
+  final Timer autoSaver;
+  final Function() saveNote;
+
+  const UnArchiveIcon(
+      {Key key,
+      @required this.note,
+      @required this.autoSaver,
+      @required this.saveNote})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('building 39');
+    return ListTile(
+      leading: Icon(
+        Icons.unarchive_outlined,
+        color: Colors.blue,
+      ),
+      title: const Text('Unarchive Note'),
+      onTap: () {
+        autoSaver.cancel();
+        saveNote();
+        Provider.of<NotesHelper>(context, listen: false).unarchiveNote(note);
+        String whereToNavigate = Utilities.navChecker(note.state);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            whereToNavigate, (Route<dynamic> route) => false);
+      },
+    );
+  }
+}
+
+class HideIcon extends StatelessWidget {
+  final Note note;
+  final Timer autoSaver;
+  final Function() saveNote;
+
+  const HideIcon(
+      {Key key,
+      @required this.note,
+      @required this.autoSaver,
+      @required this.saveNote})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('building 40');
     return ListTile(
       leading: Icon(
         TablerIcons.ghost,
         color: Colors.blue,
       ),
-      title: Text('Hide Note'),
+      title: const Text('Hide Note'),
       onTap: () {
         if (myNotes.lockChecker.passwordSet) {
           autoSaver.cancel();
-          widget.saveNote();
-          Provider.of<NotesHelper>(this.context, listen: false).hideNote(note);
+          saveNote();
+          Provider.of<NotesHelper>(context, listen: false).hideNote(note);
           String whereToNavigate = Utilities.navChecker(note.state);
-          Navigator.of(this.context).pushNamedAndRemoveUntil(
+          Navigator.of(context).pushNamedAndRemoveUntil(
               whereToNavigate, (Route<dynamic> route) => false);
         } else {
           showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Set Passcode first'),
+              title: const Text('Set Passcode first'),
               actions: [
                 TextButton(
-                  child: Text(
+                  child: const Text(
                     'Set Now',
                   ),
                   onPressed: () {
@@ -72,7 +207,7 @@ class _MoreOptionsState extends State<MoreOptions> {
                   },
                 ),
                 TextButton(
-                  child: Text(
+                  child: const Text(
                     'Cancel',
                   ),
                   onPressed: () async {
@@ -86,75 +221,35 @@ class _MoreOptionsState extends State<MoreOptions> {
       },
     );
   }
+}
 
-  Widget unhideIcon(BuildContext context, Note note, Timer autoSaver) {
-    return ListTile(
-      leading: Icon(
-        Icons.inbox_outlined,
-        color: Colors.blue,
-      ),
-      title: Text('Unhide Note'),
-      onTap: () {
-        autoSaver.cancel();
-        widget.saveNote();
-        Provider.of<NotesHelper>(this.context, listen: false).unHideNote(note);
-        String whereToNavigate = Utilities.navChecker(note.state);
-        Navigator.of(this.context).pushNamedAndRemoveUntil(
-            whereToNavigate, (Route<dynamic> route) => false);
-      },
-    );
-  }
+class ArchiveIcon extends StatelessWidget {
+  final Note note;
+  final Timer autoSaver;
+  final Function() saveNote;
 
-  Widget archiveIcon(BuildContext context, Note note, Timer autoSaver) {
+  const ArchiveIcon(
+      {Key key,
+      @required this.note,
+      @required this.autoSaver,
+      @required this.saveNote})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('building 41');
     return ListTile(
       leading: Icon(
         Icons.archive_outlined,
         color: Colors.blue,
       ),
-      title: Text('Archive Note'),
+      title: const Text('Archive Note'),
       onTap: () {
         autoSaver.cancel();
-        widget.saveNote();
-        Provider.of<NotesHelper>(this.context, listen: false).archiveNote(note);
+        saveNote();
+        Provider.of<NotesHelper>(context, listen: false).archiveNote(note);
         String whereToNavigate = Utilities.navChecker(note.state);
-        Navigator.of(this.context).pushNamedAndRemoveUntil(
-            whereToNavigate, (Route<dynamic> route) => false);
-      },
-    );
-  }
-
-  Widget unarchiveIcon(BuildContext context, Note note, Timer autoSaver) {
-    return ListTile(
-      leading: Icon(
-        Icons.unarchive_outlined,
-        color: Colors.blue,
-      ),
-      title: Text('Unarchive Note'),
-      onTap: () {
-        autoSaver.cancel();
-        widget.saveNote();
-        Provider.of<NotesHelper>(this.context, listen: false)
-            .unarchiveNote(note);
-        String whereToNavigate = Utilities.navChecker(note.state);
-        Navigator.of(this.context).pushNamedAndRemoveUntil(
-            whereToNavigate, (Route<dynamic> route) => false);
-      },
-    );
-  }
-
-  Widget copyIcon(BuildContext context, Note note, Timer autoSaver) {
-    return ListTile(
-      leading: Icon(
-        Icons.copy_outlined,
-        color: Colors.blue,
-      ),
-      title: Text('Copy Note'),
-      onTap: () async {
-        autoSaver.cancel();
-        await widget.saveNote();
-        Provider.of<NotesHelper>(this.context, listen: false).copyNote(note);
-        String whereToNavigate = Utilities.navChecker(note.state);
-        Navigator.of(this.context).pushNamedAndRemoveUntil(
+        Navigator.of(context).pushNamedAndRemoveUntil(
             whereToNavigate, (Route<dynamic> route) => false);
       },
     );
