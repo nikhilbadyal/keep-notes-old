@@ -2,19 +2,18 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:notes/main.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
 import 'package:notes/widget/Navigations.dart';
 
-import '../main.dart';
+import '../../app.dart';
 
 typedef KeyboardTapCallback = void Function(String text);
 typedef DeleteTapCallback = void Function();
 typedef FingerTapCallback = void Function();
 typedef DoneCallBack = void Function(String text);
 
-final String pass = "1234";
+const String pass = '1234';
 
 class LockScreen extends StatefulWidget {
   @override
@@ -22,7 +21,7 @@ class LockScreen extends StatefulWidget {
 }
 
 class _LockScreenState extends State<LockScreen> {
-  String enteredPassCode = "";
+  String enteredPassCode = '';
   final StreamController<bool> _verificationNotifier =
       StreamController<bool>.broadcast();
 
@@ -40,7 +39,7 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   void _onDelTap() {
-    if (enteredPassCode.length > 0) {
+    if (enteredPassCode.isNotEmpty) {
       setState(() {
         enteredPassCode =
             enteredPassCode.substring(0, enteredPassCode.length - 1);
@@ -51,7 +50,7 @@ class _LockScreenState extends State<LockScreen> {
   Future<void> _onFingerTap() async {
     if (myNotes.lockChecker.bioEnabled) {
       if (myNotes.lockChecker.firstTimeNeeded) {
-        showDialog<void>(
+        await showDialog<void>(
           context: context,
           barrierDismissible: false, // user must tap button!
           builder: (BuildContext context) {
@@ -59,59 +58,59 @@ class _LockScreenState extends State<LockScreen> {
               title: const Text('Error'),
               content: SingleChildScrollView(
                 child: ListBody(
-                  children: <Widget>[
-                    const Text("Please enter password at least once"),
+                  children: const <Widget>[
+                    Text('Please enter password at least once'),
                   ],
                 ),
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Sure'),
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.of(context).pop(false);
                   },
+                  child: const Text('Sure'),
                 ),
               ],
             );
           },
         );
       } else {
-        bool status = await Utilities.authenticateUser(context);
+        final status = await Utilities.authenticateUser(context);
         if (status) {
-          goToHiddenScreen(context);
+          await goToHiddenScreen(context);
         } else {
           Navigator.of(context).pop(false);
         }
       }
     } else {
-      showDialog<bool>(
+      await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Set Fingerprint First'),
           actions: [
             TextButton(
-              child: const Text(
-                'Ok',
-                style: const TextStyle(fontSize: 20),
-              ),
               onPressed: () async {
                 Navigator.of(context).pop(true);
-                bool status =
+                final status =
                     await Utilities.authenticateFirstTimeUser(context);
                 if (status) {
-                  Utilities.showSnackbar(context, "User Registered",
-                      Colors.green, Duration(seconds: 2), Colors.white);
+                  Utilities.showSnackbar(context, 'User Registered',
+                      Colors.green, const Duration(seconds: 2), Colors.white);
                 }
               },
+              child: const Text(
+                'Ok',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
             TextButton(
-              child: const Text(
-                'Cancel',
-                style: const TextStyle(fontSize: 20),
-              ),
-              onPressed: () async {
+              onPressed: () {
                 Navigator.of(context).pop(true);
               },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ],
         ),
@@ -119,11 +118,9 @@ class _LockScreenState extends State<LockScreen> {
     }
   }
 
-  Widget title = Container(
-    child: const Text(
-      'Enter Password',
-      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    ),
+  Widget title = const Text(
+    'Enter Password',
+    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
   );
 
   void callSetState(String data) {
@@ -136,7 +133,7 @@ class _LockScreenState extends State<LockScreen> {
     if (enteredPassCode == myNotes.lockChecker.password) {
       if (myNotes.lockChecker.bioEnabled &&
           myNotes.lockChecker.firstTimeNeeded) {
-        Utilities.addBoolToSF("firstTimeNeeded", false);
+        Utilities.addBoolToSF('firstTimeNeeded', false);
         myNotes.lockChecker.firstTimeNeeded = false;
       }
       goToHiddenScreen(context);
@@ -144,14 +141,14 @@ class _LockScreenState extends State<LockScreen> {
       _verificationNotifier.add(false);
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        Utilities.getExitSnackBar(context, "Wrong Passcode"),
+        Utilities.getExitSnackBar(context, 'Wrong Passcode'),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 23');
+    //debugPrint('building 23');
     return MyLockScreen(
       title: title,
       onTap: _onTap,
@@ -165,14 +162,6 @@ class _LockScreenState extends State<LockScreen> {
 }
 
 class MyLockScreen extends StatefulWidget {
-  final Widget title;
-  final KeyboardTapCallback onTap;
-  final DeleteTapCallback onDelTap;
-  final FingerTapCallback onFingerTap;
-  final String enteredPassCode;
-  final Stream<bool> stream;
-  final DoneCallBack doneCallBack;
-
   const MyLockScreen({
     Key key,
     @required this.title,
@@ -183,6 +172,14 @@ class MyLockScreen extends StatefulWidget {
     @required this.stream,
     this.doneCallBack,
   }) : super(key: key);
+
+  final Widget title;
+  final KeyboardTapCallback onTap;
+  final DeleteTapCallback onDelTap;
+  final FingerTapCallback onFingerTap;
+  final String enteredPassCode;
+  final Stream<bool> stream;
+  final DoneCallBack doneCallBack;
 
   @override
   _MyLockScreenState createState() => _MyLockScreenState();
@@ -195,13 +192,19 @@ class _MyLockScreenState extends State<MyLockScreen>
   Animation<double> animation;
 
   @override
+  void dispose() {
+    super.dispose();
+    streamSubscription.cancel();
+  }
+
+  @override
   void initState() {
     super.initState();
     streamSubscription = widget.stream.listen(
       (isValid) => _showValidation(isValid),
     );
-    controller =
-        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 400), vsync: this);
     final Animation curve = CurvedAnimation(
       parent: controller,
       curve: ShakeCurve(),
@@ -210,7 +213,7 @@ class _MyLockScreenState extends State<MyLockScreen>
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           setState(() {
-            widget.doneCallBack("");
+            widget.doneCallBack('');
             controller.value = 0;
           });
         }
@@ -224,27 +227,27 @@ class _MyLockScreenState extends State<MyLockScreen>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 24');
+    //debugPrint('building 24');
     return DoubleBackToCloseWidget(
       child: Scaffold(
         body: SafeArea(
           child: Stack(
-            children: [
+            children: <Widget>[
               Positioned(
                 child: Center(
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         Align(
                           alignment: Alignment.topRight,
                           child: _buildDeleteButton(context),
                         ),
                         widget.title,
-                        SizedBox(
+                        const SizedBox(
                           height: 50,
                         ),
-                        Container(
+                        SizedBox(
                           height: 40,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +268,7 @@ class _MyLockScreenState extends State<MyLockScreen>
     );
   }
 
-  _showValidation(bool isValid) {
+  void _showValidation(bool isValid) {
     if (!isValid) {
       controller.forward();
     }
@@ -273,8 +276,8 @@ class _MyLockScreenState extends State<MyLockScreen>
 }
 
 List<Widget> _buildCircles(String enteredPassCode) {
-  var list = <Widget>[];
-  for (int i = 0; i < 4; ++i) {
+  final list = <Widget>[];
+  for (var i = 0; i < 4; ++i) {
     list.add(
       Container(
         margin: const EdgeInsets.all(8),
@@ -289,36 +292,41 @@ List<Widget> _buildCircles(String enteredPassCode) {
 
 Widget _buildKeyBoard(KeyboardTapCallback _onTap, DeleteTapCallback onDelTap,
     FingerTapCallback onFingerTap, String enteredPassCode) {
-  return Container(
-    child: Keyboard(
-      onKeyboardTap: _onTap,
-      onDelTap: onDelTap,
-      onFingerTap: onFingerTap,
-    ),
+  return Keyboard(
+    onKeyboardTap: _onTap,
+    onDelTap: onDelTap,
+    onFingerTap: onFingerTap,
   );
 }
 
 Widget _buildDeleteButton(BuildContext context) {
   return Row(
-    children: [
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: <Widget>[
       IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.cancel,
           color: Colors.blue,
           size: 25,
         ),
-        onPressed: () {
+        onPressed: () async {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          Navigator.of(context)
+          await Navigator.of(context)
               .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
         },
       ),
     ],
-    mainAxisAlignment: MainAxisAlignment.end,
   );
 }
 
 class Keyboard extends StatelessWidget {
+  Keyboard(
+      {Key key,
+      @required this.onKeyboardTap,
+      @required this.onDelTap,
+      @required this.onFingerTap})
+      : super(key: key);
+
   final KeyboardTapCallback onKeyboardTap;
   final DeleteTapCallback onDelTap;
   final FingerTapCallback onFingerTap;
@@ -337,13 +345,6 @@ class Keyboard extends StatelessWidget {
     '-1'
   ];
 
-  Keyboard(
-      {Key key,
-      @required this.onKeyboardTap,
-      @required this.onDelTap,
-      @required this.onFingerTap})
-      : super(key: key);
-
   Widget _buildDigit(String text) {
     return Container(
       margin: const EdgeInsets.all(2),
@@ -355,12 +356,12 @@ class Keyboard extends StatelessWidget {
               onKeyboardTap(text);
             },
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.transparent,
               ),
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -389,12 +390,12 @@ class Keyboard extends StatelessWidget {
               onDelTap();
             },
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.transparent,
               ),
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -410,43 +411,40 @@ class Keyboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 25');
-    return Container(
-      child: CustomAlign(
-        children: List.generate(12, (index) {
-          return index == 9 || index == 11
-              ? index == 9
-                  ? onFingerTap == null
-                      ? Container()
-                      : _buildExtra(
-                          Icon(Icons.fingerprint_outlined), onFingerTap)
-                  : _buildExtra(Icon(Icons.backspace_outlined), onDelTap)
-              : _buildDigit(keyBoardItem[index]);
-        }),
-      ),
+    //debugPrint('building 25');
+    return CustomAlign(
+      children: List.generate(12, (index) {
+        return index == 9 || index == 11
+            ? index == 9
+                ? onFingerTap == null
+                    ? Container()
+                    : _buildExtra(
+                        const Icon(Icons.fingerprint_outlined), onFingerTap)
+                : _buildExtra(const Icon(Icons.backspace_outlined), onDelTap)
+            : _buildDigit(keyBoardItem[index]);
+      }),
     );
   }
 }
 
 class CustomAlign extends StatelessWidget {
-  final List<Widget> children;
-
   const CustomAlign({Key key, @required this.children}) : super(key: key);
+
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 26');
+    //debugPrint('building 26');
     return GridView.count(
       shrinkWrap: true,
       crossAxisCount: 3,
       mainAxisSpacing: 5,
       crossAxisSpacing: 5,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(25),
-      childAspectRatio: 1,
       children: children
           .map(
-            (e) => Container(
+            (e) => SizedBox(
               width: 5,
               height: 5,
               child: e,
@@ -458,9 +456,9 @@ class CustomAlign extends StatelessWidget {
 }
 
 class Circle extends StatefulWidget {
-  final isFilled;
-
   const Circle({Key key, @required this.isFilled}) : super(key: key);
+
+  final bool isFilled;
 
   @override
   _CircleState createState() => _CircleState();
@@ -469,7 +467,7 @@ class Circle extends StatefulWidget {
 class _CircleState extends State<Circle> {
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 27 ');
+    //debugPrint('building 27 ');
     return Container(
       margin: const EdgeInsets.only(bottom: 1),
       width: 30,

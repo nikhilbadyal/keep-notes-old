@@ -2,24 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:notes/database/NotesHelper.dart';
-import 'package:notes/screens/AboutMeScreen.dart';
-import 'package:notes/screens/ArchiveScreen.dart';
-import 'package:notes/screens/BackUp.dart';
-import 'package:notes/screens/HiddenScreen.dart';
-import 'package:notes/screens/HomeScreen.dart';
-import 'package:notes/screens/LockScreen.dart';
-import 'package:notes/screens/SetPassword.dart';
-import 'package:notes/screens/SettingsScreen.dart';
-import 'package:notes/screens/TrashScreen.dart';
-import 'package:notes/util/DrawerManager.dart';
-import 'package:notes/util/LockManager.dart';
-import 'package:notes/util/MyRouteObserver.dart';
-import 'package:notes/util/Utilites.dart';
-import 'package:provider/provider.dart';
-
-MyNotes myNotes;
+import 'package:notes/app.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +13,15 @@ void main() {
     if (kReleaseMode) {
       exit(1);
     }
+    if (kDebugMode) {
+      timeDilation = 1.0;
+    }
   };
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
+
+  //TODO init all settings from here
   SystemChrome.setPreferredOrientations(
           [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
       .then((_) => runApp(
@@ -39,37 +29,4 @@ void main() {
           ));
 }
 
-class MyNotes extends StatelessWidget {
-  final MyRouteObserver myRouteObserver = MyRouteObserver();
-  final DrawerManager drawerManager = DrawerManager();
-  final LockChecker lockChecker = LockChecker(Utilities.passLength);
 
-  @override
-  Widget build(BuildContext context) {
-    debugPrint('building main');
-    myNotes = this;
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<NotesHelper>(
-          create: (_) => NotesHelper(),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Notes App',
-        navigatorObservers: [myRouteObserver],
-        routes: {
-          '/': (context) => HomeScreen(),
-          '/about': (context) => AboutMeScreen(),
-          '/archive': (context) => ArchiveScreen(),
-          '/trash': (context) => TrashScreen(),
-          '/hidden': (context) => HiddenScreen(),
-          '/backup': (context) => BackUpScreen(),
-          '/lock': (context) => LockScreen(),
-          '/setpass': (context) => SetPassword(),
-          '/settings': (context) => SettingsScreen(),
-        },
-      ),
-    );
-  }
-}

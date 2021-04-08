@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:notes/main.dart';
+
+import '../app.dart';
 
 enum NoteState {
   unspecified,
@@ -19,6 +20,16 @@ extension NoteStatex on NoteState {
 }
 
 class Note {
+  Note(
+      {@required @required this.id,
+      @required @required this.title,
+      @required @required this.content,
+      @required @required this.creationDate,
+      @required @required this.lastModify,
+      @required @required this.color,
+      @required @required this.state,
+      @required @required this.imagePath});
+
   int id;
   String title;
   String content;
@@ -28,23 +39,13 @@ class Note {
   NoteState state;
   String imagePath;
 
-  Note(
-      {@required @required this.id,
-      @required @required this.title,
-      @required @required this.content,
-      @required @required this.creationDate,
-      @required @required this.lastModify,
-      @required @required this.color,
-      @required @required this.state,
-      @required @required this.imagePath}) {}
-
   @override
   String toString() {
     return 'Object is $id $title $content $creationDate $lastModify $color $state $imagePath ';
   }
 
   Map<String, dynamic> toMap(bool isNew) {
-    Map<String, dynamic> data = {
+    final data = <String, dynamic>{
       'title': title,
       'content': content,
       'creationDate':
@@ -91,7 +92,7 @@ class Note {
   }
 
   Map<String, dynamic> toJson() {
-    var data = {
+    final data = {
       'title': title,
       'content': content,
       'creationDate': creationDate.millisecondsSinceEpoch,

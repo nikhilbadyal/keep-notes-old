@@ -3,6 +3,10 @@
 import 'Utilites.dart';
 
 class LockChecker {
+  LockChecker(this.passwordLength) {
+    initConfig();
+  }
+
   int passwordLength;
   String password;
   bool passwordSet;
@@ -10,32 +14,28 @@ class LockChecker {
   bool bioAvailable;
   bool firstTimeNeeded;
 
-  void updateDetails() async {}
+  void updateDetails() {}
 
-  void bioAvailCheck() async {
+  Future<void> bioAvailCheck() async {
     bioAvailable = await Utilities.isBioAvailable();
-  }
-
-  LockChecker(this.passwordLength) {
-    initConfig();
   }
 
   Future<void> initConfig() async {
     password = await Utilities.getStringValuesSF('password');
-    passwordSet = password == null ? false : true;
+    if (password == null) {
+      passwordSet = false;
+    } else {
+      passwordSet = password.isNotEmpty;
+    }
+    // passwordSet = password.isNotEmpty || false;
     bioEnabled = await Utilities.getBoolValuesSF('bio');
     firstTimeNeeded = await Utilities.getBoolValuesSF('firstTimeNeeded');
-    bioEnabled == null ? false : bioEnabled;
-    if (bioEnabled == null) {
-      bioEnabled = false;
-    }
+    bioEnabled ??= false;
     if (bioEnabled) {
       bioAvailable = true;
     } else {
-      bioAvailCheck();
+      await bioAvailCheck();
     }
-    if (firstTimeNeeded == null) {
-      firstTimeNeeded = true;
-    }
+    firstTimeNeeded ??= true;
   }
 }

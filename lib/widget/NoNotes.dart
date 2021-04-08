@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/note.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/Navigations.dart';
 
@@ -9,10 +9,10 @@ class NoNotesUi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 17');
+    //debugPrint('building 17');
     return Center(
       child: ListView(
-        children: [
+        children: <Widget>[
           const ImageWig(),
           Center(
             child: RichText(
@@ -23,7 +23,8 @@ class NoNotesUi extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
                 children: [
-                  const TextSpan(text: ' Nothing here\nTap on "'),
+                  const TextSpan(text: ' Nothing here\n"'),
+                  const TextSpan(text: 'Tap on "'),
                   TextSpan(
                       text: '+',
                       style: const TextStyle(
@@ -49,18 +50,16 @@ class NoNotesUi extends StatelessWidget {
 }
 
 class ImageWig extends StatelessWidget {
+  const ImageWig();
+
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 16');
-    return Container(
-      child: Image.asset(
-        'assets/images/crying_emoji.png',
-        fit: BoxFit.contain,
-        width: 120.0,
-        height: 200.0,
-      ),
+    //debugPrint('building 16');
+    return Image.asset(
+      'assets/images/crying_emoji.png',
+      fit: BoxFit.contain,
+      width: 120.0,
+      height: 200.0,
     );
   }
-
-  const ImageWig();
 }

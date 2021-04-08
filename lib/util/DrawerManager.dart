@@ -1,13 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:notes/AnimatedDrawerHelper/SecondLayer.dart';
-import 'package:notes/ScreenHelpers/AboutMeScreen.dart';
-import 'package:notes/ScreenHelpers/ArchiveScreen.dart';
-import 'package:notes/ScreenHelpers/BackupRestore.dart';
-import 'package:notes/ScreenHelpers/HiddenScreen.dart';
-import 'package:notes/ScreenHelpers/HomeScreen.dart';
-import 'package:notes/ScreenHelpers/SettingsScreen.dart';
-import 'package:notes/ScreenHelpers/TrashScreen.dart';
-import 'package:notes/main.dart';
+import 'package:flutter/material.dart';
+import 'package:notes/Animations/AnimatedDrawerHelper/SecondLayer.dart';
+import 'package:notes/views/TopWidget.dart';
+import 'package:notes/widget/AppBar.dart';
+import 'package:provider/provider.dart';
 
 class DrawerManager with ChangeNotifier {
   double xOffSet = 0;
@@ -15,83 +11,54 @@ class DrawerManager with ChangeNotifier {
   double angle = 0;
   bool isOpened = false;
   bool isIgnoring = false;
-  static int animationTime = 350;
-  static int SecondLayerAnimationTime = 600;
+  static int animationTime = 300;
+  static int secondLayerAnimationTime = 500;
 
-  void callback(bool isOpen) {
+  void callback(BuildContext context, bool isOpen) {
+    // final status = Provider.of<AppbarStatus>(context, listen: false);
     if (isOpen) {
       xOffSet = 0;
       yOffSet = 0;
       angle = 0;
       isOpened = false;
       isIgnoring = false;
-      secondLayer.animate();
+      secondLayer.callSetState(0, 0, 0);
+      // secondLayer.animate();
       animatedDrawer();
+      // status.close();
     } else {
+      //   print('opening');
       xOffSet = 150;
       yOffSet = 80;
       angle = -0.2;
       isOpened = true;
       isIgnoring = true;
-      secondLayer.animate();
+      secondLayer.callSetState(123, 110, -0.275);
+      // secondLayer.animate();
       animatedDrawer();
+      // status.open();
     }
   }
 
-  void openDrawer() {
-    callback(false);
+  void openDrawer(BuildContext context) {
+    callback(context, false);
   }
 
-  void closeDrawer() {
-    callback(true);
+  void closeDrawer(BuildContext context) {
+    callback(context, true);
   }
 
-  void resetDrawerState() {
+  void resetDrawerState(BuildContext context) {
     xOffSet = 0;
     yOffSet = 0;
     angle = 0;
     isOpened = false;
     isIgnoring = false;
+    final status = Provider.of<AppbarStatus>(context, listen: false);
+    status.toggle();
   }
 
   void animatedDrawer() {
-    String currentScreen = myNotes.myRouteObserver.currentScreen;
-    switch (currentScreen) {
-      case "/":
-        {
-          homeScreen.animate();
-        }
-        break;
-      case "/about":
-        {
-          aboutMe.animate();
-        }
-        break;
-      case "/archive":
-        {
-          archive.animate();
-        }
-        break;
-      case "/trash":
-        {
-          trash.animate();
-        }
-        break;
-      case "/hidden":
-        {
-          hidden.animate();
-        }
-        break;
-      case "/backup":
-        {
-          backup.animate();
-        }
-        break;
-      case "/settings":
-        {
-          settings.animate();
-        }
-        break;
-    }
+    topWidgetState.animate();
   }
 }

@@ -1,41 +1,41 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:notes/database/NotesHelper.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/database/NotesHelper.dart';
+import 'package:notes/model/note.dart';
 import 'package:provider/provider.dart';
 
-import '../main.dart';
+import '../app.dart';
 
 class DeletePopUp extends StatelessWidget {
+  const DeletePopUp(this.toBeDeleted, this.autoSaver, this.fromWhere);
+
   final Note toBeDeleted;
   final Timer autoSaver;
   final NoteState fromWhere;
 
-  DeletePopUp(this.toBeDeleted, this.autoSaver, this.fromWhere);
-
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 33');
+    //debugPrint('building 33');
     var toWhere = '/';
-    String currentScreen = myNotes.myRouteObserver.currentScreen;
+    final currentScreen = myNotes.myRouteObserver.currentScreen;
     switch (currentScreen) {
-      case "/":
+      case '/':
         {
           toWhere = '/';
         }
         break;
-      case "/archive":
+      case '/archive':
         {
           toWhere = '/archive';
         }
         break;
-      case "/trash":
+      case '/trash':
         {
           toWhere = '/trash';
         }
         break;
-      case "/hidden":
+      case '/hidden':
         {
           toWhere = '/hidden';
         }
@@ -45,21 +45,21 @@ class DeletePopUp extends StatelessWidget {
       title: const Text('Delete'),
       actions: [
         TextButton(
-          child: const Text('Yes'),
-          onPressed: () {
+          onPressed: () async {
             autoSaver.cancel();
-            Provider.of<NotesHelper>(context, listen: false)
+            await Provider.of<NotesHelper>(context, listen: false)
                 .trashNote(note: toBeDeleted);
-            Navigator.of(context).pushNamedAndRemoveUntil(
+            await Navigator.of(context).pushNamedAndRemoveUntil(
                 toWhere, (Route<dynamic> route) => false);
           },
+          child: const Text('Yes'),
         ),
         TextButton(
-          child: const Text('Cancel'),
-          onPressed: () {
+          onPressed: () async {
             Provider.of<NotesHelper>(context, listen: false).falseDelete();
             Navigator.of(context).pop();
           },
+          child: const Text('Cancel'),
         ),
       ],
     );

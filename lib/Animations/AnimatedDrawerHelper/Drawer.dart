@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:notes/main.dart';
 import 'package:notes/widget/AppBar.dart';
 import 'package:notes/widget/Navigations.dart';
+import 'package:provider/provider.dart';
+
+import '../../app.dart';
 
 class ThirdLayer extends StatelessWidget {
+  const ThirdLayer();
+
   @override
   Widget build(BuildContext context) {
     debugPrint('drawer building 1 ');
@@ -16,45 +20,45 @@ class ThirdLayer extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 15.0),
         child: ListView(
-          children: [
+          children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   GestureDetector(
                     onTap: () async {
-                      if (ModalRoute.of(context).settings.name == '/hidden') {
-                        myNotes.drawerManager.closeDrawer();
+                      //TODO detect current screen
+                      /*if (ModalRoute.of(context).settings.name == '/hidden') {
+                        myNotes.drawerManager.closeDrawer(context);
                         // appBar.drawerNotifier.value = true;
-                        appBar.drawerNotifier.value = true;
+                      } else {*/
+                      final status = myNotes.lockChecker.passwordSet;
+                      //print(status);
+                      if (status) {
+                        await goToLockScreen(context);
                       } else {
-                        var status = myNotes.lockChecker.passwordSet;
-                        print(status);
-                        if (status) {
-                          await goToLockScreen(context);
-                        } else {
-                          goToSetPasswordScreen(context);
-                        }
+                        await goToSetPasswordScreen(context);
                       }
+                      // }
                     },
                     child: FlutterLogo(
                       size: MediaQuery.of(context).size.width / 4,
                     ),
                   ),
                   Row(
-                    children: [
-                      const Text(
+                    children: const <Widget>[
+                      Text(
                         'Nik',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Text(
+                      Text(
                         'hil',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -70,140 +74,134 @@ class ThirdLayer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [
+                children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      if (ModalRoute.of(context).settings.name == '/') {
-                        myNotes.drawerManager.closeDrawer();
-                        appBar.drawerNotifier.value = true;
-                      } else {
-                        goToHomeScreen(context);
-                      }
+                      /*if (ModalRoute.of(context).settings.name == '/') {
+                        myNotes.drawerManager.closeDrawer(context);
+                      } else {*/
+                      goToHomeScreen(context);
+                      // }
                     },
                     child: const Text(
                       'Notes',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20.0),
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (ModalRoute.of(context).settings.name == '/archive') {
-                        myNotes.drawerManager.closeDrawer();
-                        appBar.drawerNotifier.value = true;
-                      } else {
-                        goToArchiveScreen(context);
-                      }
+                      /* if (ModalRoute.of(context).settings.name == '/archive') {
+                        myNotes.drawerManager.closeDrawer(context);
+                      } else {*/
+                      goToArchiveScreen(context);
+                      // }
                     },
                     child: const Text(
                       'Archive',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20.0),
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (ModalRoute.of(context).settings.name == '/backup') {
-                        myNotes.drawerManager.closeDrawer();
-                        appBar.drawerNotifier.value = true;
-                      } else {
-                        goToBackUpScreen(context);
-                      }
+                      /* if (ModalRoute.of(context).settings.name == '/backup') {
+                        myNotes.drawerManager.closeDrawer(context);
+                      } else {*/
+                      goToBackUpScreen(context);
+                      // }
                     },
                     child: const Text(
                       'Backup and Restore',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20.0),
                   ),
-                  Divider(
+                  const Divider(
                     color: Colors.white,
                     thickness: 2,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (ModalRoute.of(context).settings.name == '/trash') {
-                        myNotes.drawerManager.closeDrawer();
-                        appBar.drawerNotifier.value = true;
-                      } else {
-                        goToDeleteScreen(context);
-                      }
+                      /* if (ModalRoute.of(context).settings.name == '/trash') {
+                        myNotes.drawerManager.closeDrawer(context);
+                      } else {*/
+                      goToDeleteScreen(context);
+                      // }
                     },
                     child: const Text(
                       'Deleted',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (ModalRoute.of(context).settings.name == '/about') {
-                        myNotes.drawerManager.closeDrawer();
-                        appBar.drawerNotifier.value = true;
-                      } else {
-                        goToAboutMeScreen(context);
-                      }
+                      /*if (ModalRoute.of(context).settings.name == '/about') {
+                        myNotes.drawerManager.closeDrawer(context);
+                      } else {*/
+                      goToAboutMeScreen(context);
+                      // }
                     },
                     child: const Text(
                       'About Me',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
                   ),
-                  Divider(
+                  const Divider(
                     color: Colors.white,
                     thickness: 2,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (ModalRoute.of(context).settings.name == '/settings') {
-                        myNotes.drawerManager.closeDrawer();
-                        appBar.drawerNotifier.value = true;
-                      } else {
-                        goToSettingsScreen(context);
-                      }
+                      /*if (ModalRoute.of(context).settings.name == '/settings') {
+                        myNotes.drawerManager.closeDrawer(context);
+                      } else {*/
+                      goToSettingsScreen(context);
+                      // }
                     },
                     child: const Text(
                       'Settings',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -211,14 +209,14 @@ class ThirdLayer extends StatelessWidget {
                     },
                     child: const Text(
                       'Report/Suggest',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
                   ),
                   SafeArea(
                     child: Align(
@@ -226,7 +224,7 @@ class ThirdLayer extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Semantics(
-                          label: "Close Drawer",
+                          label: 'Close Drawer',
                           button: true,
                           enabled: true,
                           excludeSemantics: true,
@@ -234,9 +232,12 @@ class ThirdLayer extends StatelessWidget {
                             heroTag: UniqueKey(),
                             key: const ValueKey('Back'),
                             onPressed: () {
-                              myNotes.drawerManager.isOpened = false;
-                              myNotes.drawerManager.callback(true);
-                              appBar.drawerNotifier.value = true;
+                              final status = Provider.of<AppbarStatus>(context,
+                                  listen: false);
+                              status.toggle();
+                              leadingState.reverse();
+                              myNotes.drawerManager.callback(
+                                  context, myNotes.drawerManager.isOpened);
                             },
                             icon: IconTheme(
                               data: IconThemeData(color: colorScheme.onPrimary),
@@ -261,6 +262,4 @@ class ThirdLayer extends StatelessWidget {
       ),
     );
   }
-
-  const ThirdLayer();
 }

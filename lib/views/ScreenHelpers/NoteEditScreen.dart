@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:notes/database/NotesHelper.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/database/NotesHelper.dart';
+import 'package:notes/model/note.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/DeletePopUp.dart';
@@ -13,16 +13,16 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class EditScreen extends StatefulWidget {
-  final Note currentNote;
-  final bool shouldAutoFocus;
-  bool isImageNote; //TODO fix this and make this final
-  final NoteState fromWhere;
-
   EditScreen(
       {@required this.currentNote,
       this.shouldAutoFocus = true,
       @required this.fromWhere,
       @required this.isImageNote});
+
+  final Note currentNote;
+  final bool shouldAutoFocus;
+  bool isImageNote; //TODO fix this and make this final
+  final NoteState fromWhere;
 
   @override
   _EditScreenState createState() => _EditScreenState();
@@ -43,7 +43,7 @@ class _EditScreenState extends State<EditScreen> {
     if (widget.currentNote.id == -1) {
       isNew = true;
     }
-    _autoSaver = Timer.periodic(Duration(seconds: 5), (timer) {
+    _autoSaver = Timer.periodic(const Duration(seconds: 5), (timer) {
       saveNote();
     });
   }
@@ -52,9 +52,8 @@ class _EditScreenState extends State<EditScreen> {
   Note noteInEditing;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  var noteColor;
+  Color noteColor;
   bool isNew = false;
-  var state;
   File _image;
 
   String _titleFromInitial;
@@ -76,7 +75,7 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 10');
+    //debugPrint('building 10');
     return WillPopScope(
       onWillPop: _onBackPress,
       child: Scaffold(
@@ -88,95 +87,93 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   Widget _body(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.only(
-                  left: 10.0, right: 5.0, top: 10.0, bottom: 5.0),
-              child: TextField(
-                controller: _titleController,
-                maxLines: null,
-                textCapitalization: TextCapitalization.sentences,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.0,
-                ),
-                decoration: InputDecoration(
-                    hintText: 'Enter Note Title', border: InputBorder.none),
+    return Column(
+      children: <Widget>[
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.only(
+                left: 10.0, right: 5.0, top: 10.0, bottom: 5.0),
+            child: TextField(
+              controller: _titleController,
+              maxLines: null,
+              textCapitalization: TextCapitalization.sentences,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15.0,
               ),
+              decoration: const InputDecoration(
+                  hintText: 'Enter Note Title', border: InputBorder.none),
             ),
           ),
-          if (_image != null)
-            Container(
-              padding: const EdgeInsets.all(10.0),
-              width: MediaQuery.of(context).size.width,
-              height: 250.0,
-              child: Stack(
-                children: [
-                  Hero(
-                    tag: noteInEditing.imagePath,
+        ),
+        if (_image != null)
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            width: MediaQuery.of(context).size.width,
+            height: 250.0,
+            child: Stack(
+              children: <Widget>[
+                Hero(
+                  tag: noteInEditing.imagePath,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      image: DecorationImage(
+                        image: FileImage(_image),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
                     child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                        image: DecorationImage(
-                          image: FileImage(_image),
-                          fit: BoxFit.cover,
+                      height: 30.0,
+                      width: 30.0,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            oldName = _image.path;
+                            _image = null;
+                            updateNote();
+                            deleteImage();
+                          });
+                        },
+                        child: const Icon(
+                          Icons.delete_outline,
+                          size: 16.0,
                         ),
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Container(
-                        height: 30.0,
-                        width: 30.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              oldName = _image.path;
-                              _image = null;
-                              updateNote();
-                              deleteImage();
-                            });
-                          },
-                          child: Icon(
-                            Icons.delete_outline,
-                            size: 16.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.only(
-                  left: 10.0, right: 5.0, top: 10.0, bottom: 5.0),
-              child: TextField(
-                autofocus: widget.shouldAutoFocus,
-                controller: _contentController,
-                maxLines: null,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.0,
                 ),
-                decoration: InputDecoration(
-                    hintText: 'Enter Content', border: InputBorder.none),
-              ),
+              ],
             ),
           ),
-        ],
-      ),
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.only(
+                left: 10.0, right: 5.0, top: 10.0, bottom: 5.0),
+            child: TextField(
+              autofocus: widget.shouldAutoFocus,
+              controller: _contentController,
+              maxLines: null,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15.0,
+              ),
+              decoration: const InputDecoration(
+                  hintText: 'Enter Content', border: InputBorder.none),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -188,7 +185,7 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   Future<void> deleteImage() async {
-    if (await File(oldName).exists()) {
+    if (File(oldName).existsSync()) {
       await File(oldName).delete();
     } else {}
   }
@@ -200,7 +197,7 @@ class _EditScreenState extends State<EditScreen> {
           onPressed: () {
             _showDialog(context, noteInEditing, widget.fromWhere);
           },
-          icon: Icon(Icons.delete_outline),
+          icon: const Icon(Icons.delete_outline),
           tooltip: 'Delete Note',
         ),
     ];
@@ -224,7 +221,7 @@ class _EditScreenState extends State<EditScreen> {
               onPressed: () {
                 _moreMenu(context);
               },
-              icon: Icon(Icons.more_vert_outlined),
+              icon: const Icon(Icons.more_vert_outlined),
               color: headerColor,
               tooltip: 'More ',
             ),
@@ -236,35 +233,38 @@ class _EditScreenState extends State<EditScreen> {
 
   Future<bool> _onBackPress() async {
     _autoSaver.cancel();
-    saveNote();
-    Navigator.of(this.context).pop();
+    await saveNote();
+    Navigator.of(context).pop();
     return true;
   }
 
-  void saveNote() {
-    var isEdited = updateNote();
-    var isEmptyNote = isEmpty();
+  Future<void> saveNote() async {
+    final isEdited = updateNote();
+    final isEmptyNote = isEmpty();
     if (isEdited) {
       if (noteInEditing.id == -1) {
         if (!isEmptyNote) {
-          var noteIn = Provider.of<NotesHelper>(this.context, listen: false)
+          print('here');
+          final noteIn = Provider.of<NotesHelper>(context, listen: false)
               .insertNote(noteInEditing, true);
-          noteIn.then((value) => noteInEditing = value);
+          await noteIn.then((value) => noteInEditing = value);
         }
       } else {
         if (isEmptyNote) {
-          Provider.of<NotesHelper>(this.context, listen: false)
+          print('empty');
+          await Provider.of<NotesHelper>(context, listen: false)
               .deleteNote(noteInEditing);
         } else {
-          var noteIn = Provider.of<NotesHelper>(this.context, listen: false)
+          final noteIn = Provider.of<NotesHelper>(context, listen: false)
               .insertNote(noteInEditing, false);
-          noteIn.then((value) => noteInEditing = value);
+          await noteIn.then((value) => noteInEditing = value);
         }
       }
       Utilities.getSnackBar(
-          "Note Saved", Colors.white, Duration(seconds: 2), Colors.green);
+          'Note Saved', Colors.white, const Duration(seconds: 2), Colors.green);
       return;
     }
+    print('not edited');
   }
 
   bool isEmpty() {
@@ -281,7 +281,7 @@ class _EditScreenState extends State<EditScreen> {
     noteInEditing.content = _contentController.text.trim();
     if (_image == null) {
     } else {}
-    noteInEditing.imagePath = (_image != null ? _image.path : '');
+    noteInEditing.imagePath = _image != null ? _image.path : '';
     noteInEditing.color = noteColor;
 
     if (widget.isImageNote) {
@@ -312,7 +312,7 @@ class _EditScreenState extends State<EditScreen> {
         });
   }
 
-  void exitWithoutSaving(BuildContext context) {
+  Future<void> exitWithoutSaving(BuildContext context) async {
     _autoSaver.cancel();
     Navigator.pop(context);
   }

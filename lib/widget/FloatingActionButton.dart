@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/note.dart';
 import 'package:notes/util/constants.dart';
 import 'package:notes/widget/Navigations.dart';
 
 class Fab extends StatelessWidget {
-  final NoteState noteState;
-
   const Fab(this.noteState);
+
+  final NoteState noteState;
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('FAB building 35');
+    // debugPrint('FAB building 35');
     return FloatingActionButton(
       onPressed: () async {
-        goToNoteEditScreen(
+        await goToNoteEditScreen(
             context: context, noteState: noteState, shouldAutoFocus: true);
       },
       tooltip: 'Add Notes',
-      child: const Icon(Icons.add),
       foregroundColor: Colors.white,
       backgroundColor: headerColor,
+      child: const Icon(Icons.add),
     );
   }
 }

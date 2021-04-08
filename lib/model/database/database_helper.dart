@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:notes/database/note.dart';
-import 'package:notes/main.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../app.dart';
+import '../note.dart';
+
+// ignore: avoid_classes_with_only_static_members
 class DatabaseHelper {
   static String tableName = 'notes';
-  static var statPath;
 
   static final fieldMap = {
     'id': 'INTEGER PRIMARY KEY ',
@@ -26,7 +27,7 @@ class DatabaseHelper {
 
   static Future<Database> get database async {
     final databasePath = await getDatabasesPath();
-    bool status = await databaseExists(databasePath);
+    final status = await databaseExists(databasePath);
     if (!status) {
       _database = await openDatabase(join(databasePath, 'notes_database.db'),
           onCreate: (database, version) {
@@ -66,8 +67,8 @@ class DatabaseHelper {
     try {
       await db.delete('notes', where: 'state = ?', whereArgs: [3]);
       myNotes.lockChecker.passwordSet = false;
-      Utilities.removeValues('password');
-      Utilities.removeValues('bio');
+      await Utilities.removeValues('password');
+      await Utilities.removeValues('bio');
       myNotes.lockChecker.updateDetails();
       return true;
     } on Error {
@@ -82,7 +83,7 @@ class DatabaseHelper {
         try {
           await db.delete('notes', where: 'id = ?', whereArgs: [note.id]);
 
-          if (note.imagePath != "" && await File(note.imagePath).exists()) {
+          if (note.imagePath != '' && File(note.imagePath).existsSync()) {
             await File(note.imagePath).delete();
           }
           return true;
@@ -91,7 +92,7 @@ class DatabaseHelper {
         }
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
     return false;
   }
@@ -107,7 +108,7 @@ class DatabaseHelper {
         return false;
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -115,7 +116,7 @@ class DatabaseHelper {
     if (note.id != -1) {
       final db = await database;
       note.state = NoteState.unspecified;
-      var idToUpdate = note.id;
+      final idToUpdate = note.id;
 
       await db.update('notes', note.toMap(true),
           where: 'id = ?', whereArgs: [idToUpdate]);
@@ -127,7 +128,7 @@ class DatabaseHelper {
   static Future<bool> trashNote(Note note) async {
     final db = await database;
     note.state = NoteState.deleted;
-    var idToUpdate = note.id;
+    final idToUpdate = note.id;
 
     await db.update('notes', note.toMap(true),
         where: 'id = ?', whereArgs: [idToUpdate]);
@@ -138,7 +139,7 @@ class DatabaseHelper {
     if (note.id != -1) {
       final db = await database;
       note.state = NoteState.hidden;
-      var idToUpdate = note.id;
+      final idToUpdate = note.id;
       await db.update('notes', note.toMap(true),
           where: 'id = ?', whereArgs: [idToUpdate]);
       return true;
@@ -150,7 +151,7 @@ class DatabaseHelper {
     if (note.id != -1) {
       final db = await database;
       note.state = NoteState.unspecified;
-      var idToUpdate = note.id;
+      final idToUpdate = note.id;
       await db.update('notes', note.toMap(true),
           where: 'id = ?', whereArgs: [idToUpdate]);
       return true;
@@ -162,7 +163,7 @@ class DatabaseHelper {
     if (note.id != -1) {
       final db = await database;
       note.state = NoteState.archived;
-      var idToUpdate = note.id;
+      final idToUpdate = note.id;
       await db.update('notes', note.toMap(true),
           where: 'id = ?', whereArgs: [idToUpdate]);
       return true;
@@ -174,7 +175,7 @@ class DatabaseHelper {
     if (note.id != -1) {
       final db = await database;
       note.state = NoteState.unspecified;
-      var idToUpdate = note.id;
+      final idToUpdate = note.id;
 
       await db.update('notes', note.toMap(true),
           where: 'id = ?', whereArgs: [idToUpdate]);
@@ -190,34 +191,34 @@ class DatabaseHelper {
       note.toMap(true),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    var one = await db.query(tableName,
+    final one = await db.query(tableName,
         orderBy: 'lastModify DESC',
         where: 'state != ?',
         whereArgs: [2],
         limit: 1);
-    var latestId = one.first['id'] as int;
+    final latestId = one.first['id'] as int;
     return latestId;
   }
 
   static Future<List<Map<String, dynamic>>> selectAllNotes(
       int noteState) async {
     final db = await database;
-    var lol = db.query('notes',
+    final lol = db.query('notes',
         orderBy: 'lastModify desc', where: 'state = ?', whereArgs: [noteState]);
     return lol;
   }
 
   static Future<List<Map<String, dynamic>>> selectAllNotesForBackup() async {
     final db = await database;
-    var lol = db.query('notes', orderBy: 'lastModify desc');
+    final lol = db.query('notes', orderBy: 'lastModify desc');
     return lol;
   }
 
   static Future<bool> addAllNotesToBackup(List<Note> notes) async {
     try {
-      notes.forEach(
-        (element) => insertNote(element, true),
-      );
+      for (final note in notes) {
+        await insertNote(note, true);
+      }
       return true;
     } catch (_) {
       return false;

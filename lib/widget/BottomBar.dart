@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 class BottomBar extends StatelessWidget {
+  const BottomBar();
+
   @override
   Widget build(BuildContext context) {
-    debugPrint('Bottom bar building 32');
+    // debugPrint('Bottom bar building 32');
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       child: Container(
@@ -13,5 +15,4 @@ class BottomBar extends StatelessWidget {
     );
   }
 
-  const BottomBar();
 }

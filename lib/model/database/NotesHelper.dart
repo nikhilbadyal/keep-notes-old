@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:notes/database/database_helper.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/database/database_helper.dart';
+
+import '../note.dart';
 
 class NotesHelper with ChangeNotifier {
   List _items = [];
@@ -16,8 +17,11 @@ class NotesHelper with ChangeNotifier {
     } else {
       try {
         _items[_items.indexWhere((element) => note.id == element.id)] = note;
-      } catch (e) {}
+      } catch (e) {
+        rethrow;
+      }
     }
+    // ignore: parameter_assignments
     note = await DatabaseHelper.insertNote(note, isNew);
     notifyListeners();
     return note;
@@ -84,14 +88,16 @@ class NotesHelper with ChangeNotifier {
   }
 
   Future<bool> deleteNote(Note note) async {
-    bool status = false;
+    var status = false;
     if (note.id == -1) {
       return status;
     }
     try {
       _items.removeWhere((element) => element.id == note.id);
       status = await DatabaseHelper.deleteNote(note);
-    } catch (e) {}
+    } catch (e) {
+      rethrow;
+    }
     notifyListeners();
     return status;
   }
@@ -104,11 +110,11 @@ class NotesHelper with ChangeNotifier {
   Future<bool> trashNote({Note note, BuildContext context}) async {
     if (note.id != -1) {
       //TODO fix this
-      var nav = note.state.index.toString();
+      final nav = note.state.index.toString();
       switch (nav) {
         case '0':
           {
-            bool stat = await DatabaseHelper.trashNote(note);
+            final stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(0);
             notifyListeners();
             return stat;
@@ -116,7 +122,7 @@ class NotesHelper with ChangeNotifier {
           break;
         case '2':
           {
-            bool stat = await DatabaseHelper.trashNote(note);
+            final stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(2);
             notifyListeners();
 
@@ -125,7 +131,7 @@ class NotesHelper with ChangeNotifier {
           break;
         case '3':
           {
-            bool stat = await DatabaseHelper.trashNote(note);
+            final stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(3);
             notifyListeners();
             return stat;
@@ -138,14 +144,13 @@ class NotesHelper with ChangeNotifier {
                   'If you\'re seeing this please consider submitting a bug :-)'),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Ok'),
                   onPressed: () async {
-                    bool stat = await Navigator.of(context)
-                        .pushNamedAndRemoveUntil(
-                            '/', (Route<dynamic> route) => false);
+                    await Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/', (Route<dynamic> route) => false);
                     notifyListeners();
-                    return stat;
+                    return;
                   },
+                  child: const Text('Ok'),
                 ),
               ],
             );
@@ -180,7 +185,7 @@ class NotesHelper with ChangeNotifier {
 
   Future<List> getNotesAllForBackup() async {
     final notesList = await DatabaseHelper.selectAllNotesForBackup();
-    List items = notesList.map(
+    final items = notesList.map(
       (itemVar) {
         return Note(
             id: itemVar['id'],
@@ -199,13 +204,13 @@ class NotesHelper with ChangeNotifier {
   }
 
   Future<void> addAllNotesToBackup(List<Note> notesList) async {
-    bool status = await DatabaseHelper.addAllNotesToBackup(notesList);
+    final status = await DatabaseHelper.addAllNotesToBackup(notesList);
     notifyListeners();
     return status;
   }
 
   Future<bool> deleteAllTrashNotes() async {
-    bool status = await DatabaseHelper.deleteAllTrashNote();
+    final status = await DatabaseHelper.deleteAllTrashNote();
     notifyListeners();
     return status;
   }

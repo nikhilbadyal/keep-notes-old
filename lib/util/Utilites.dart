@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:notes/database/NotesHelper.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/database/NotesHelper.dart';
+import 'package:notes/model/note.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../main.dart';
+import '../app.dart';
 
 class Utilities {
   static final LocalAuthentication _localAuthentication = LocalAuthentication();
@@ -34,36 +34,38 @@ class Utilities {
     return SnackBar(
       action: SnackBarAction(
         textColor: Colors.white,
-        label: "Reset?",
+        label: 'Reset?',
         onPressed: () async {
-          showDialog<bool>(
+          await showDialog<bool>(
             context: context,
-            builder: (context) => Center(
-              child: SingleChildScrollView(
-                child: AlertDialog(
-                  title: const Text(
-                      'Passcode cant be reset. Delete all notes to reset Passcode'),
-                  actions: [
-                    TextButton(
-                      child: const Text('Ok'),
-                      onPressed: () async {
-                        Utilities.showSnackbar(
-                            context,
-                            "Deleted all Hidden Notes",
-                            Colors.white,
-                            Duration(seconds: 2),
-                            Colors.green);
-                        Provider.of<NotesHelper>(context, listen: false)
-                            .deleteAllHiddenNotes();
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/', (Route<dynamic> route) => false);
-                      },
+            builder: (context) =>
+                Center(
+                  child: SingleChildScrollView(
+                    child: AlertDialog(
+                      title: const Text(
+                          'Passcode cant be reset. Delete all notes to reset Passcode'),
+                      actions: [
+                        TextButton(
+                          onPressed: () async {
+                            Utilities.showSnackbar(
+                                context,
+                                'Deleted all Hidden Notes',
+                                Colors.white,
+                                const Duration(seconds: 2),
+                                Colors.green);
+                            await Provider.of<NotesHelper>(
+                                context, listen: false)
+                                .deleteAllHiddenNotes();
+                            await Navigator.of(context).pushNamedAndRemoveUntil(
+                                '/', (Route<dynamic> route) => false);
+                          },
+                          child: const Text('Ok'),
                     ),
                     TextButton(
-                      child: const Text('Cancel'),
                       onPressed: () async {
                         Navigator.of(context).pop(true);
                       },
+                      child: const Text('Cancel'),
                     ),
                   ],
                 ),
@@ -74,7 +76,7 @@ class Utilities {
       ),
       content: Text(data),
       backgroundColor: Colors.red,
-      duration: Duration(
+      duration: const Duration(
         seconds: 2,
       ),
       behavior: SnackBarBehavior.floating,
@@ -105,7 +107,7 @@ class Utilities {
     if (await permission.isGranted) {
       return true;
     } else {
-      var result = await permission.request();
+      final result = await permission.request();
       if (result == PermissionStatus.granted) {
         return true;
       }
@@ -151,7 +153,7 @@ class Utilities {
       );
     } on PlatformException catch (errorCode) {
       isAuthenticated = false;
-      _handleError(errorCode: errorCode.code, context: context);
+      await _handleError(errorCode: errorCode.code, context: context);
     }
     return isAuthenticated;
   }
@@ -168,61 +170,61 @@ class Utilities {
       );
     } on PlatformException catch (errorCode) {
       isAuthenticated = false;
-      _handleError(errorCode: errorCode.code, context: context);
+      await _handleError(errorCode: errorCode.code, context: context);
     }
     if (isAuthenticated) {
-      Utilities.addBoolToSF('bio', true);
-      Utilities.addBoolToSF('firstTimeNeeded', true);
+      await Utilities.addBoolToSF('bio', true);
+      await Utilities.addBoolToSF('firstTimeNeeded', true);
       myNotes.lockChecker.bioEnabled = true;
     }
     return isAuthenticated;
   }
 
-  static void addStringToSF(String key, String value) async {
+  static Future<void> addStringToSF(String key, String value) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.setString(key, value);
   }
 
-  static void addBoolToSF(String key, bool value) async {
+  static Future<void> addBoolToSF(String key, bool value) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.setBool(key, value);
   }
 
-  static void addIntToSF(String key, int value) async {
+  static Future<void> addIntToSF(String key, int value) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.setInt(key, value);
   }
 
-  static void addDoubleToSF(String key, double value) async {
+  static Future<void> addDoubleToSF(String key, double value) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.setDouble(key, value);
   }
 
   static Future<String> getStringValuesSF(String key) async {
     prefs ??= await SharedPreferences.getInstance();
-    var stringValue = prefs.getString(key);
+    final stringValue = prefs.getString(key);
     return stringValue;
   }
 
   static Future<bool> getBoolValuesSF(String key) async {
     prefs ??= await SharedPreferences.getInstance();
-    var boolValue = prefs.getBool(key);
+    final boolValue = prefs.getBool(key);
     return boolValue;
   }
 
   static Future<int> getIntValuesSF(String key) async {
     prefs ??= await SharedPreferences.getInstance();
-    var intValue = prefs.getInt(key);
+    final intValue = prefs.getInt(key);
     return intValue;
   }
 
   static Future<double> getDoubleValuesSF(String key) async {
     prefs ??= await SharedPreferences.getInstance();
-    var doubleValue = prefs.getDouble(key);
+    final doubleValue = prefs.getDouble(key);
     return doubleValue;
   }
 
-  static void removeValues(String key) async {
+  static Future<void> removeValues(String key) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.remove(key);
   }
@@ -235,16 +237,16 @@ class Utilities {
   static Future<void> _handleError(
       {String errorCode, BuildContext context}) async {
     String error;
-    if (errorCode == " PasscodeNotSet") {
-      error = "Please first set passcode in your system settings";
-    } else if (errorCode == "LockedOut") {
-      error = "Too many attempts. Try after 30 seconds";
-    } else if (errorCode == "PermanentlyLockedOut") {
-      error = "Too many attempts. Please open your device with pass first";
-    } else if (errorCode == "NotAvailable") {
+    if (errorCode == ' PasscodeNotSet') {
+      error = 'Please first set passcode in your system settings';
+    } else if (errorCode == 'LockedOut') {
+      error = 'Too many attempts. Try after 30 seconds';
+    } else if (errorCode == 'PermanentlyLockedOut') {
+      error = 'Too many attempts. Please open your device with pass first';
+    } else if (errorCode == 'NotAvailable') {
       error = 'Setup biometric from setting first';
     } else {
-      error = 'Some issue occurred. Please report with code ${errorCode}';
+      error = 'Some issue occurred. Please report with code $errorCode';
     }
     return showDialog<void>(
       context: context,
@@ -261,11 +263,11 @@ class Utilities {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Ok :('),
-              onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
+              onPressed: () async {
+                await Navigator.of(context).pushNamedAndRemoveUntil(
                     '/lock', (Route<dynamic> route) => false);
               },
+              child: const Text('Ok :('),
             ),
           ],
         );
@@ -276,179 +278,172 @@ class Utilities {
   static Widget hideAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: TablerIcons.ghost,
-      caption: "Hide",
+      caption: 'Hide',
       color: Colors.blueAccent,
       onTap: () => _onHideTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onHideTap(BuildContext context, Note note) async {
-    bool value =
-        await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
+  static Future<void> _onHideTap(BuildContext context, Note note) async {
+    final value =
+    await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
     if (value) {
-      Utilities.showSnackbar(context, "Note Hidden", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Hidden', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 
   static Widget deleteAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: Icons.delete_forever_outlined,
-      caption: "Delete",
+      caption: 'Delete',
       color: Colors.redAccent,
       onTap: () => _onDeleteTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onDeleteTap(BuildContext context, Note note) async {
-    bool value =
-        await Provider.of<NotesHelper>(context, listen: false).deleteNote(note);
+  static Future<void> _onDeleteTap(BuildContext context, Note note) async {
+    final value =
+    await Provider.of<NotesHelper>(context, listen: false).deleteNote(note);
     if (value) {
-      Utilities.showSnackbar(context, "Note Deleted", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Deleted', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 
   static Widget trashAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: Icons.delete_outline,
-      caption: "Trash",
+      caption: 'Trash',
       color: Colors.redAccent,
       onTap: () => _onTrashTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onTrashTap(BuildContext context, Note note) async {
-    bool value =
-        await Provider.of<NotesHelper>(context, listen: false).trashNote(
+  static Future<void> _onTrashTap(BuildContext context, Note note) async {
+    final value =
+    await Provider.of<NotesHelper>(context, listen: false).trashNote(
       note: note,
       context: context,
     );
     if (value) {
-      Utilities.showSnackbar(context, "Note Trashed", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Trashed', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 
   static Widget archiveAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: Icons.archive_outlined,
-      caption: "Archive",
+      caption: 'Archive',
       color: Colors.green,
       onTap: () => _onArchiveTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onArchiveTap(BuildContext context, Note note) async {
-    bool value = await Provider.of<NotesHelper>(context, listen: false)
+  static Future<void> _onArchiveTap(BuildContext context, Note note) async {
+    final value = await Provider.of<NotesHelper>(context, listen: false)
         .archiveNote(note);
     if (value) {
-      Utilities.showSnackbar(context, "Note Archived", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Archived', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 
   static Widget copyAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: TablerIcons.copy,
-      caption: "Copy",
+      caption: 'Copy',
       color: Colors.black,
       onTap: () => _onCopyTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onCopyTap(BuildContext context, Note note) async {
-    bool value =
-        await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
+  static Future<void> _onCopyTap(BuildContext context, Note note) async {
+    final value =
+    await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
     if (value) {
-      Utilities.showSnackbar(context, "Note Copied", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Copied', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 
   static Widget unHideAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: Icons.inbox_outlined,
-      caption: "UnHide",
+      caption: 'UnHide',
       color: Colors.blueAccent,
       onTap: () => _onUnHideTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onUnHideTap(BuildContext context, Note note) async {
-    bool value =
-        await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
+  static Future<void> _onUnHideTap(BuildContext context, Note note) async {
+    final value =
+    await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
     if (value) {
-      Utilities.showSnackbar(context, "Note Restored", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Restored', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 
   static Widget unArchiveAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: TablerIcons.ghost,
-      caption: "Unarchive",
+      caption: 'Unarchive',
       color: Colors.green,
       onTap: () => _onUnArchiveTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onUnArchiveTap(BuildContext context, Note note) async {
-    bool value = await Provider.of<NotesHelper>(context, listen: false)
+  static Future<void> _onUnArchiveTap(BuildContext context, Note note) async {
+    final value = await Provider.of<NotesHelper>(context, listen: false)
         .unarchiveNote(note);
     if (value) {
-      Utilities.showSnackbar(context, "Note Unarchived", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Unarchived', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 
   static Widget restoreAction(BuildContext context, Note note) {
     return IconSlideAction(
       icon: Icons.inbox_outlined,
-      caption: "Restore",
+      caption: 'Restore',
       color: Colors.green,
       onTap: () => _onRestoreActionTap(context, note),
-      closeOnTap: true,
     );
   }
 
-  static _onRestoreActionTap(BuildContext context, Note note) async {
-    bool value =
-        await Provider.of<NotesHelper>(context, listen: false).undelete(note);
+  static Future<void> _onRestoreActionTap(BuildContext context,
+      Note note) async {
+    final value =
+    await Provider.of<NotesHelper>(context, listen: false).undelete(note);
     if (value) {
-      Utilities.showSnackbar(context, "Note Restored", Colors.white,
-          Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(context, 'Note Restored', Colors.white,
+          const Duration(seconds: 2), Colors.green);
     } else {
-      Utilities.showSnackbar(context, "Some error occurred", Colors.white,
-          Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
+          const Duration(seconds: 2), Colors.redAccent);
     }
   }
 }

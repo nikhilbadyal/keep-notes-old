@@ -1,5 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
+
+SecondLayerState secondLayer;
+
+class SecondLayer extends StatefulWidget {
+  @override
+  SecondLayerState createState() => SecondLayerState();
+}
+
+class SecondLayerState extends State<SecondLayer> {
+  double xOffSet = 0;
+  double yOffSet = 0;
+  double angle = 0;
+  bool isOpen = false;
+
+  void callSetState(double xOffset, double yOffset, double angle) {
+    setState(
+      () {
+        xOffSet = xOffset;
+        yOffSet = yOffset;
+        this.angle = angle;
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    secondLayer = this;
+    return AnimatedContainer(
+      transform: Matrix4Transform()
+          .translate(x: xOffSet, y: yOffSet)
+          .rotate(angle)
+          .matrix4,
+      duration: const Duration(milliseconds: 550),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: const Color(0xFFBAFF29),
+      ),
+      child: Column(
+        children: <Widget>[Row()],
+      ),
+    );
+  }
+}
+
+/*
+import 'package:flutter/material.dart';
+import 'package:matrix4_transform/matrix4_transform.dart';
 import 'package:notes/util/DrawerManager.dart';
 
 SecondLayerState secondLayer;
@@ -20,19 +67,19 @@ class SecondLayerState extends State<SecondLayer>
   @override
   void initState() {
     _xController = AnimationController(
-      duration: Duration(milliseconds: DrawerManager.SecondLayerAnimationTime),
+      duration: const Duration(milliseconds: DrawerManager.SecondLayerAnimationTime),
       vsync: this,
       lowerBound: 0,
       upperBound: 123,
     );
     _yController = AnimationController(
-      duration: Duration(milliseconds: DrawerManager.SecondLayerAnimationTime),
+      duration: const Duration(milliseconds: DrawerManager.SecondLayerAnimationTime),
       vsync: this,
       lowerBound: 0,
       upperBound: 110,
     );
     _angleController = AnimationController(
-      duration: Duration(milliseconds: DrawerManager.SecondLayerAnimationTime),
+      duration: const Duration(milliseconds: DrawerManager.SecondLayerAnimationTime),
       vsync: this,
       lowerBound: 0,
       upperBound: 0.275,
@@ -62,7 +109,7 @@ class SecondLayerState extends State<SecondLayer>
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(' second layer building 3 ');
+    //debugPrint(' second layer building 3 ');
     secondLayer = this;
     return AnimatedBuilder(
       animation: _xController,
@@ -82,16 +129,19 @@ class SecondLayerState extends State<SecondLayer>
         ),
       ),
     );
-    /*return AnimatedContainer(
+    */
+/*return AnimatedContainer(
       transform: Matrix4Transform()
           .translate(x: xOffSet, y: yOffSet)
           .rotate(angle)
           .matrix4,
-      duration: Duration(milliseconds: 750),
+      duration: const Duration(milliseconds: 750),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: const Color(0xFFBAFF29),
       ),
-    );*/
+    );*/ /*
+
   }
 }
+*/

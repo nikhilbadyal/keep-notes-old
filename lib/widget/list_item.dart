@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/note.dart';
 import 'package:notes/util/constants.dart';
+import 'package:notes/views/ScreenHelpers/NoteEditScreen.dart';
 
 class ListItem extends StatelessWidget {
-  final Note note;
-  final NoteState fromWhere;
-
   const ListItem({Key key, @required this.note, @required this.fromWhere})
       : super(key: key);
+
+  final Note note;
+  final NoteState fromWhere;
 
   @override
   Widget build(BuildContext context) {
@@ -21,26 +21,25 @@ class ListItem extends StatelessWidget {
           if (note.state == NoteState.deleted) {
             await showDialog<bool>(
               context: context,
-              builder: (context) => AlertDialog(
+              builder: (BuildContext context) => AlertDialog(
                 title:
                     const Text('Please remove note from trash before editing'),
-                actions: [
+                actions: <Widget>[
                   TextButton(
-                    child: const Text('Ok'),
                     onPressed: () {
                       Navigator.of(context).pop(true);
                     },
+                    child: const Text('Ok'),
                   ),
                 ],
               ),
             );
           } else {
-            Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EditScreen(
+                builder: (BuildContext context) => EditScreen(
                   currentNote: note,
-                  shouldAutoFocus: true,
                   fromWhere: fromWhere,
                   isImageNote: false,
                 ),
@@ -57,11 +56,10 @@ class ListItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(15.0),
             border: Border.all(
               color: grey,
-              width: 1.0,
             ),
           ),
           child: Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -69,7 +67,7 @@ class ListItem extends StatelessWidget {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(
                         note.title,
                         overflow: TextOverflow.ellipsis,

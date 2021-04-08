@@ -1,13 +1,12 @@
-//20-12-2020
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:notes/main.dart';
-import 'package:notes/screens/LockScreen.dart';
 import 'package:notes/util/Utilites.dart';
+import 'package:notes/views/screens/LockScreen.dart';
 import 'package:notes/widget/DoubleBackToClose.dart';
 import 'package:notes/widget/Navigations.dart';
+
+import '../../app.dart';
 
 class SetPassword extends StatefulWidget {
   @override
@@ -15,7 +14,7 @@ class SetPassword extends StatefulWidget {
 }
 
 class _SetPasswordState extends State<SetPassword> {
-  String enteredPassCode = "";
+  String enteredPassCode = '';
   bool isFirst;
   String firstPass;
   String title;
@@ -43,7 +42,7 @@ class _SetPasswordState extends State<SetPassword> {
   }
 
   void _onDelTap() {
-    if (enteredPassCode.length > 0) {
+    if (enteredPassCode.isNotEmpty) {
       setState(() {
         enteredPassCode =
             enteredPassCode.substring(0, enteredPassCode.length - 1);
@@ -56,45 +55,43 @@ class _SetPasswordState extends State<SetPassword> {
       await Navigator.of(context).pushNamedAndRemoveUntil(
         '/setpass',
         (Route<dynamic> route) => false,
-        arguments: DataObj(false, enteredPassCode, "Re Enter Password"),
+        arguments: DataObj(false, enteredPassCode, 'Re Enter Password'),
       );
     } else {
       if (enteredPassCode == firstPass) {
         myNotes.lockChecker.passwordSet = true;
         myNotes.lockChecker.password = enteredPassCode;
-        await Utilities.addBoolToSF("passwordSet", true);
+        await Utilities.addBoolToSF('passwordSet', true);
         await Utilities.addStringToSF('password', enteredPassCode);
         myNotes.lockChecker.updateDetails();
-        goToHiddenScreen(context);
+        await goToHiddenScreen(context);
       } else {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           Utilities.getExitSnackBar(context, "PassCodes doesn't match"),
         );
-        goToSetPasswordScreen(context);
+        await goToSetPasswordScreen(context);
       }
     }
   }
 
   Widget _titleWidget(String title) {
-    return Container(
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
+    return Text(
+      title,
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     );
   }
 
-  void ValidationCheck() {}
+  void validationCheck() {}
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('building 28 ');
+    //debugPrint('building 28 ');
     final DataObj args = ModalRoute.of(context).settings.arguments;
     isFirst = args.isFirst;
     firstPass = args.firstPass;
     title = args.heading;
-    Widget titleWidget = _titleWidget(title);
+    final titleWidget = _titleWidget(title);
     return DoubleBackToCloseWidget(
       child: MyLockScreen(
           title: titleWidget,
@@ -108,9 +105,9 @@ class _SetPasswordState extends State<SetPassword> {
 }
 
 class DataObj {
+  DataObj(this.isFirst, this.firstPass, this.heading);
+
   final bool isFirst;
   final String firstPass;
   final String heading;
-
-  DataObj(this.isFirst, this.firstPass, this.heading);
 }

@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:notes/database/NotesHelper.dart';
-import 'package:notes/database/note.dart';
+import 'package:notes/model/database/NotesHelper.dart';
+import 'package:notes/model/note.dart';
 import 'package:notes/widget/NoNotes.dart';
 import 'package:provider/provider.dart';
 
-import '../main.dart';
+import '../app.dart';
 import 'list_item.dart';
 
 class Body extends StatelessWidget {
-  final NoteState fromWhere;
-
-  // final List<Widget> primary;
-  final Function(Note note) primary;
-
-  final Function(Note note) secondary;
-
   const Body({
     Key key,
     @required @required this.fromWhere,
@@ -23,37 +16,43 @@ class Body extends StatelessWidget {
     @required this.secondary,
   }) : super(key: key);
 
+  final NoteState fromWhere;
+
+  // final List<Widget> primary;
+  final Function(Note note) primary;
+
+  final Function(Note note) secondary;
+
   @override
   Widget build(BuildContext context) {
-    debugPrint('building body');
+    //debugPrint('building body');
     return FutureBuilder(
       future: Provider.of<NotesHelper>(context, listen: false)
           .getNotesAll(fromWhere.index),
       builder: (context, projectSnap) {
         if (projectSnap.connectionState == ConnectionState.done) {
-          return Container(
-            child: Consumer<NotesHelper>(
-                child: const NoNotesUi(),
-                builder: (context, notehelper, child) {
-                  if (notehelper.items.isEmpty) {
-                    return child;
-                  } else {
-                    return nonEmptyUi(
-                      notehelper: notehelper,
-                      fromWhere: fromWhere,
-                      primary: primary,
-                      secondary: secondary,
-                    );
-                  }
-                }),
+          return Consumer<NotesHelper>(
+            builder: (context, notehelper, child) {
+              if (notehelper.items.isEmpty) {
+                return child;
+              } else {
+                return NonEmptyUi(
+                  notehelper: notehelper,
+                  fromWhere: fromWhere,
+                  primary: primary,
+                  secondary: secondary,
+                );
+              }
+            },
+            child: const NoNotesUi(),
           );
         } else {
-          return Container(
+          return SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: const Scaffold(
-              body: const Center(
-                child: const CircularProgressIndicator(),
+              body: Center(
+                child: CircularProgressIndicator(),
               ),
             ),
           );
@@ -63,14 +62,8 @@ class Body extends StatelessWidget {
   }
 }
 
-class nonEmptyUi extends StatelessWidget {
-  final NotesHelper notehelper;
-
-  final NoteState fromWhere;
-  final Function(Note note) primary;
-  final Function(Note note) secondary;
-
-  const nonEmptyUi(
+class NonEmptyUi extends StatelessWidget {
+  const NonEmptyUi(
       {Key key,
       @required this.notehelper,
       @required this.fromWhere,
@@ -78,11 +71,17 @@ class nonEmptyUi extends StatelessWidget {
       @required this.secondary})
       : super(key: key);
 
+  final NotesHelper notehelper;
+
+  final NoteState fromWhere;
+  final Function(Note note) primary;
+  final Function(Note note) secondary;
+
   @override
   Widget build(BuildContext context) {
-    print('Building list');
+    //print'Building list');
     return Padding(
-      padding: const EdgeInsets.only(top: 0),
+      padding: const EdgeInsets.only(),
       child: AbsorbPointer(
         absorbing: myNotes.drawerManager.isIgnoring,
         child: ListView.builder(
@@ -92,13 +91,13 @@ class nonEmptyUi extends StatelessWidget {
             final item = notehelper.items[index];
             return Slidable(
               key: UniqueKey(),
+              actions: primary(item),
+              secondaryActions: secondary(item),
+              actionPane: const SlidableDrawerActionPane(),
               child: ListItem(
                 note: item,
                 fromWhere: fromWhere,
               ),
-              actions: primary(item),
-              secondaryActions: secondary(item),
-              actionPane: const SlidableDrawerActionPane(),
             );
           },
         ),

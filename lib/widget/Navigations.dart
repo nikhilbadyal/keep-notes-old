@@ -1,64 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:notes/ScreenHelpers/NoteEditScreen.dart';
-import 'package:notes/database/note.dart';
-import 'package:notes/screens/SetPassword.dart';
+import 'package:notes/model/note.dart';
 import 'package:notes/util/Utilites.dart';
+import 'package:notes/views/ScreenHelpers/AboutMeScreen.dart';
+import 'package:notes/views/ScreenHelpers/ArchiveScreen.dart';
+import 'package:notes/views/ScreenHelpers/BackupRestore.dart';
+import 'package:notes/views/ScreenHelpers/HiddenScreen.dart';
+import 'package:notes/views/ScreenHelpers/HomeScreen.dart';
+import 'package:notes/views/ScreenHelpers/NoteEditScreen.dart';
+import 'package:notes/views/ScreenHelpers/SettingsScreen.dart';
+import 'package:notes/views/ScreenHelpers/TrashScreen.dart';
+import 'package:notes/views/TopWidget.dart';
+import 'package:notes/views/screens/SetPassword.dart';
 
-import '../main.dart';
-
-void goToArchiveScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/archive', (Route<dynamic> route) => false);
-}
-
-void goToBackUpScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/backup', (Route<dynamic> route) => false);
-}
-
-void goToDeleteScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/trash', (Route<dynamic> route) => false);
-}
-
-void goToAboutMeScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/about', (Route<dynamic> route) => false);
-}
-
-void goToBugScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-  Utilities.launchUrl(
-    Utilities.emailLaunchUri.toString(),
-  );
-}
-
-void goToSettingsScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/settings', (Route<dynamic> route) => false);
-}
-
-void goToHomeScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-}
-
-void goToHiddenScreen(BuildContext context) {
-  myNotes.drawerManager.resetDrawerState();
-  Navigator.of(context)
-      .pushNamedAndRemoveUntil('/hidden', (Route<dynamic> route) => false);
-}
+import '../app.dart';
 
 Future<void> goToLockScreen(BuildContext context) async {
-  myNotes.drawerManager.resetDrawerState();
+  myNotes.drawerManager.resetDrawerState(context);
 
   await Navigator.of(context)
       .pushNamedAndRemoveUntil('/lock', (Route<dynamic> route) => false);
@@ -66,19 +23,127 @@ Future<void> goToLockScreen(BuildContext context) async {
 
 Future<void> goToSetPasswordScreen(BuildContext context,
     [String password]) async {
-  myNotes.drawerManager.resetDrawerState();
-
+  myNotes.drawerManager.resetDrawerState(context);
   await Navigator.of(context).pushNamedAndRemoveUntil(
     '/setpass',
     (Route<dynamic> route) => false,
-    arguments:
-        DataObj(true, password != null ? password : "", "Enter New Password"),
+    arguments: DataObj(true, password ?? '', 'Enter New Password'),
+  );
+}
+
+Future<void> goToHiddenScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState(context);
+
+  await Navigator.pushAndRemoveUntil(
+      context,
+      FadeInSlideOutRoute(
+        builder: (BuildContext context) => ScreenContainer(
+          topScreen: HiddenScreenHelper(),
+        ),
+      ),
+      (route) => false);
+}
+
+Future<void> goToHomeScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState(context);
+  await Navigator.pushAndRemoveUntil(
+      context,
+      FadeInSlideOutRoute(
+        builder: (BuildContext context) => ScreenContainer(
+          topScreen: HomeScreenHelper(),
+        ),
+      ),
+      (route) => false);
+  /* await Navigator.of(context)
+      .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);*/
+}
+
+Future<void> goToArchiveScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState(context);
+
+  /* await Navigator.of(context)
+      .pushNamedAndRemoveUntil('/archive', (Route<dynamic> route) => false);*/
+
+  await Navigator.pushAndRemoveUntil(
+      context,
+      FadeInSlideOutRoute(
+        builder: (BuildContext context) => ScreenContainer(
+          topScreen: ArchiveScreenHelper(),
+        ),
+      ),
+      (route) => false);
+}
+
+Future<void> goToBackUpScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState(context);
+  await Navigator.pushAndRemoveUntil(
+      context,
+      FadeInSlideOutRoute(
+        builder: (BuildContext context) => ScreenContainer(
+          topScreen: BackUpScreenHelper(),
+        ),
+      ),
+      (route) => false);
+  /*await Navigator.of(context)
+      .pushNamedAndRemoveUntil('/backup', (Route<dynamic> route) => false);*/
+}
+
+Future<void> goToDeleteScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState(context);
+
+  await Navigator.pushAndRemoveUntil(
+      context,
+      FadeInSlideOutRoute(
+        builder: (BuildContext context) => ScreenContainer(
+          topScreen: TrashScreenHelper(),
+        ),
+      ),
+      (route) => false);
+  /* await Navigator.of(context)
+      .pushNamedAndRemoveUntil('/trash', (Route<dynamic> route) => false);*/
+}
+
+Future<void> goToAboutMeScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState(context);
+  await Navigator.pushAndRemoveUntil(
+      context,
+      FadeInSlideOutRoute(
+        builder: (BuildContext context) => const ScreenContainer(
+          topScreen: AboutMeScreenHelper(),
+        ),
+      ),
+      (route) => false);
+
+  /*await Navigator.of(context)
+      .pushNamedAndRemoveUntil('/about', (Route<dynamic> route) => false);*/
+}
+
+Future<void> goToSettingsScreen(BuildContext context) async {
+  myNotes.drawerManager.resetDrawerState(context);
+  await Navigator.pushAndRemoveUntil(
+      context,
+      FadeInSlideOutRoute(
+        builder: (BuildContext context) => const ScreenContainer(
+          topScreen: SettingsScreenHelper(),
+        ),
+      ),
+      (route) => false);
+
+  /* await Navigator.of(context)
+      .pushNamedAndRemoveUntil('/settings', (Route<dynamic> route) => false);*/
+}
+
+void goToBugScreen(BuildContext context) {
+  myNotes.drawerManager.resetDrawerState(context);
+
+  Utilities.launchUrl(
+    Utilities.emailLaunchUri.toString(),
   );
 }
 /*
 void goToSetPasswordScreen(BuildContext context, [String password]) {
-  myNotes.drawerManager.resetDrawerState();
-  Navigator.push(
+  myNotes.drawerManager.resetDrawerState(context);
+  await Navigator.push(
     context,
     MaterialPageRoute(
       builder: (context) {
@@ -93,13 +158,13 @@ void goToSetPasswordScreen(BuildContext context, [String password]) {
 }*/
 
 //TODO remove noteState from here
-void goToNoteEditScreen(
+Future<void> goToNoteEditScreen(
     {BuildContext context,
     NoteState noteState,
     String imagePath = '',
-    shouldAutoFocus = false}) {
+    shouldAutoFocus = false}) async {
   var autoFocus = true;
-  var emptyNote = Note(
+  final emptyNote = Note(
     id: -1,
     title: '',
     content: '',
@@ -112,14 +177,33 @@ void goToNoteEditScreen(
   if (emptyNote.imagePath != '') {
     autoFocus = false;
   }
-  Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditScreen(
-          currentNote: emptyNote,
-          shouldAutoFocus: autoFocus,
-          fromWhere: noteState,
-          isImageNote: imagePath == '' ? false : true,
-        ),
-      ));
+  await Navigator.push(
+    context,
+    FadeInSlideOutRoute(
+      builder: (BuildContext context) => EditScreen(
+        currentNote: emptyNote,
+        shouldAutoFocus: autoFocus,
+        fromWhere: noteState,
+        isImageNote: imagePath.isNotEmpty || false,
+      ),
+    ),
+  );
+}
+
+class FadeInSlideOutRoute<T> extends MaterialPageRoute<T> {
+  FadeInSlideOutRoute({WidgetBuilder builder, RouteSettings settings})
+      : super(builder: builder, settings: settings);
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    // /*if (settings.) */ return child; //TODO
+
+    if (animation.status == AnimationStatus.reverse) {
+      return super
+          .buildTransitions(context, animation, secondaryAnimation, child);
+    }
+
+    return FadeTransition(opacity: animation, child: child);
+  }
 }
