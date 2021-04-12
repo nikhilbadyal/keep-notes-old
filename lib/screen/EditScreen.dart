@@ -243,7 +243,8 @@ class _EditScreenState extends State<EditScreen> {
   bool updateNote() {
     noteInEditing.title = _titleController.text.trim();
     noteInEditing.content = _contentController.text.trim();
-    if (_image == null) {} else {}
+    if (_image == null) {
+    } else {}
     noteInEditing.imagePath = _image != null ? _image.path : '';
     noteInEditing.color = noteColor;
 
