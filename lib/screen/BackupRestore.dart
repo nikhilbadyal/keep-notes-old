@@ -33,12 +33,11 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper>
                 onPressed: () async {
                   final items =
                       await Provider.of<NotesHelper>(context, listen: false)
-                          .getNotesAllForBackup();
+                          .getNotesAllForBackupHelper();
                   await exportToFile(items);
                   Utilities.showSnackbar(
                     context,
                     'Notes Exported',
-                    const Duration(seconds: 2),
                   );
                 },
                 child: const Text(
@@ -62,7 +61,6 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper>
                     Utilities.showSnackbar(
                       context,
                       'Permission Not granted',
-                      const Duration(seconds: 2),
                     );
                   }
                 },
@@ -118,7 +116,6 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper>
       Utilities.showSnackbar(
         context,
         'Error while exporting',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -133,17 +130,15 @@ class _BackUpScreenHelperState extends State<BackUpScreenHelper>
           )
           .toList();
       await Provider.of<NotesHelper>(context, listen: false)
-          .addAllNotesToBackup(notesList);
+          .addAllNotesToBackupHelper(notesList);
       Utilities.showSnackbar(
         context,
         'Done importing',
-        const Duration(seconds: 2),
       );
     } catch (e) {
       Utilities.showSnackbar(
         context,
         'Error while importing',
-        const Duration(seconds: 2),
       );
     }
   }

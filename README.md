@@ -1,16 +1,27 @@
-# notes
+Notes is a beautiful and fast application made in flutter, it supports various features like adding and saving notes. Hiding notes with password security, Archiving them. To make UI look beautiful it has various UI colors with the support of light and dark theme.
 
-Notes
 
-## Getting Started
+![](https://i.imgur.com/HpRxuaD.png)
+![](https://i.imgur.com/aXskF3e.png)
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+---
 
-For help to get started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Features
+
++ Create and Save Notes
++ Archive them to avoid clutter
++ Hide your Notes
++ Recycle Bin
++ Multiple UI colors
++ Backup and Restore option
+
+
+---
+
+## Screenshots
+![](https://i.imgur.com/truGZog.png)
+![](https://i.imgur.com/DQby0NX.png)  ![](https://i.imgur.com/uSsNFKS.png)  ![](https://i.imgur.com/GtnAYSN.png)
+
+---

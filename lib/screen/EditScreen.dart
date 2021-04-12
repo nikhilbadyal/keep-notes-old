@@ -207,24 +207,23 @@ class _EditScreenState extends State<EditScreen> {
         if (!isEmptyNote) {
           //debugPrint('here');
           final noteIn = Provider.of<NotesHelper>(context, listen: false)
-              .insertNote(noteInEditing, isNew: true);
+              .insertNoteHelper(noteInEditing, isNew: true);
           await noteIn.then((value) => noteInEditing = value);
         }
       } else {
         if (isEmptyNote) {
           //debugPrint('empty');
           await Provider.of<NotesHelper>(context, listen: false)
-              .deleteNote(noteInEditing);
+              .deleteNoteHelper(noteInEditing);
         } else {
           final noteIn = Provider.of<NotesHelper>(context, listen: false)
-              .insertNote(noteInEditing, isNew: false);
+              .insertNoteHelper(noteInEditing, isNew: false);
           await noteIn.then((value) => noteInEditing = value);
         }
       }
       Utilities.getSnackBar(
         context,
         'Note Saved',
-        const Duration(seconds: 2),
       );
       return;
     }

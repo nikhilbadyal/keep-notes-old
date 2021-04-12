@@ -65,17 +65,15 @@ class Utilities {
       {bool deleteAllNotes = false}) async {
     if (deleteAllNotes) {
       await Provider.of<NotesHelper>(context, listen: false)
-          .deleteAllHiddenNotes();
+          .deleteAllHiddenNotesHelper();
       Utilities.showSnackbar(
         context,
         'Deleted all Hidden Notes',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Password Reset',
-        const Duration(seconds: 2),
       );
     }
     await myNotes.lockChecker.resetConfig();
@@ -152,9 +150,11 @@ class Utilities {
       path: 'nikhildevelops@gmail.com',
       queryParameters: {'subject': 'Suggestion/Issues in the app'});
 
-  static SnackBar getSnackBar(
-      BuildContext context, String data, Duration duration,
-      {Color dataColor, Color color, SnackBarAction action}) {
+  static SnackBar getSnackBar(BuildContext context, String data,
+      {Duration duration = const Duration(seconds: 1),
+      Color dataColor,
+      Color color,
+      SnackBarAction action}) {
     return SnackBar(
       key: UniqueKey(),
       content: Text(
@@ -171,14 +171,15 @@ class Utilities {
     );
   }
 
-  static void showSnackbar(BuildContext context, String data, Duration duration,
-      {Color dataColor, Color color}) {
+  static void showSnackbar(BuildContext context, String data,
+      {Duration duration = const Duration(seconds: 1),
+      Color dataColor,
+      Color color}) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       Utilities.getSnackBar(
         context,
         data,
-        duration,
       ),
     );
   }
@@ -316,19 +317,17 @@ class Utilities {
   }
 
   static Future<void> onHideTap(BuildContext context, Note note) async {
-    final value =
-        await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
+    final value = await Provider.of<NotesHelper>(context, listen: false)
+        .hideNoteHelper(note);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Hidden',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -346,19 +345,17 @@ class Utilities {
   }
 
   static Future<void> onDeleteTap(BuildContext context, Note note) async {
-    final value =
-        await Provider.of<NotesHelper>(context, listen: false).deleteNote(note);
+    final value = await Provider.of<NotesHelper>(context, listen: false)
+        .deleteNoteHelper(note);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Deleted',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -376,18 +373,16 @@ class Utilities {
 
   static Future<void> onTrashTap(BuildContext context, Note note) async {
     final value = await Provider.of<NotesHelper>(context, listen: false)
-        .trashNote(note, context);
+        .trashNoteHelper(note, context);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Trashed',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -404,19 +399,17 @@ class Utilities {
   }
 
   static Future<void> onCopyTap(BuildContext context, Note note) async {
-    final value =
-        await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
+    final value = await Provider.of<NotesHelper>(context, listen: false)
+        .copyNoteHelper(note);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Copied',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -435,18 +428,16 @@ class Utilities {
 
   static Future<void> onArchiveTap(BuildContext context, Note note) async {
     final value = await Provider.of<NotesHelper>(context, listen: false)
-        .archiveNote(note);
+        .archiveNoteHelper(note);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Archived',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -464,19 +455,17 @@ class Utilities {
   }
 
   static Future<void> onUnHideTap(BuildContext context, Note note) async {
-    final value =
-        await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
+    final value = await Provider.of<NotesHelper>(context, listen: false)
+        .unhideNoteHelper(note);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Restored',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -495,18 +484,16 @@ class Utilities {
 
   static Future<void> onUnArchiveTap(BuildContext context, Note note) async {
     final value = await Provider.of<NotesHelper>(context, listen: false)
-        .unarchiveNote(note);
+        .unarchiveNoteHelper(note);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Unarchived',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
@@ -524,37 +511,33 @@ class Utilities {
   }
 
   static Future<void> onRestoreTap(BuildContext context, Note note) async {
-    final value =
-        await Provider.of<NotesHelper>(context, listen: false).undelete(note);
+    final value = await Provider.of<NotesHelper>(context, listen: false)
+        .undeleteHelper(note);
     if (value) {
       Utilities.showSnackbar(
         context,
         'Note Restored',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }
 
   static Future<void> onDeleteAllTap(BuildContext context) async {
     final value = await Provider.of<NotesHelper>(context, listen: false)
-        .deleteAllTrashNotes();
+        .deleteAllTrashNotesHelper();
     if (value) {
       Utilities.showSnackbar(
         context,
         'Deleted All',
-        const Duration(seconds: 2),
       );
     } else {
       Utilities.showSnackbar(
         context,
         'Some error occurred',
-        const Duration(seconds: 2),
       );
     }
   }

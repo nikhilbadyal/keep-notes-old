@@ -30,14 +30,14 @@ class DatabaseHelper {
       _database = await openDatabase(join(databasePath, 'notes_database.db'),
           onCreate: (database, version) {
         return database.execute(
-          _query(),
+          query(),
         );
       }, version: 1);
     }
     return _database;
   }
 
-  static String _query() {
+  static String query() {
     var query = 'CREATE TABLE '; //IF NOT EXISTS
     query += tableName;
     query += '(';
@@ -50,33 +50,109 @@ class DatabaseHelper {
     return query;
   }
 
-  static Future<Note> insertNote(Note note, {bool isNew}) async {
+  static Future<bool> insertNoteDb(Note note, {bool isNew = false}) async {
     final db = await database;
     note.id = await db.insert(
       tableName,
       isNew ? note.toMap(isNew: true) : note.toMap(isNew: false),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    return note;
+    return true;
   }
 
-  static Future<bool> deleteAllHiddenNotes() async {
+  /*static Future<Note> copyNoteDb(Note note) async {
     final db = await database;
-    try {
-      await db.delete(
+    copiedNote.id = await db.insert(
+      tableName,
+      note.toMap(isNew: true),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return note;
+  }*/
+
+  static Future<bool> archiveNoteDb(Note note) async {
+    if (note.id != -1) {
+      final db = await database;
+      note.state = NoteState.archived;
+      final idToUpdate = note.id;
+      await db.update(
         'notes',
-        where: 'state = ?',
-        whereArgs: [3],
+        note.toMap(isNew: true),
+        where: 'id = ?',
+        whereArgs: [idToUpdate],
       );
-      myNotes.lockChecker.passwordSet = false;
-      myNotes.lockChecker.updateDetails();
       return true;
-    } on Error {
-      return false;
     }
+    return false;
   }
 
-  static Future<bool> deleteNote(Note note) async {
+  static Future<bool> hideNoteDb(Note note) async {
+    if (note.id != -1) {
+      final db = await database;
+      note.state = NoteState.hidden;
+      final idToUpdate = note.id;
+      await db.update(
+        'notes',
+        note.toMap(isNew: true),
+        where: 'id = ?',
+        whereArgs: [idToUpdate],
+      );
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> unhideNoteDb(Note note) async {
+    if (note.id != -1) {
+      final db = await database;
+      note.state = NoteState.unspecified;
+      final idToUpdate = note.id;
+      await db.update(
+        'notes',
+        note.toMap(isNew: true),
+        where: 'id = ?',
+        whereArgs: [idToUpdate],
+      );
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> unarchiveNoteDb(Note note) async {
+    if (note.id != -1) {
+      final db = await database;
+      note.state = NoteState.unspecified;
+      final idToUpdate = note.id;
+
+      await db.update(
+        'notes',
+        note.toMap(isNew: true),
+        where: 'id = ?',
+        whereArgs: [idToUpdate],
+      );
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> undeleteDb(Note note) async {
+    if (note.id != -1) {
+      final db = await database;
+      note.state = NoteState.unspecified;
+      final idToUpdate = note.id;
+
+      await db.update(
+        'notes',
+        note.toMap(isNew: true),
+        where: 'id = ?',
+        whereArgs: [idToUpdate],
+      );
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> deleteNoteDb(Note note) async {
     try {
       if (note.id != -1) {
         final db = await database;
@@ -101,7 +177,37 @@ class DatabaseHelper {
     return false;
   }
 
-  static Future<bool> deleteAllTrashNote() async {
+  static Future<bool> trashNoteDb(Note note) async {
+    final db = await database;
+    note.state = NoteState.deleted;
+    final idToUpdate = note.id;
+
+    await db.update(
+      'notes',
+      note.toMap(isNew: true),
+      where: 'id = ?',
+      whereArgs: [idToUpdate],
+    );
+    return true;
+  }
+
+  static Future<bool> deleteAllHiddenNotesDb() async {
+    final db = await database;
+    try {
+      await db.delete(
+        'notes',
+        where: 'state = ?',
+        whereArgs: [3],
+      );
+      myNotes.lockChecker.passwordSet = false;
+      myNotes.lockChecker.updateDetails();
+      return true;
+    } on Error {
+      return false;
+    }
+  }
+
+  static Future<bool> deleteAllTrashNoteDb() async {
     try {
       final db = await database;
       try {
@@ -119,120 +225,7 @@ class DatabaseHelper {
     }
   }
 
-  static Future<bool> undelete(Note note) async {
-    if (note.id != -1) {
-      final db = await database;
-      note.state = NoteState.unspecified;
-      final idToUpdate = note.id;
-
-      await db.update(
-        'notes',
-        note.toMap(isNew: true),
-        where: 'id = ?',
-        whereArgs: [idToUpdate],
-      );
-      return true;
-    }
-    return false;
-  }
-
-  static Future<bool> trashNote(Note note) async {
-    final db = await database;
-    note.state = NoteState.deleted;
-    final idToUpdate = note.id;
-
-    await db.update(
-      'notes',
-      note.toMap(isNew: true),
-      where: 'id = ?',
-      whereArgs: [idToUpdate],
-    );
-    return true;
-  }
-
-  static Future<bool> hideNote(Note note) async {
-    if (note.id != -1) {
-      final db = await database;
-      note.state = NoteState.hidden;
-      final idToUpdate = note.id;
-      await db.update(
-        'notes',
-        note.toMap(isNew: true),
-        where: 'id = ?',
-        whereArgs: [idToUpdate],
-      );
-      return true;
-    }
-    return false;
-  }
-
-  static Future<bool> unhideNote(Note note) async {
-    if (note.id != -1) {
-      final db = await database;
-      note.state = NoteState.unspecified;
-      final idToUpdate = note.id;
-      await db.update(
-        'notes',
-        note.toMap(isNew: true),
-        where: 'id = ?',
-        whereArgs: [idToUpdate],
-      );
-      return true;
-    }
-    return false;
-  }
-
-  static Future<bool> archiveNote(Note note) async {
-    if (note.id != -1) {
-      final db = await database;
-      note.state = NoteState.archived;
-      final idToUpdate = note.id;
-      await db.update(
-        'notes',
-        note.toMap(isNew: true),
-        where: 'id = ?',
-        whereArgs: [idToUpdate],
-      );
-      return true;
-    }
-    return false;
-  }
-
-  static Future<bool> unarchiveNote(Note note) async {
-    if (note.id != -1) {
-      final db = await database;
-      note.state = NoteState.unspecified;
-      final idToUpdate = note.id;
-
-      await db.update(
-        'notes',
-        note.toMap(isNew: true),
-        where: 'id = ?',
-        whereArgs: [idToUpdate],
-      );
-      return true;
-    }
-    return false;
-  }
-
-  static Future<int> copyNote(Note note) async {
-    final db = await database;
-    await db.insert(
-      tableName,
-      note.toMap(isNew: true),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    final one = await db.query(tableName,
-        orderBy: 'lastModify DESC',
-        where: 'state != ?',
-        whereArgs: [2],
-        limit: 1);
-    final latestId = one.first['id'] as int;
-    return latestId;
-  }
-
-  static Future<List<Map<String, dynamic>>> selectAllNotes(
-      int noteState) async {
+  static Future<List<Map<String, dynamic>>> getAllNotesDb(int noteState) async {
     final db = await database;
     final lol = db.query(
       'notes',
@@ -243,16 +236,16 @@ class DatabaseHelper {
     return lol;
   }
 
-  static Future<List<Map<String, dynamic>>> selectAllNotesForBackup() async {
+  static Future<List<Map<String, dynamic>>> getNotesAllForBackupDb() async {
     final db = await database;
     final lol = db.query('notes', orderBy: 'lastModify desc');
     return lol;
   }
 
-  static Future<bool> addAllNotesToBackup(List<Note> notes) async {
+  static Future<bool> addAllNotesToBackupDb(List<Note> notes) async {
     try {
       for (final note in notes) {
-        await insertNote(note, isNew: true);
+        await insertNoteDb(note, isNew: true);
       }
       return true;
     } catch (_) {

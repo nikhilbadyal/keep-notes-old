@@ -88,7 +88,6 @@ class _LockScreenState extends State<LockScreen> {
                   Utilities.showSnackbar(
                     context,
                     'User Registered',
-                    const Duration(seconds: 2),
                   );
                 }
               },
@@ -144,7 +143,6 @@ class _LockScreenState extends State<LockScreen> {
         Utilities.getSnackBar(
           context,
           'Wrong Passcode',
-          const Duration(seconds: 2),
           action: Utilities.resetAction(context),
         ),
       );

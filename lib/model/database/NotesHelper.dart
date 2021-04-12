@@ -3,105 +3,101 @@ import 'package:notes/model/database/database_helper.dart';
 import 'package:notes/model/note.dart';
 import 'package:notes/util/Utilites.dart';
 
+//Insert
+//Copy
+//Trash
 class NotesHelper with ChangeNotifier {
   List _mainNotes = [];
   List _otherNotes = [];
 
-  List get mainItems {
-    return [..._mainNotes];
-  }
+  List get mainNotes => [..._mainNotes];
 
   List get otherNotes => [..._otherNotes];
 
-  Future<Note> insertNote(Note note, {bool isNew}) async {
-    if (note.id != -1) {}
-    if (isNew) {
+  Future<Note> insertNoteHelper(Note note, {bool isNew = false}) async {
+    if (!isNew) {
       note.state == NoteState.unspecified
-          ? _mainNotes.insert(0, note)
-          : _otherNotes.insert(0, note);
+          ? mainNotes[
+              mainNotes.indexWhere((element) => note.id == element.id)] = note
+          : otherNotes[
+              otherNotes.indexWhere((element) => note.id == element.id)] = note;
     } else {
-      try {
-        note.state == NoteState.unspecified
-            ? _mainNotes[_mainNotes
-                .indexWhere((element) => note.id == element.id)] = note
-            : _otherNotes[_otherNotes
-                .indexWhere((element) => note.id == element.id)] = note;
-      } catch (e) {
-        rethrow;
-      }
+      note.state == NoteState.unspecified
+          ? mainNotes.insert(0, note)
+          : mainNotes.insert(0, note);
     }
-    // ignore: parameter_assignments
-    note = await DatabaseHelper.insertNote(note, isNew: isNew);
+    await DatabaseHelper.insertNoteDb(note, isNew: isNew);
     notifyListeners();
     return note;
   }
 
-  Future<bool> copyNote(Note note) async {
+  Future<bool> copyNoteHelper(Note note) async {
     if (note.id != -1) {
+      final copiedNote = note.copyWith();
+      await DatabaseHelper.insertNoteDb(copiedNote, isNew: true);
       note.state == NoteState.unspecified
           ? _mainNotes.insert(0, note)
           : _otherNotes.insert(0, note);
-      await DatabaseHelper.copyNote(note);
       notifyListeners();
       return true;
     }
     return false;
   }
 
-  Future<bool> archiveNote(Note note) async {
+  Future<bool> archiveNoteHelper(Note note) async {
     if (note.id != -1) {
-      await DatabaseHelper.archiveNote(note);
-      await getNotesAll(0);
+      await DatabaseHelper.archiveNoteDb(note);
+      await getAllNotesHelper(0);
       notifyListeners();
       return true;
     }
     return false;
   }
 
-  Future<bool> hideNote(Note note) async {
+  Future<bool> hideNoteHelper(Note note) async {
     if (note.id != -1) {
       final toDo = note.state;
-      await DatabaseHelper.hideNote(note);
+      await DatabaseHelper.hideNoteDb(note);
       toDo == NoteState.unspecified
-          ? await getNotesAll(0)
-          : await getNotesAll(2);
+          ? await getAllNotesHelper(0)
+          : await getAllNotesHelper(2);
       notifyListeners();
       return true;
     }
     return false;
   }
 
-  Future<bool> unHideNote(Note note) async {
+  Future<bool> unhideNoteHelper(Note note) async {
     if (note.id != -1) {
-      await DatabaseHelper.unhideNote(note);
-      await getNotesAll(3);
+      await DatabaseHelper.unhideNoteDb(note);
+      await getAllNotesHelper(3);
       notifyListeners();
       return true;
     }
     return false;
   }
 
-  Future<bool> unarchiveNote(Note note) async {
+  Future<bool> unarchiveNoteHelper(Note note) async {
     if (note.id != -1) {
-      await DatabaseHelper.unarchiveNote(note);
-      await getNotesAll(2);
+      await DatabaseHelper.unarchiveNoteDb(note);
+      await getAllNotesHelper(2);
       notifyListeners();
       return true;
     }
     return false;
   }
 
-  Future<bool> undelete(Note note) async {
+  Future<bool> undeleteHelper(Note note) async {
     if (note.id == -1) {
       return false;
     }
-    await DatabaseHelper.undelete(note);
-    await getNotesAll(4);
+    await DatabaseHelper.undeleteDb(note);
+    await getAllNotesHelper(4);
     notifyListeners();
     return true;
   }
 
-  Future<bool> deleteNote(Note note) async {
+  Future<bool> deleteNoteHelper(Note note) async {
     var status = false;
     if (note.id == -1) {
       return status;
@@ -110,7 +106,7 @@ class NotesHelper with ChangeNotifier {
       note.state == NoteState.unspecified
           ? _mainNotes.removeWhere((element) => element.id == note.id)
           : _otherNotes.removeWhere((element) => element.id == note.id);
-      status = await DatabaseHelper.deleteNote(note);
+      status = await DatabaseHelper.deleteNoteDb(note);
     } catch (e) {
       rethrow;
     }
@@ -118,34 +114,30 @@ class NotesHelper with ChangeNotifier {
     return status;
   }
 
-  Future<bool> deleteAllHiddenNotes() async {
-    notifyListeners();
-    return DatabaseHelper.deleteAllHiddenNotes();
-  }
-
-  Future<bool> trashNote(Note note, BuildContext context) async {
+  //Cyan color
+  Future<bool> trashNoteHelper(Note note, BuildContext context) async {
     if (note.id != -1) {
       //TODO fix this
       final nav = note.state.index.toString();
-      final stat = await DatabaseHelper.trashNote(note);
+      final stat = await DatabaseHelper.trashNoteDb(note);
       switch (nav) {
         case '0':
           {
-            await getNotesAll(0);
+            await getAllNotesHelper(0);
             notifyListeners();
             return stat;
           }
           break;
         case '2':
           {
-            await getNotesAll(2);
+            await getAllNotesHelper(2);
             notifyListeners();
             return stat;
           }
           break;
         case '3':
           {
-            await getNotesAll(3);
+            await getAllNotesHelper(3);
             notifyListeners();
             return stat;
           }
@@ -176,12 +168,23 @@ class NotesHelper with ChangeNotifier {
     return false;
   }
 
-  void falseDelete() {
-    // notifyListeners();
+  Future<bool> deleteAllHiddenNotesHelper() async {
+    notifyListeners();
+    return DatabaseHelper.deleteAllHiddenNotesDb();
   }
 
-  Future getNotesAll(int noteState) async {
-    final notesList = await DatabaseHelper.selectAllNotes(noteState);
+  Future<bool> deleteAllTrashNotesHelper() async {
+    final status = await DatabaseHelper.deleteAllTrashNoteDb();
+    await getAllNotesHelper(NoteState.deleted.index);
+    notifyListeners();
+    return status;
+  }
+
+  Future getAllNotesHelper(int noteState, {bool returnCached = true}) async {
+    if (returnCached) {
+      return;
+    }
+    final notesList = await DatabaseHelper.getAllNotesDb(noteState);
     noteState == NoteState.unspecified.index
         ? _mainNotes = notesList.map(
             (itemVar) {
@@ -225,8 +228,8 @@ class NotesHelper with ChangeNotifier {
           ).toList();
   }
 
-  Future<List> getNotesAllForBackup() async {
-    final notesList = await DatabaseHelper.selectAllNotesForBackup();
+  Future<List> getNotesAllForBackupHelper() async {
+    final notesList = await DatabaseHelper.getNotesAllForBackupDb();
     final items = notesList.map(
       (itemVar) {
         return Note(
@@ -250,17 +253,14 @@ class NotesHelper with ChangeNotifier {
     return items;
   }
 
-  Future<void> addAllNotesToBackup(List<Note> notesList) async {
-    final status = await DatabaseHelper.addAllNotesToBackup(notesList);
+  Future<void> addAllNotesToBackupHelper(List<Note> notesList) async {
+    final status = await DatabaseHelper.addAllNotesToBackupDb(notesList);
     notifyListeners();
     return status;
   }
 
-  Future<bool> deleteAllTrashNotes() async {
-    final status = await DatabaseHelper.deleteAllTrashNote();
-    await getNotesAll(NoteState.deleted.index);
-    notifyListeners();
-    return status;
+  void falseDelete() {
+    // notifyListeners();
   }
 }
 

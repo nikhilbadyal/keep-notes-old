@@ -69,7 +69,7 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     _myFuture = Provider.of<NotesHelper>(context, listen: false)
-        .getNotesAll(widget.fromWhere.index);
+        .getAllNotesHelper(widget.fromWhere.index);
     super.initState();
   }
 }
@@ -131,12 +131,12 @@ class HomeBody extends StatelessWidget {
     //debugPrint('building HomeBody');
     return FutureBuilder(
       future: Provider.of<NotesHelper>(context, listen: false)
-          .getNotesAll(NoteState.unspecified.index),
+          .getAllNotesHelper(NoteState.unspecified.index),
       builder: (context, projectSnap) {
         if (projectSnap.connectionState == ConnectionState.done) {
           return Consumer<NotesHelper>(
             builder: (context, notehelper, child) {
-              if (notehelper.mainItems.isEmpty) {
+              if (notehelper.mainNotes.isEmpty) {
                 return child;
               } else {
                 return NonEmptyHomeUi(
@@ -186,9 +186,9 @@ class NonEmptyHomeUi extends StatelessWidget {
       padding: const EdgeInsets.only(),
       child: ListView.builder(
         physics: const BouncingScrollPhysics(),
-        itemCount: notehelper.mainItems.length,
+        itemCount: notehelper.mainNotes.length,
         itemBuilder: (context, index) {
-          final item = notehelper.mainItems[index];
+          final item = notehelper.mainNotes[index];
           return Slidable(
             key: UniqueKey(),
             actions: primary(item, context),

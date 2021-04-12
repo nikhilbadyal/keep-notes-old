@@ -92,7 +92,8 @@ class CopyIcon extends StatelessWidget {
         autoSaver.cancel();
         await saveNote();
         final whereToNavigate = Utilities.navChecker(note.state);
-        await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
+        await Provider.of<NotesHelper>(context, listen: false)
+            .copyNoteHelper(note);
         await navigate(
             ModalRoute.of(context).settings.name, context, whereToNavigate);
       },
@@ -125,7 +126,8 @@ class UnHideIcon extends StatelessWidget {
         autoSaver.cancel();
         saveNote();
         final whereToNavigate = Utilities.navChecker(note.state);
-        await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
+        await Provider.of<NotesHelper>(context, listen: false)
+            .unhideNoteHelper(note);
         await navigate(
             ModalRoute.of(context).settings.name, context, whereToNavigate);
       },
@@ -160,7 +162,7 @@ class UnArchiveIcon extends StatelessWidget {
         final whereToNavigate = Utilities.navChecker(note.state);
 
         await Provider.of<NotesHelper>(context, listen: false)
-            .unarchiveNote(note);
+            .unarchiveNoteHelper(note);
         await navigate(
             ModalRoute.of(context).settings.name, context, whereToNavigate);
       },
@@ -194,7 +196,8 @@ class HideIcon extends StatelessWidget {
           autoSaver.cancel();
           saveNote();
           final whereToNavigate = Utilities.navChecker(note.state);
-          await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
+          await Provider.of<NotesHelper>(context, listen: false)
+              .hideNoteHelper(note);
           await navigate(
               ModalRoute.of(context).settings.name, context, whereToNavigate);
         } else {
@@ -255,7 +258,7 @@ class ArchiveIcon extends StatelessWidget {
         saveNote();
         final whereToNavigate = Utilities.navChecker(note.state);
         await Provider.of<NotesHelper>(context, listen: false)
-            .archiveNote(note);
+            .archiveNoteHelper(note);
         await navigate(
             ModalRoute.of(context).settings.name, context, whereToNavigate);
       },

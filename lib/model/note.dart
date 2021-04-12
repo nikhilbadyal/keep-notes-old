@@ -18,7 +18,7 @@ extension NoteStatex on NoteState {
   bool get canEdit => this < NoteState.deleted;
 }
 
-class Note {
+class Note implements Comparable<Note> {
   Note(
       {@required this.id,
       @required this.title,
@@ -37,6 +37,47 @@ class Note {
   Color color;
   NoteState state;
   String imagePath;
+
+  Note copyWith({
+    Nullable<int> id,
+    Nullable<String> title,
+    Nullable<String> content,
+    DateTime creationDate,
+    DateTime lastModify,
+    Color color,
+    NoteState state,
+    Nullable<String> imagePath,
+  }) {
+    return Note(
+      id: id ?? -1,
+      title: title ?? this.title,
+      state: state ?? this.state,
+      creationDate: creationDate ?? this.creationDate,
+      color: color ?? this.color,
+      lastModify: lastModify ?? this.lastModify,
+      content: content ?? this.content,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
+
+  /*Note copyWith() {
+    return Note(
+      title: title ?? this.title,
+      state: state,
+      creationDate: creationDate,
+      color: color,
+      lastModify: lastModify,
+      content: content,
+      imagePath: imagePath,
+      id: id,
+    );
+  }*/
+
+  @override
+  bool operator ==(Object other) => other is Note && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 
   @override
   String toString() {
@@ -113,4 +154,28 @@ class Note {
       DateFormat.yMd().add_jm().format(lastModify);
 
   String get strLastModifiedDate1 => DateFormat('jm').format(lastModify);
+
+  @override
+  int compareTo(Note other) {
+    final isAfter = lastModify.isAfter(other.lastModify);
+    if (isAfter) {
+      return -1;
+    } else {
+      final isBefore = lastModify.isBefore(other.lastModify);
+      if (isBefore) {
+        return 1;
+      }
+      return 0;
+    }
+  }
+}
+
+class Nullable<T> {
+  Nullable(this._value);
+
+  final T _value;
+
+  T get value {
+    return _value;
+  }
 }

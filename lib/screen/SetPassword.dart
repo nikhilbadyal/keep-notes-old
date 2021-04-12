@@ -71,7 +71,6 @@ class _SetPasswordState extends State<SetPassword> {
           Utilities.getSnackBar(
             context,
             "PassCodes doesn't match",
-            const Duration(seconds: 2),
           ),
         );
         await navigate(
