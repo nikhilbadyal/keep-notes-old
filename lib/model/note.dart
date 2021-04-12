@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../app.dart';
+import 'package:notes/app.dart';
 
 enum NoteState {
-  unspecified,
+  unspecified, //HOM
   pinned,
-  archived,
-  hidden,
-  deleted,
+  archived, //ARCHIVED
+  hidden, //HIdden
+  deleted, //Trash
 }
 
 extension NoteStatex on NoteState {
@@ -21,14 +20,14 @@ extension NoteStatex on NoteState {
 
 class Note {
   Note(
-      {@required @required this.id,
-      @required @required this.title,
-      @required @required this.content,
-      @required @required this.creationDate,
-      @required @required this.lastModify,
-      @required @required this.color,
-      @required @required this.state,
-      @required @required this.imagePath});
+      {@required this.id,
+      @required this.title,
+      @required this.content,
+      @required this.creationDate,
+      @required this.lastModify,
+      @required this.color,
+      @required this.state,
+      @required this.imagePath});
 
   int id;
   String title;
@@ -44,7 +43,7 @@ class Note {
     return 'Object is $id $title $content $creationDate $lastModify $color $state $imagePath ';
   }
 
-  Map<String, dynamic> toMap(bool isNew) {
+  Map<String, dynamic> toMap({bool isNew}) {
     final data = <String, dynamic>{
       'title': title,
       'content': content,
@@ -84,9 +83,15 @@ class Note {
         id: -1,
         title: json['title'].toString(),
         content: json['content'].toString(),
-        creationDate: DateTime.fromMillisecondsSinceEpoch(json['creationDate']),
-        lastModify: DateTime.fromMillisecondsSinceEpoch(json['lastModify']),
-        color: Color(json['color']),
+        creationDate: DateTime.fromMillisecondsSinceEpoch(
+          json['creationDate'],
+        ),
+        lastModify: DateTime.fromMillisecondsSinceEpoch(
+          json['lastModify'],
+        ),
+        color: Color(
+          json['color'],
+        ),
         state: NoteState.values[state],
         imagePath: null);
   }

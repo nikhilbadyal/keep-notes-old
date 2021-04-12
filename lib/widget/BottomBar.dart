@@ -5,7 +5,7 @@ class BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint('Bottom bar building 32');
+    //debugPrint('Bottom bar building 32');
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       child: Container(
@@ -14,5 +14,4 @@ class BottomBar extends StatelessWidget {
       ),
     );
   }
-
 }

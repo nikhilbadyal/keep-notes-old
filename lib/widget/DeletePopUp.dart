@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:notes/model/database/NotesHelper.dart';
 import 'package:notes/model/note.dart';
-import 'package:provider/provider.dart';
-
-import '../app.dart';
+import 'package:notes/util/AppRoutes.dart';
+import 'package:notes/util/Utilites.dart';
 
 class DeletePopUp extends StatelessWidget {
   const DeletePopUp(this.toBeDeleted, this.autoSaver, this.fromWhere);
@@ -16,52 +15,47 @@ class DeletePopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //debugPrint('building 33');
-    var toWhere = '/';
-    final currentScreen = myNotes.myRouteObserver.currentScreen;
-    switch (currentScreen) {
-      case '/':
-        {
-          toWhere = '/';
-        }
-        break;
-      case '/archive':
-        {
-          toWhere = '/archive';
-        }
-        break;
-      case '/trash':
-        {
-          toWhere = '/trash';
-        }
-        break;
-      case '/hidden':
-        {
-          toWhere = '/hidden';
-        }
-        break;
-    }
-    return AlertDialog(
+    final toWhere = getToWhere();
+    return MyAlertDialog(
       title: const Text('Delete'),
       actions: [
         TextButton(
           onPressed: () async {
             autoSaver.cancel();
-            await Provider.of<NotesHelper>(context, listen: false)
-                .trashNote(note: toBeDeleted);
-            await Navigator.of(context).pushNamedAndRemoveUntil(
-                toWhere, (Route<dynamic> route) => false);
+            await Utilities.onTrashTap(context, toBeDeleted);
+            Navigator.popUntil(
+              context,
+              (Route<dynamic> route) {
+                return route.settings.name == toWhere;
+              },
+            );
           },
-          child: const Text('Yes'),
+          child: const Text('Sure'),
         ),
         TextButton(
           onPressed: () async {
-            Provider.of<NotesHelper>(context, listen: false).falseDelete();
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
       ],
     );
+  }
+
+  String getToWhere() {
+    switch (toBeDeleted.state) {
+      case NoteState.archived:
+        return NotesRoutes.archiveScreen;
+        break;
+      case NoteState.hidden:
+        return NotesRoutes.hiddenScreen;
+        break;
+      case NoteState.deleted:
+        return NotesRoutes.trashScreen;
+        break;
+      default:
+        return '/';
+        break;
+    }
   }
 }

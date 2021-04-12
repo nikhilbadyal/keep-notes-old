@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:notes/model/database/NotesHelper.dart';
-import 'package:notes/util/DrawerManager.dart';
+import 'package:notes/util/AppConfiguration.dart';
+import 'package:notes/util/AppRoutes.dart';
 import 'package:notes/util/LockManager.dart';
 import 'package:notes/util/MyRouteObserver.dart';
-import 'package:notes/util/Utilites.dart';
-import 'package:notes/views/ScreenHelpers/HomeScreen.dart';
-import 'package:notes/views/TopWidget.dart';
-import 'package:notes/views/screens/LockScreen.dart';
-import 'package:notes/views/screens/SetPassword.dart';
-import 'package:notes/widget/AppBar.dart';
+import 'package:notes/util/ThemeData.dart';
 import 'package:provider/provider.dart';
 
 MyNotes myNotes;
+final RouteObserver<Route> routeObserver = RouteObserver<Route>();
+MyRouteObserver myRouteObserver = MyRouteObserver();
 
 class MyNotes extends StatelessWidget {
-  final MyRouteObserver myRouteObserver = MyRouteObserver();
-  final DrawerManager drawerManager = DrawerManager();
-  final LockChecker lockChecker = LockChecker(Utilities.passLength);
-
-  /*final theme = ThemeData(
-    //TODO lern this
-  );*/
+  final LockChecker lockChecker = LockChecker();
 
   @override
   Widget build(BuildContext context) {
@@ -31,20 +23,31 @@ class MyNotes extends StatelessWidget {
         ChangeNotifierProvider<NotesHelper>(
           create: (_) => NotesHelper(),
         ),
-        ChangeNotifierProvider<AppbarStatus>(
-          create: (_) => AppbarStatus(),
+        ChangeNotifierProvider<AppConfiguration>(
+          create: (_) => AppConfiguration(),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Notes App',
-        navigatorObservers: [myRouteObserver],
-        routes: {
-          '/': (context) => ScreenContainer(
-                topScreen: HomeScreenHelper(),
-              ),
-          '/lock': (context) => LockScreen(),
-          '/setpass': (context) => SetPassword(),
+      child: Builder(
+        builder: (BuildContext context) {
+          debugPrint('Building again');
+          Provider.of<AppConfiguration>(context);
+          // ignore: prefer_typing_uninitialized_variables
+          var _theme;
+          final currentTheme =
+              Provider.of<AppConfiguration>(context, listen: false).appTheme;
+          if (currentTheme == AppTheme.Black) {
+            // debugPrint('Dark theme');
+            _theme = blackTheme(context);
+          } else {
+            _theme = lightTheme(context);
+          }
+          return MaterialApp(
+            theme: _theme,
+            title: 'Notes App',
+            navigatorObservers: [myRouteObserver],
+            initialRoute: '/',
+            onGenerateRoute: RouteGenerator.generateRoute,
+          );
         },
       ),
     );

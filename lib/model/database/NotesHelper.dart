@@ -1,35 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:notes/model/database/database_helper.dart';
-
-import '../note.dart';
+import 'package:notes/model/note.dart';
+import 'package:notes/util/Utilites.dart';
 
 class NotesHelper with ChangeNotifier {
-  List _items = [];
+  List _mainNotes = [];
+  List _otherNotes = [];
 
-  List get items {
-    return [..._items];
+  List get mainItems {
+    return [..._mainNotes];
   }
 
-  Future<Note> insertNote(Note note, bool isNew) async {
+  List get otherNotes => [..._otherNotes];
+
+  Future<Note> insertNote(Note note, {bool isNew}) async {
     if (note.id != -1) {}
     if (isNew) {
-      _items.insert(0, note);
+      note.state == NoteState.unspecified
+          ? _mainNotes.insert(0, note)
+          : _otherNotes.insert(0, note);
     } else {
       try {
-        _items[_items.indexWhere((element) => note.id == element.id)] = note;
+        note.state == NoteState.unspecified
+            ? _mainNotes[_mainNotes
+                .indexWhere((element) => note.id == element.id)] = note
+            : _otherNotes[_otherNotes
+                .indexWhere((element) => note.id == element.id)] = note;
       } catch (e) {
         rethrow;
       }
     }
     // ignore: parameter_assignments
-    note = await DatabaseHelper.insertNote(note, isNew);
+    note = await DatabaseHelper.insertNote(note, isNew: isNew);
     notifyListeners();
     return note;
   }
 
   Future<bool> copyNote(Note note) async {
     if (note.id != -1) {
-      _items.insert(0, note);
+      note.state == NoteState.unspecified
+          ? _mainNotes.insert(0, note)
+          : _otherNotes.insert(0, note);
       await DatabaseHelper.copyNote(note);
       notifyListeners();
       return true;
@@ -49,8 +60,11 @@ class NotesHelper with ChangeNotifier {
 
   Future<bool> hideNote(Note note) async {
     if (note.id != -1) {
+      final toDo = note.state;
       await DatabaseHelper.hideNote(note);
-      await getNotesAll(0);
+      toDo == NoteState.unspecified
+          ? await getNotesAll(0)
+          : await getNotesAll(2);
       notifyListeners();
       return true;
     }
@@ -93,7 +107,9 @@ class NotesHelper with ChangeNotifier {
       return status;
     }
     try {
-      _items.removeWhere((element) => element.id == note.id);
+      note.state == NoteState.unspecified
+          ? _mainNotes.removeWhere((element) => element.id == note.id)
+          : _otherNotes.removeWhere((element) => element.id == note.id);
       status = await DatabaseHelper.deleteNote(note);
     } catch (e) {
       rethrow;
@@ -107,14 +123,14 @@ class NotesHelper with ChangeNotifier {
     return DatabaseHelper.deleteAllHiddenNotes();
   }
 
-  Future<bool> trashNote({Note note, BuildContext context}) async {
+  Future<bool> trashNote(Note note, BuildContext context) async {
     if (note.id != -1) {
       //TODO fix this
       final nav = note.state.index.toString();
+      final stat = await DatabaseHelper.trashNote(note);
       switch (nav) {
         case '0':
           {
-            final stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(0);
             notifyListeners();
             return stat;
@@ -122,16 +138,13 @@ class NotesHelper with ChangeNotifier {
           break;
         case '2':
           {
-            final stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(2);
             notifyListeners();
-
             return stat;
           }
           break;
         case '3':
           {
-            final stat = await DatabaseHelper.trashNote(note);
             await getNotesAll(3);
             notifyListeners();
             return stat;
@@ -139,20 +152,23 @@ class NotesHelper with ChangeNotifier {
           break;
         default:
           {
-            AlertDialog(
-              content: const Text(
-                  'If you\'re seeing this please consider submitting a bug :-)'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () async {
-                    await Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/', (Route<dynamic> route) => false);
-                    notifyListeners();
-                    return;
-                  },
-                  child: const Text('Ok'),
-                ),
-              ],
+            await showDialog(
+              context: context,
+              builder: (_) {
+                return MySimpleDialog(
+                  title: const Text(
+                      'If you\'re seeing this please consider submitting a bug :'),
+                  children: [
+                    SimpleDialogOption(
+                      onPressed: () {
+                        Utilities.launchUrl(
+                          Utilities.emailLaunchUri.toString(),
+                        );
+                      },
+                    )
+                  ],
+                );
+              },
             );
           }
       }
@@ -161,26 +177,52 @@ class NotesHelper with ChangeNotifier {
   }
 
   void falseDelete() {
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future getNotesAll(int noteState) async {
     final notesList = await DatabaseHelper.selectAllNotes(noteState);
-    _items = notesList.map(
-      (itemVar) {
-        return Note(
-            id: itemVar['id'],
-            title: itemVar['title'].toString(),
-            content: itemVar['content'].toString(),
-            creationDate:
-                DateTime.fromMillisecondsSinceEpoch(itemVar['creationDate']),
-            lastModify:
-                DateTime.fromMillisecondsSinceEpoch(itemVar['lastModify']),
-            color: Color(itemVar['color']),
-            state: NoteState.values[itemVar['state']],
-            imagePath: itemVar['imagePath']);
-      },
-    ).toList();
+    noteState == NoteState.unspecified.index
+        ? _mainNotes = notesList.map(
+            (itemVar) {
+              return Note(
+                id: itemVar['id'],
+                title: itemVar['title'].toString(),
+                content: itemVar['content'].toString(),
+                creationDate: DateTime.fromMillisecondsSinceEpoch(
+                  itemVar['creationDate'],
+                ),
+                lastModify: DateTime.fromMillisecondsSinceEpoch(
+                  itemVar['lastModify'],
+                ),
+                color: Color(
+                  itemVar['color'],
+                ),
+                state: NoteState.values[itemVar['state']],
+                imagePath: itemVar['imagePath'],
+              );
+            },
+          ).toList()
+        : _otherNotes = notesList.map(
+            (itemVar) {
+              return Note(
+                id: itemVar['id'],
+                title: itemVar['title'].toString(),
+                content: itemVar['content'].toString(),
+                creationDate: DateTime.fromMillisecondsSinceEpoch(
+                  itemVar['creationDate'],
+                ),
+                lastModify: DateTime.fromMillisecondsSinceEpoch(
+                  itemVar['lastModify'],
+                ),
+                color: Color(
+                  itemVar['color'],
+                ),
+                state: NoteState.values[itemVar['state']],
+                imagePath: itemVar['imagePath'],
+              );
+            },
+          ).toList();
   }
 
   Future<List> getNotesAllForBackup() async {
@@ -188,16 +230,21 @@ class NotesHelper with ChangeNotifier {
     final items = notesList.map(
       (itemVar) {
         return Note(
-            id: itemVar['id'],
-            title: itemVar['title'].toString(),
-            content: itemVar['content'].toString(),
-            creationDate:
-                DateTime.fromMillisecondsSinceEpoch(itemVar['creationDate']),
-            lastModify:
-                DateTime.fromMillisecondsSinceEpoch(itemVar['lastModify']),
-            color: Color(itemVar['color']),
-            state: NoteState.values[itemVar['state']],
-            imagePath: itemVar['imagePath']);
+          id: itemVar['id'],
+          title: itemVar['title'].toString(),
+          content: itemVar['content'].toString(),
+          creationDate: DateTime.fromMillisecondsSinceEpoch(
+            itemVar['creationDate'],
+          ),
+          lastModify: DateTime.fromMillisecondsSinceEpoch(
+            itemVar['lastModify'],
+          ),
+          color: Color(
+            itemVar['color'],
+          ),
+          state: NoteState.values[itemVar['state']],
+          imagePath: itemVar['imagePath'],
+        );
       },
     ).toList();
     return items;
@@ -211,7 +258,55 @@ class NotesHelper with ChangeNotifier {
 
   Future<bool> deleteAllTrashNotes() async {
     final status = await DatabaseHelper.deleteAllTrashNote();
+    await getNotesAll(NoteState.deleted.index);
     notifyListeners();
     return status;
+  }
+}
+
+class MySimpleDialog extends StatelessWidget {
+  const MySimpleDialog({Key key, this.title, this.children}) : super(key: key);
+
+  final Widget title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final fake = <Widget>[];
+    if (children == null) {
+      fake.add(Container(
+        height: 20,
+      ));
+    }
+    return SimpleDialog(
+      title: Center(
+        child: title,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      children: children ?? fake,
+    );
+  }
+}
+
+class MyAlertDialog extends StatelessWidget {
+  const MyAlertDialog({Key key, this.title, this.actions, this.content})
+      : super(key: key);
+
+  final Widget title;
+  final List<Widget> actions;
+  final Widget content;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: title,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      content: content,
+      actions: actions,
+    );
   }
 }

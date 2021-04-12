@@ -3,24 +3,55 @@ import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:notes/app.dart';
 import 'package:notes/model/database/NotesHelper.dart';
 import 'package:notes/model/note.dart';
+import 'package:notes/util/AppConfiguration.dart';
+import 'package:notes/util/AppRoutes.dart';
+import 'package:notes/widget/Navigations.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:random_color/random_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../app.dart';
+enum IconColorStatus { NoColor, RandomColor, PickedColor, UiColor }
+
+MaterialColor createMaterialColor(Color color) {
+  final strengths = <double>[.05];
+  final swatch = <int, Color>{};
+  final r = color.red;
+  final g = color.green;
+  final b = color.blue;
+
+  for (var i = 1; i < 10; i++) {
+    strengths.add(0.1 * i);
+  }
+  for (final strength in strengths) {
+    final ds = 0.5 - strength;
+    swatch[(strength * 1000).round()] = Color.fromRGBO(
+      r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+      g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+      b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+      1,
+    );
+  }
+  return MaterialColor(color.value, swatch);
+}
+
+Color getRandomColor() {
+  final _randomColor = RandomColor();
+  var color = _randomColor.randomColor();
+  while (color == selectedPrimaryColor || color == selectedAccentColor) {
+    color = _randomColor.randomColor();
+  }
+  return color;
+}
 
 class Utilities {
   static final LocalAuthentication _localAuthentication = LocalAuthentication();
   static SharedPreferences prefs;
-  static const Color uiColor1 = Color(0xFFFD5872);
-  static const Color uiColor2 = Colors.blue;
-  static const double padding = 20;
-  static const double avatarRadius = 45;
   static const passLength = 4;
-  static const Color dialogColor = Colors.white;
 
   static Future<bool> isBioAvailable() async {
     var isAvailable = false;
@@ -30,76 +61,46 @@ class Utilities {
     return isAvailable;
   }
 
-  static SnackBar getExitSnackBar(BuildContext context, String data) {
-    return SnackBar(
-      action: SnackBarAction(
-        textColor: Colors.white,
-        label: 'Reset?',
-        onPressed: () async {
-          await showDialog<bool>(
-            context: context,
-            builder: (context) =>
-                Center(
-                  child: SingleChildScrollView(
-                    child: AlertDialog(
-                      title: const Text(
-                          'Passcode cant be reset. Delete all notes to reset Passcode'),
-                      actions: [
-                        TextButton(
-                          onPressed: () async {
-                            Utilities.showSnackbar(
-                                context,
-                                'Deleted all Hidden Notes',
-                                Colors.white,
-                                const Duration(seconds: 2),
-                                Colors.green);
-                            await Provider.of<NotesHelper>(
-                                context, listen: false)
-                                .deleteAllHiddenNotes();
-                            await Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/', (Route<dynamic> route) => false);
-                          },
-                          child: const Text('Ok'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        Navigator.of(context).pop(true);
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-      content: Text(data),
-      backgroundColor: Colors.red,
-      duration: const Duration(
-        seconds: 2,
-      ),
-      behavior: SnackBarBehavior.floating,
-    );
+  static Future<void> resetPassword(BuildContext context,
+      {bool deleteAllNotes = false}) async {
+    if (deleteAllNotes) {
+      await Provider.of<NotesHelper>(context, listen: false)
+          .deleteAllHiddenNotes();
+      Utilities.showSnackbar(
+        context,
+        'Deleted all Hidden Notes',
+        const Duration(seconds: 2),
+      );
+    } else {
+      Utilities.showSnackbar(
+        context,
+        'Password Reset',
+        const Duration(seconds: 2),
+      );
+    }
+    await myNotes.lockChecker.resetConfig();
+    await navigate(
+        ModalRoute.of(context).settings.name, context, NotesRoutes.homeScreen);
   }
 
   static Future<bool> launchUrl(String url) async {
     if (await canLaunch(url)) {
       return launch(url);
     } else {
+      //debugPrint('unable');
       return false;
     }
   }
 
   static String navChecker(NoteState state) {
     if (state == NoteState.archived) {
-      return '/archive';
-    } else if (state == NoteState.unspecified) {
-      return '/';
+      return NotesRoutes.archiveScreen;
+    } else if (state == NoteState.hidden) {
+      return NotesRoutes.hiddenScreen;
     } else if (state == NoteState.deleted) {
-      return '/trash';
+      return NotesRoutes.trashScreen;
     } else {
-      return '/hidden';
+      return NotesRoutes.homeScreen;
     }
   }
 
@@ -115,29 +116,70 @@ class Utilities {
     return false;
   }
 
+  static SnackBarAction resetAction(BuildContext context) {
+    return SnackBarAction(
+      label: 'Reset?',
+      onPressed: () async {
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => Center(
+            child: SingleChildScrollView(
+              child: MyAlertDialog(
+                title: const Text('Delete all notes to reset Passcode'),
+                actions: [
+                  TextButton(
+                    onPressed: () =>
+                        resetPassword(context, deleteAllNotes: true),
+                    child: const Text('Ok'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop(true);
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   static final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: 'nikhildevelops@gmail.com',
       queryParameters: {'subject': 'Suggestion/Issues in the app'});
 
   static SnackBar getSnackBar(
-      String data, Color dataColor, Duration duration, Color color) {
+      BuildContext context, String data, Duration duration,
+      {Color dataColor, Color color, SnackBarAction action}) {
     return SnackBar(
+      key: UniqueKey(),
       content: Text(
         data,
-        style: TextStyle(color: dataColor),
       ),
-      backgroundColor: color,
+      action: action,
       duration: duration,
-      behavior: SnackBarBehavior.floating,
+      padding: EdgeInsets.only(
+        left: MediaQuery.of(context).size.width * 0.38,
+      ),
+      shape: ContinuousRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
     );
   }
 
-  static void showSnackbar(BuildContext context, String data, Color dataColor,
-      Duration duration, Color color) {
+  static void showSnackbar(BuildContext context, String data, Duration duration,
+      {Color dataColor, Color color}) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      Utilities.getSnackBar(data, dataColor, duration, color),
+      Utilities.getSnackBar(
+        context,
+        data,
+        duration,
+      ),
     );
   }
 
@@ -173,9 +215,7 @@ class Utilities {
       await _handleError(errorCode: errorCode.code, context: context);
     }
     if (isAuthenticated) {
-      await Utilities.addBoolToSF('bio', true);
-      await Utilities.addBoolToSF('firstTimeNeeded', true);
-      myNotes.lockChecker.bioEnabled = true;
+      await myNotes.lockChecker.bioEnabledConfig();
     }
     return isAuthenticated;
   }
@@ -185,7 +225,7 @@ class Utilities {
     await prefs.setString(key, value);
   }
 
-  static Future<void> addBoolToSF(String key, bool value) async {
+  static Future<void> addBoolToSF(String key, {bool value}) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.setBool(key, value);
   }
@@ -200,28 +240,20 @@ class Utilities {
     await prefs.setDouble(key, value);
   }
 
-  static Future<String> getStringValuesSF(String key) async {
-    prefs ??= await SharedPreferences.getInstance();
-    final stringValue = prefs.getString(key);
-    return stringValue;
+  static String getStringValuesSF(String key) {
+    return prefs.getString(key);
   }
 
-  static Future<bool> getBoolValuesSF(String key) async {
-    prefs ??= await SharedPreferences.getInstance();
-    final boolValue = prefs.getBool(key);
-    return boolValue;
+  static bool getBoolValuesSF(String key) {
+    return prefs.getBool(key);
   }
 
-  static Future<int> getIntValuesSF(String key) async {
-    prefs ??= await SharedPreferences.getInstance();
-    final intValue = prefs.getInt(key);
-    return intValue;
+  static int getIntValuesSF(String key) {
+    return prefs.getInt(key);
   }
 
-  static Future<double> getDoubleValuesSF(String key) async {
-    prefs ??= await SharedPreferences.getInstance();
-    final doubleValue = prefs.getDouble(key);
-    return doubleValue;
+  static double getDoubleValuesSF(String key) {
+    return prefs.getDouble(key);
   }
 
   static Future<void> removeValues(String key) async {
@@ -229,8 +261,7 @@ class Utilities {
     await prefs.remove(key);
   }
 
-  static Future<bool> checkKey(String key) async {
-    prefs ??= await SharedPreferences.getInstance();
+  static bool checkKey(String key) {
     return prefs.containsKey(key);
   }
 
@@ -252,7 +283,7 @@ class Utilities {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog(
+        return MyAlertDialog(
           title: const Text('Error'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -264,8 +295,7 @@ class Utilities {
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                await Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/lock', (Route<dynamic> route) => false);
+                Navigator.of(context).pop();
               },
               child: const Text('Ok :('),
             ),
@@ -279,20 +309,27 @@ class Utilities {
     return IconSlideAction(
       icon: TablerIcons.ghost,
       caption: 'Hide',
-      color: Colors.blueAccent,
-      onTap: () => _onHideTap(context, note),
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      onTap: () => onHideTap(context, note),
     );
   }
 
-  static Future<void> _onHideTap(BuildContext context, Note note) async {
+  static Future<void> onHideTap(BuildContext context, Note note) async {
     final value =
-    await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
+        await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
     if (value) {
-      Utilities.showSnackbar(context, 'Note Hidden', Colors.white,
-          const Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(
+        context,
+        'Note Hidden',
+        const Duration(seconds: 2),
+      );
     } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
     }
   }
 
@@ -300,20 +337,29 @@ class Utilities {
     return IconSlideAction(
       icon: Icons.delete_forever_outlined,
       caption: 'Delete',
-      color: Colors.redAccent,
-      onTap: () => _onDeleteTap(context, note),
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      //light
+
+      onTap: () => onDeleteTap(context, note),
     );
   }
 
-  static Future<void> _onDeleteTap(BuildContext context, Note note) async {
+  static Future<void> onDeleteTap(BuildContext context, Note note) async {
     final value =
-    await Provider.of<NotesHelper>(context, listen: false).deleteNote(note);
+        await Provider.of<NotesHelper>(context, listen: false).deleteNote(note);
     if (value) {
-      Utilities.showSnackbar(context, 'Note Deleted', Colors.white,
-          const Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(
+        context,
+        'Note Deleted',
+        const Duration(seconds: 2),
+      );
     } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
     }
   }
 
@@ -321,44 +367,28 @@ class Utilities {
     return IconSlideAction(
       icon: Icons.delete_outline,
       caption: 'Trash',
-      color: Colors.redAccent,
-      onTap: () => _onTrashTap(context, note),
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      //light
+      onTap: () => onTrashTap(context, note),
     );
   }
 
-  static Future<void> _onTrashTap(BuildContext context, Note note) async {
-    final value =
-    await Provider.of<NotesHelper>(context, listen: false).trashNote(
-      note: note,
-      context: context,
-    );
-    if (value) {
-      Utilities.showSnackbar(context, 'Note Trashed', Colors.white,
-          const Duration(seconds: 2), Colors.green);
-    } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
-    }
-  }
-
-  static Widget archiveAction(BuildContext context, Note note) {
-    return IconSlideAction(
-      icon: Icons.archive_outlined,
-      caption: 'Archive',
-      color: Colors.green,
-      onTap: () => _onArchiveTap(context, note),
-    );
-  }
-
-  static Future<void> _onArchiveTap(BuildContext context, Note note) async {
+  static Future<void> onTrashTap(BuildContext context, Note note) async {
     final value = await Provider.of<NotesHelper>(context, listen: false)
-        .archiveNote(note);
+        .trashNote(note, context);
     if (value) {
-      Utilities.showSnackbar(context, 'Note Archived', Colors.white,
-          const Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(
+        context,
+        'Note Trashed',
+        const Duration(seconds: 2),
+      );
     } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
     }
   }
 
@@ -366,41 +396,88 @@ class Utilities {
     return IconSlideAction(
       icon: TablerIcons.copy,
       caption: 'Copy',
-      color: Colors.black,
-      onTap: () => _onCopyTap(context, note),
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      //dark
+      onTap: () => onCopyTap(context, note),
     );
   }
 
-  static Future<void> _onCopyTap(BuildContext context, Note note) async {
+  static Future<void> onCopyTap(BuildContext context, Note note) async {
     final value =
-    await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
+        await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
     if (value) {
-      Utilities.showSnackbar(context, 'Note Copied', Colors.white,
-          const Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(
+        context,
+        'Note Copied',
+        const Duration(seconds: 2),
+      );
     } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
+    }
+  }
+
+  static Widget archiveAction(BuildContext context, Note note) {
+    return IconSlideAction(
+      icon: Icons.archive_outlined,
+      caption: 'Archive',
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      //light
+
+      onTap: () => onArchiveTap(context, note),
+    );
+  }
+
+  static Future<void> onArchiveTap(BuildContext context, Note note) async {
+    final value = await Provider.of<NotesHelper>(context, listen: false)
+        .archiveNote(note);
+    if (value) {
+      Utilities.showSnackbar(
+        context,
+        'Note Archived',
+        const Duration(seconds: 2),
+      );
+    } else {
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
     }
   }
 
   static Widget unHideAction(BuildContext context, Note note) {
     return IconSlideAction(
-      icon: Icons.inbox_outlined,
+      icon: Icons.drive_file_move_outline,
       caption: 'UnHide',
-      color: Colors.blueAccent,
-      onTap: () => _onUnHideTap(context, note),
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      //light
+
+      onTap: () => onUnHideTap(context, note),
     );
   }
 
-  static Future<void> _onUnHideTap(BuildContext context, Note note) async {
+  static Future<void> onUnHideTap(BuildContext context, Note note) async {
     final value =
-    await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
+        await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
     if (value) {
-      Utilities.showSnackbar(context, 'Note Restored', Colors.white,
-          const Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(
+        context,
+        'Note Restored',
+        const Duration(seconds: 2),
+      );
     } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
     }
   }
 
@@ -408,42 +485,110 @@ class Utilities {
     return IconSlideAction(
       icon: TablerIcons.ghost,
       caption: 'Unarchive',
-      color: Colors.green,
-      onTap: () => _onUnArchiveTap(context, note),
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      //light
+
+      onTap: () => onUnArchiveTap(context, note),
     );
   }
 
-  static Future<void> _onUnArchiveTap(BuildContext context, Note note) async {
+  static Future<void> onUnArchiveTap(BuildContext context, Note note) async {
     final value = await Provider.of<NotesHelper>(context, listen: false)
         .unarchiveNote(note);
     if (value) {
-      Utilities.showSnackbar(context, 'Note Unarchived', Colors.white,
-          const Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(
+        context,
+        'Note Unarchived',
+        const Duration(seconds: 2),
+      );
     } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
     }
   }
 
   static Widget restoreAction(BuildContext context, Note note) {
     return IconSlideAction(
-      icon: Icons.inbox_outlined,
+      icon: Icons.restore_from_trash_outlined,
       caption: 'Restore',
-      color: Colors.green,
-      onTap: () => _onRestoreActionTap(context, note),
+      color: Colors.transparent,
+      foregroundColor: Theme.of(context).textTheme.bodyText1.color,
+      //light
+
+      onTap: () => onRestoreTap(context, note),
     );
   }
 
-  static Future<void> _onRestoreActionTap(BuildContext context,
-      Note note) async {
+  static Future<void> onRestoreTap(BuildContext context, Note note) async {
     final value =
-    await Provider.of<NotesHelper>(context, listen: false).undelete(note);
+        await Provider.of<NotesHelper>(context, listen: false).undelete(note);
     if (value) {
-      Utilities.showSnackbar(context, 'Note Restored', Colors.white,
-          const Duration(seconds: 2), Colors.green);
+      Utilities.showSnackbar(
+        context,
+        'Note Restored',
+        const Duration(seconds: 2),
+      );
     } else {
-      Utilities.showSnackbar(context, 'Some error occurred', Colors.white,
-          const Duration(seconds: 2), Colors.redAccent);
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
     }
   }
+
+  static Future<void> onDeleteAllTap(BuildContext context) async {
+    final value = await Provider.of<NotesHelper>(context, listen: false)
+        .deleteAllTrashNotes();
+    if (value) {
+      Utilities.showSnackbar(
+        context,
+        'Deleted All',
+        const Duration(seconds: 2),
+      );
+    } else {
+      Utilities.showSnackbar(
+        context,
+        'Some error occurred',
+        const Duration(seconds: 2),
+      );
+    }
+  }
+
+  static Color iconColor() {
+    // debugPrint(selectedIconColorStatus.index.toString());
+    switch (selectedIconColorStatus) {
+      case IconColorStatus.RandomColor:
+        return getRandomColor();
+        break;
+      case IconColorStatus.PickedColor:
+        return selectedIconColor;
+        break;
+      case IconColorStatus.UiColor:
+        return selectedPrimaryColor;
+        break;
+      default:
+        return selectedAppTheme == AppTheme.Light ? Colors.black : Colors.white;
+        break;
+    }
+  }
+
+/*static Color lightDarkIconColor() {
+    // debugPrint(selectedIconColorStatus.index.toString());
+    switch (selectedAppTheme) {
+      case AppTheme.Dark:
+        return Colors.white;
+        break;
+      case AppTheme.Black:
+        return Colors.white;
+        break;
+      default:
+        return Colors.black;
+        break;
+    }
+  }*/
 }

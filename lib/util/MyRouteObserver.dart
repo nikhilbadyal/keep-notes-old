@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class MyRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   String currentScreen;
+  bool needsUpdate = false;
 
   void _sendScreenView(PageRoute<dynamic> route) {
     final screenName = route.settings.name;

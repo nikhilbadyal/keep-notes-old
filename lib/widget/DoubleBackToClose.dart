@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:notes/util/Utilites.dart';
+import 'package:notes/util/AppRoutes.dart';
 import 'package:notes/widget/Navigations.dart';
 
-import '../app.dart';
-
 class DoubleBackToCloseWidget extends StatefulWidget {
-  const DoubleBackToCloseWidget({@required @required this.child});
+  const DoubleBackToCloseWidget({@required this.child});
 
   final Widget child;
 
@@ -17,8 +15,6 @@ class DoubleBackToCloseWidget extends StatefulWidget {
 }
 
 class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
-  int _lastTimeBackButtonWasTapped;
-
   @override
   Widget build(BuildContext context) {
     //debugPrint('double back building 34');
@@ -26,34 +22,13 @@ class _DoubleBackToCloseWidgetState extends State<DoubleBackToCloseWidget> {
     if (_isAndroid) {
       return WillPopScope(
         onWillPop: () async {
-          if (myNotes.drawerManager.isOpened) {
-            final _currentTime = DateTime.now().millisecondsSinceEpoch;
-            if (_lastTimeBackButtonWasTapped != null &&
-                (_currentTime - _lastTimeBackButtonWasTapped) <
-                    DoubleBackToCloseWidget.exitTimeInMillis) {
-              return Future.value(true);
-            } else {
-              _lastTimeBackButtonWasTapped =
-                  DateTime.now().millisecondsSinceEpoch;
-              Utilities.showSnackbar(
-                  context,
-                  'Press twice to exit',
-                  Colors.black87,
-                  const Duration(
-                      milliseconds: DoubleBackToCloseWidget.exitTimeInMillis),
-                  Colors.white60);
-              return Future.value(false);
-            }
+          if (ModalRoute.of(context).settings.name == '/lock' ||
+              ModalRoute.of(context).settings.name == '/setpass') {
+            await navigate(ModalRoute.of(context).settings.name, context,
+                NotesRoutes.homeScreen);
+            return Future.value(true);
           } else {
-            _lastTimeBackButtonWasTapped = null;
-            if (ModalRoute.of(context).settings.name == '/lock' ||
-                ModalRoute.of(context).settings.name == '/setpass') {
-              await goToHomeScreen(context);
-              return Future.value(true);
-            } else {
-              myNotes.drawerManager.openDrawer(context);
-              return Future.value(false);
-            }
+            return Future.value(true);
           }
         },
         child: widget.child,

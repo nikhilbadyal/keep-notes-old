@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:notes/app.dart';
 import 'package:notes/model/database/NotesHelper.dart';
 import 'package:notes/model/note.dart';
+import 'package:notes/util/AppRoutes.dart';
 import 'package:notes/util/Utilites.dart';
 import 'package:notes/widget/Navigations.dart';
 import 'package:provider/provider.dart';
-
-import '../app.dart';
 
 class MoreOptions extends StatefulWidget {
   const MoreOptions(this.note, this.autoSaver, this.saveNote);
@@ -83,18 +83,18 @@ class CopyIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     //debugPrint('building 37');
     return ListTile(
-      leading: const Icon(
+      leading: Icon(
         Icons.copy_outlined,
-        color: Colors.blue,
+        color: Utilities.iconColor(),
       ),
       title: const Text('Copy Note'),
       onTap: () async {
         autoSaver.cancel();
         await saveNote();
-        await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
         final whereToNavigate = Utilities.navChecker(note.state);
-        await Navigator.of(context).pushNamedAndRemoveUntil(
-            whereToNavigate, (Route<dynamic> route) => false);
+        await Provider.of<NotesHelper>(context, listen: false).copyNote(note);
+        await navigate(
+            ModalRoute.of(context).settings.name, context, whereToNavigate);
       },
     );
   }
@@ -116,18 +116,18 @@ class UnHideIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     //debugPrint('building 38');
     return ListTile(
-      leading: const Icon(
+      leading: Icon(
         Icons.inbox_outlined,
-        color: Colors.blue,
+        color: Utilities.iconColor(),
       ),
       title: const Text('Unhide Note'),
       onTap: () async {
         autoSaver.cancel();
         saveNote();
-        await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
         final whereToNavigate = Utilities.navChecker(note.state);
-        await Navigator.of(context).pushNamedAndRemoveUntil(
-            whereToNavigate, (Route<dynamic> route) => false);
+        await Provider.of<NotesHelper>(context, listen: false).unHideNote(note);
+        await navigate(
+            ModalRoute.of(context).settings.name, context, whereToNavigate);
       },
     );
   }
@@ -149,19 +149,20 @@ class UnArchiveIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     //debugPrint('building 39');
     return ListTile(
-      leading: const Icon(
+      leading: Icon(
         Icons.unarchive_outlined,
-        color: Colors.blue,
+        color: Utilities.iconColor(),
       ),
       title: const Text('Unarchive Note'),
       onTap: () async {
         autoSaver.cancel();
         saveNote();
+        final whereToNavigate = Utilities.navChecker(note.state);
+
         await Provider.of<NotesHelper>(context, listen: false)
             .unarchiveNote(note);
-        final whereToNavigate = Utilities.navChecker(note.state);
-        await Navigator.of(context).pushNamedAndRemoveUntil(
-            whereToNavigate, (Route<dynamic> route) => false);
+        await navigate(
+            ModalRoute.of(context).settings.name, context, whereToNavigate);
       },
     );
   }
@@ -183,28 +184,29 @@ class HideIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     //debugPrint('building 40');
     return ListTile(
-      leading: const Icon(
+      leading: Icon(
         TablerIcons.ghost,
-        color: Colors.blue,
+        color: Utilities.iconColor(),
       ),
       title: const Text('Hide Note'),
       onTap: () async {
         if (myNotes.lockChecker.passwordSet) {
           autoSaver.cancel();
           saveNote();
-          await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
           final whereToNavigate = Utilities.navChecker(note.state);
-          await Navigator.of(context).pushNamedAndRemoveUntil(
-              whereToNavigate, (Route<dynamic> route) => false);
+          await Provider.of<NotesHelper>(context, listen: false).hideNote(note);
+          await navigate(
+              ModalRoute.of(context).settings.name, context, whereToNavigate);
         } else {
           await showDialog<bool>(
             context: context,
-            builder: (context) => AlertDialog(
+            builder: (context) => MyAlertDialog(
               title: const Text('Set Passcode first'),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    goToSetPasswordScreen(context);
+                  onPressed: () async {
+                    await navigate(ModalRoute.of(context).settings.name,
+                        context, NotesRoutes.setpassScreen);
                   },
                   child: const Text(
                     'Set Now',
@@ -243,19 +245,19 @@ class ArchiveIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     //debugPrint('building 41');
     return ListTile(
-      leading: const Icon(
+      leading: Icon(
         Icons.archive_outlined,
-        color: Colors.blue,
+        color: Utilities.iconColor(),
       ),
       title: const Text('Archive Note'),
       onTap: () async {
         autoSaver.cancel();
         saveNote();
+        final whereToNavigate = Utilities.navChecker(note.state);
         await Provider.of<NotesHelper>(context, listen: false)
             .archiveNote(note);
-        final whereToNavigate = Utilities.navChecker(note.state);
-        await Navigator.of(context).pushNamedAndRemoveUntil(
-            whereToNavigate, (Route<dynamic> route) => false);
+        await navigate(
+            ModalRoute.of(context).settings.name, context, whereToNavigate);
       },
     );
   }
