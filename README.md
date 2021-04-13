@@ -1,4 +1,4 @@
-Notes is a beautiful and fast application made in flutter, it supports various features like adding and saving notes. Hiding notes with password security, Archiving them. To make UI look beautiful it has various UI colors with the support of light and dark theme.
+Notes is a privacy oriented, beautiful and fast application made in flutter, it supports various features like adding and saving notes. Hiding notes with password security, Archiving them. To make UI look beautiful it has various UI colors with the support of light and black theme.
 
 
 ![](https://i.imgur.com/HpRxuaD.png)
